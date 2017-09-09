@@ -10,6 +10,9 @@ public class CreateAccountActivity extends AppCompatActivity {
     Button buttonCreate;
     Button buttonBack;
 
+    // TCP Client
+    Client mClient;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -19,7 +22,16 @@ public class CreateAccountActivity extends AppCompatActivity {
         buttonCreate.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO
+                // Starts a connection to the server
+                new ConnectTask().execute("");
+                // Sends a message to the server
+                if (mClient != null) {
+                    mClient.sendMessage("Testing");
+                }
+                // Stopping the connection to the server
+                if (mClient != null) {
+                    mClient.close();
+                }
             }
         });
 
