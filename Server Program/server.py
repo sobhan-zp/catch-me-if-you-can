@@ -43,7 +43,7 @@ if __name__ == "__main__":
                 try:
                     data = sock.recv(RECV_BUFFER)
                     if data:
-                        print ("r " + data)
+                        Exchange().process(data)
                     else:
                         offline_client(sock)
 
