@@ -1,46 +1,34 @@
 from Mysql import Mysql
+
+""" Handles database transactions corresponding to the account table """
 class Account:
-    def register(self, db):
-        a="INSERT INTO account (username, password, email, name, date_of_birth, user_level) VALUES ('zire9999n','xia','asd','asd','asd',1);"
-        response = db.execute(a)
 
-        print(response)
+    """ Registers a new user """
+    def register(self, username, password, email, name, dob):
+        db = Mysql()
+        db.conn()
 
-    # def change_pass(id, password, self):
-    #     response = db.execute(
-    #         """
-    #         UPDATE account
-    #         SET account.password =
-    #         """
-    #         + password
-    #         +
-    #         """
-    #         WHERE account.id =
-    #         """
-    #         + id
-    #         + """;"""
-    #     )
-    #     print(response)
+        query = "INSERT INTO account VALUES (DEFAULT, '" + username + "', '" + password + "', '" + email + "', '" + name + "', " + dob + ", 1);"
+        print(query)
+        
+        response = db.execute(query)
+        print("D: " + response)
+        return(response)
 
-    def login(id, password, self):
-        response = db.execute(
-            """
-            SELECT username from account
-            WHERE id =
-            """
-            + id
-            + """
-             AND password =
-            """
-            + password
-            + """
-            ;
-            """
-        )
-        print(response)
+    """ Verifies the login credentials of a user """
+    def login(self, username, password):
+        db = Mysql()
+        db.conn()
+        query = "SELECT id from account WHERE username = '" + username + "' AND password = '" + password + "';"
+        response = db.execute(query)
+        print("D: " + response)
+        return response
 
-if __name__ == "__main__":
-    acc = Account()
-    db = Mysql()
-    db.conn()
-    acc.register(db)
+    """ Updates an account holder's password """
+    def change_password(self, username, password):
+        db = Mysql()
+        db.conn()
+        query = "UPDATE account SET account.password = '" + password + " WHERE username = '" + username + "';"
+        response = db.execute(query)
+        print("D: " + response)
+        return response
