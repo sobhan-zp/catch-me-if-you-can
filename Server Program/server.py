@@ -2,7 +2,7 @@
 
 import socket, select
 from Mysql import Mysql
-#from Account import Account
+from Account import Account
 from Exchange import Exchange
 
 RECV_BUFFER = 4096 # an exponent of 2
@@ -26,6 +26,8 @@ if __name__ == "__main__":
     print "TCP server starts at Port " + str(PORT)
     mysql_op = Mysql()
     mysql_op.conn()
+    exchange = Exchange()
+    acc = Account()
 
     while True:
         read_sockets,write_sockets,error_sockets = select.select(conn_list,[],[])
@@ -43,11 +45,13 @@ if __name__ == "__main__":
                 try:
                     data = sock.recv(RECV_BUFFER)
                     if data:
-                        Exchange().process(data)
+                        exchange.process(acc, mysql_op, sock, data)
                     else:
+                        print("CLIENT TERMINATED")
                         offline_client(sock)
 
                 except:
+                    print("EXCEPTION")
                     offline_client(sock)
                     continue
 
