@@ -5,6 +5,15 @@
     android:layout_height="match_parent">
 
     <EditText
+        android:id="@+id/editTextEmail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Email"
+        android:textSize="20sp"
+        android:layout_below="@+id/editTextPassword"
+        android:layout_alignParentStart="true" />
+
+    <EditText
         android:id="@+id/editTextName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -13,26 +22,30 @@
 
     <EditText
         android:id="@+id/editTextPassword"
-        android:layout_below="@+id/editTextName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Password"
-        android:textSize="20sp" />
+        android:textSize="20sp"
+        android:layout_below="@+id/editTextName"
+        android:layout_alignParentStart="true" />
 
     <Button
         android:id="@+id/buttonCreate"
-        android:layout_below="@+id/editTextPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:text="Create" />
+        android:onClick="createOnClick"
+        android:text="Create"
+        android:layout_above="@+id/buttonBack"
+        android:layout_alignParentStart="true" />
 
     <Button
         android:id="@+id/buttonBack"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/buttonCreate"
-        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="135dp"
+        android:onClick="back"
         android:text="Back" />
 
 </RelativeLayout>
