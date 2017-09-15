@@ -33,3 +33,12 @@ To install MariaDB
         - MariaDB initiallize
         
             mysql_secure_installation
+
+To run the server
+
+    - for CentOS
+    
+        - cd ht
+        
+        - sudo node index.js
+        
