@@ -4,13 +4,36 @@ var SERVER_PORT = 80
 // Requires
 var WebSocket = require('ws');
 var uuid = require('node-uuid');
+var mysql = require('mysql');
 
 // Variables
 var WebSocketServer = WebSocket.Server,
     wss = new WebSocketServer({ port: SERVER_PORT });
+var con = mysql.createConnection({
+    host: "localhost",
+    user: "root",
+    password: "ht!!!",
+    database: "housetarth"
+});
 var clients = [];
 
-console.log('Server Starts at port %d', SERVER_PORT);
+console.log('Server Starts At Port %d', SERVER_PORT);
+
+con.connect(function(err) {
+    if (err) {
+        console.log('Database Connection Failed');
+        console.log('%s', err);
+        process.exit();
+    }
+    console.log("Database Connected");
+
+});
+
+con.query("SELECT * FROM test", function (err, result, fields) {
+    if (err) throw err;
+    console.log("Result:%s",JSON.stringify(result));
+});
+
 
 function ws_send_to(from_uuid, to_uuid, message){
 
