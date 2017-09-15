@@ -12,7 +12,7 @@ Requirements:
 
 To install Node.JS
 
-    - Download && Latest Node.JS from https://nodejs.org/en/
+    - Download && install latest Node.JS from https://nodejs.org/en/
 
 To install MariaDB
 
@@ -36,9 +36,9 @@ To install MariaDB
 
 To run the server
 
-    - for CentOS
+    - for Linux && Windows
     
-        - cd ht
+        - cd /%YOUR PATH%//ht
         
         - sudo node index.js
         
