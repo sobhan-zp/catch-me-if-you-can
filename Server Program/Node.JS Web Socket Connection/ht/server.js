@@ -133,9 +133,9 @@ function sys_send_to_sock(sock, message){
         console.log('A system message has been sent');
 }
 
-function user_send_to_id(from_id, to_id, message){
+function user_send_to_name(from_id, to_name, message){
     for (var i = 0; i < clients.length; i++) {
-        if (clients[i].id = to_id){
+        if (clients[i].username = to_name){
             var clientSocket = clients[i].ws;
             if (clientSocket.readyState === WebSocket.OPEN) {
                 clientSocket.send(JSON.stringify({
