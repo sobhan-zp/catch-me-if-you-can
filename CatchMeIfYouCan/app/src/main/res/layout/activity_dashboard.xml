@@ -16,8 +16,18 @@
         android:id="@+id/buttonBack"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:text="Back"
         android:layout_below="@+id/imageViewTest"
-        android:layout_centerHorizontal="true"
-        android:text="Back" />
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="52dp" />
+
+    <Button
+        android:id="@+id/buttonMaps"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/imageViewTest"
+        android:text="Map" />
 
 </RelativeLayout>
