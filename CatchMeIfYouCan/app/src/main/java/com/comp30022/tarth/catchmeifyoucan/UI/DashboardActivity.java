@@ -1,5 +1,6 @@
 package com.comp30022.tarth.catchmeifyoucan.UI;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -10,6 +11,7 @@ import com.comp30022.tarth.catchmeifyoucan.R;
 public class DashboardActivity extends AppCompatActivity {
 
     Button buttonBack;
+    Button buttonMaps;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,6 +25,19 @@ public class DashboardActivity extends AppCompatActivity {
                 back(v);
             }
         });
+
+        buttonMaps = (Button) findViewById(R.id.buttonMaps);
+        buttonMaps.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                maps(v);
+            }
+        });
+    }
+
+    public void maps(View view) {
+        Intent intent = new Intent(this, MapsActivity.class);
+        startActivity(intent);
     }
 
     @Override
