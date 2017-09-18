@@ -6,7 +6,6 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/logo_circle"
@@ -14,7 +13,7 @@
         android:roundIcon="@mipmap/logo_circle"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity"
+        <activity android:name=".UI.MainActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -24,17 +23,17 @@
         </activity>
 
         <activity
-            android:name=".CreateAccountActivity"
+            android:name=".UI.RegisterActivity"
             android:label="Create Account">
         </activity>
 
         <activity
-            android:name=".LoginActivity"
+            android:name=".UI.LoginActivity"
             android:label="Login">
         </activity>
 
         <activity
-            android:name=".DashboardActivity"
+            android:name=".UI.DashboardActivity"
             android:label="Dashboard">
         </activity>
     </application>
