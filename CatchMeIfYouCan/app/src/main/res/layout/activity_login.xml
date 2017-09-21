@@ -5,7 +5,7 @@
     android:layout_height="match_parent">
 
     <EditText
-        android:id="@+id/editTextName"
+        android:id="@+id/editTextUsername"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Name"
@@ -13,7 +13,7 @@
 
     <EditText
         android:id="@+id/editTextPassword"
-        android:layout_below="@+id/editTextName"
+        android:layout_below="@+id/editTextUsername"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Password"

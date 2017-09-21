@@ -26,6 +26,8 @@ import okhttp3.WebSocket;
 public class RegisterActivity extends AppCompatActivity {
 
     private static final Integer ACTION_REGISTER = 100;       // Register action
+    private static final Integer RESISTER_SUCCESS = 300;
+    private static final Integer REGISTER_FAIL = 301;
     private static final String SERVER_IP = "35.197.172.195"; // CentOS 6 Server
     //public static final String SERVER_IP = "45.77.49.3";    // CentOS 7 Server
 
