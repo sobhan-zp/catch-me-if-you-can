@@ -38,6 +38,10 @@
         <activity
             android:name=".UI.DashboardActivity"
             android:label="Dashboard"></activity>
+        <activity
+            android:name=".UI.FriendsActivity"
+            android:label="Friends"></activity>
+
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
