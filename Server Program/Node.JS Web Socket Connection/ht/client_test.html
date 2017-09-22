@@ -2,14 +2,29 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>WebSocket Echo Demo</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <script>
         //Connection
-        var ws = new WebSocket("ws://45.77.49.3");
-        ws.onopen = function (e) {
-            appendLog("Server connected");
-            //console.log('Connection to server opened');
+        var ws;
+        function ws_operation(){
+            ws = new WebSocket("ws://" + document.getElementById('id').value);
+            ws.onopen = function (e) {
+                appendLog("Server connected");
+                //console.log('Connection to server opened');
+            }
+            //Process message
+            ws.onmessage = function (e) {
+                var data = JSON.parse(e.data);
+                appendLog(data);
+                //console.log("ID: [%s] = %s", data.id, data.message);
+            }
+            ws.onclose = function (e) {
+                appendLog("Server connection closed");
+                //console.log("Connection closed");
+            }
         }
+
         //View message
         function appendLog(message) {
             if (typeof message == "undefined") return;
@@ -22,16 +37,7 @@
             messageElem.innerHTML = message_text;
             messages.appendChild(messageElem);
         }
-        //Process message
-        ws.onmessage = function (e) {
-            var data = JSON.parse(e.data);
-            appendLog(data);
-            //console.log("ID: [%s] = %s", data.id, data.message);
-        }
-        ws.onclose = function (e) {
-            appendLog("Server connection closed");
-            //console.log("Connection closed");
-        }
+
         //Send message
         function sendMessage() {
             var messageField = document.getElementById('message');
@@ -46,6 +52,13 @@
             ws.close();
         }
 
+        function g1(){
+            document.getElementById('message').value = '{"username":"admin","password":"abcd","action":101}';
+        }
+
+        function g2(){
+            document.getElementById('message').value = '{"action":500}';
+        }
     </script>
 </head>
 
@@ -59,9 +72,29 @@
                     <input class="form-control" type="text" id="message" name="message"
                            placeholder="Type text to echo in here" value="" autofocus/>
                 </div>
+                <div class="form-group">
+                    <input class="form-control" type="text" id="ip" name="ip"
+                           placeholder="Server IP" value="45.77.49.3" autofocus/>
+                </div>
                 <button type="button" id="send" class="btn btn-primary"
                         onclick="sendMessage();">
                     Send Message
+                </button>
+                <button type="button" id="send" class="btn btn-primary"
+                        onclick="g1();">
+                    Generate Login Test 1
+                </button>
+                <button type="button" id="send" class="btn btn-primary"
+                        onclick="g2();">
+                    Generate Fetch Friend Test 1
+                </button>
+                <button type="button" id="send" class="btn btn-primary"
+                        onclick="ws_operation();">
+                    Connect To Server
+                </button>
+                <button type="button" id="send" class="btn btn-primary"
+                        onclick="location.reload();">
+                    Reload Page
                 </button>
             </form>
         </div>
