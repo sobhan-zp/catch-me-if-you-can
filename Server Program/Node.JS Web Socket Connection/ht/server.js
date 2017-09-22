@@ -9,6 +9,15 @@ LOGIN_USER_NON_EXIST_CODE = 201;
 LOGIN_EXIST_CODE = 202;
 RESISTER_SUCCESS = 300;
 REGISTER_FAIL = 301;
+FRIEND_GET = 500;
+FRIEND_GET_FAIL = 501;
+FRIEND_GET_SUCCESS = 502;
+FRIEND_SEARCH = 503;
+FRIEND_SEARCH_FAIL = 504;
+FRIEND_SEARCH_SUCCESS = 505;
+FRIEND_ADD = 506;
+FRIEND_ADD_FAIL = 507;
+FRIEND_ADD_SUCCESS = 508;
 
 // Requires
 var WebSocket = require('ws');
@@ -40,8 +49,7 @@ function set_database_con(){
     });
 }
 
-
-function login_check(username, password, sock, client_uuid){
+function login_check(username, password, sock, client_uuid, user_status){
     var fails = false;
     var code = LOGIN_SUCCESS_CODE;
     for (var i = 0; i < clients.length; i++) {
@@ -69,8 +77,10 @@ function login_check(username, password, sock, client_uuid){
                     "status": "success",
                     "code": code
                 };
+                user_status.login = true;
+                user_status.info = temp_info;
                 clients.push(temp_info);
-                sys_send_to_id(client_uuid, JSON.stringify(feedback));
+                sys_send_to_sock(sock, JSON.stringify(feedback));
             }else{
                 fails = true;
                 code = LOGIN_USER_NON_EXIST_CODE;
@@ -82,28 +92,68 @@ function login_check(username, password, sock, client_uuid){
             "status": "failed",
             "code": code
         };
-        sys_send_to_id(client_uuid, JSON.stringify(feedback));
+        sys_send_to_sock(sock, JSON.stringify(feedback));
     }
 }
 
-
-function register(username, password, email, name, sock){
-    var sql = "INSERT INTO account (username, password, email, name, user_level) VALUES ('" + username + "','" + password +"','" + email + "','" + name + "','" + DEFAULT_USER_LEVEL + "')";
-    con.query(sql, function (err, result) {
+function db_excution_send_msg(sock, sql_statement, success_code, fail_code, return_result){
+    con.query(sql_statement, function (err, result) {
         var feedback;
         if (err){
             feedback = {
                 "status": "failed",
-                "code": REGISTER_FAIL
+                "code": fail_code
             };
         }else{
-            feedback = {
-                "status": "success",
-                "code": RESISTER_SUCCESS
-            };
+            if (return_result){
+                feedback = {
+                    "status": "success",
+                    "code": success_code,
+                    "result": result
+                };
+            }else{
+                feedback = {
+                    "status": "success",
+                    "code": success_code
+                };
+            }
+
         }
         sys_send_to_sock(sock, JSON.stringify(feedback));
+        console.log(JSON.stringify(result));
     });
+}
+
+function add_friend(userinfo, add_username){
+    var sql_is_in_db = "SELECT friend_id from friend WHERE self_id = " + userinfo.db_id + " and friend_id = (SELECT id FROM account WHERE username = '" + add_username + "')";
+    var sql = "INSERT INTO friend (self_id, friend_id) VALUES (" + userinfo.db_id + ", (SELECT id FROM account WHERE username = '" + add_username + "'))";
+    con.query(sql_is_in_db, function (err, result) {
+        if (result.length>0){
+            var feedback = {
+                "status": "failed",
+                "code": FRIEND_ADD_FAIL
+            };
+            sys_send_to_sock(userinfo.ws, JSON.stringify(feedback));
+            console.log(JSON.stringify(result));
+        }else{
+            db_excution_send_msg(userinfo.ws, sql, FRIEND_ADD_SUCCESS, FRIEND_ADD_FAIL, false);
+        }
+    });
+}
+
+function search_user(userinfo, search_user){
+    var sql = "SELECT username, email, name FROM account WHERE username = '" + search_user + "'";
+    db_excution_send_msg(userinfo.ws, sql, FRIEND_SEARCH_SUCCESS, FRIEND_SEARCH_FAIL, true);
+}
+
+function fetch_friend_list(userinfo){
+    var sql = "SELECT username FROM account WHERE id IN (SELECT friend_id FROM friend WHERE self_id = " + userinfo.db_id + ")";
+    db_excution_send_msg(userinfo.ws, sql, FRIEND_GET_SUCCESS, FRIEND_GET_FAIL, true);
+}
+
+function register(username, password, email, name, sock){
+    var sql = "INSERT INTO account (username, password, email, name, user_level) VALUES ('" + username + "','" + password +"','" + email + "','" + name + "','" + DEFAULT_USER_LEVEL + "')";
+    db_excution_send_msg(sock, sql, RESISTER_SUCCESS, REGISTER_FAIL, false);
 }
 
 function sys_send_to_id(id, message){
@@ -142,11 +192,7 @@ function msg_send_all(type, client_uuid, message) {
     for (var i = 0; i < clients.length; i++) {
         var clientSocket = clients[i].ws;
         if (clientSocket.readyState === WebSocket.OPEN) {
-            clientSocket.send(JSON.stringify({
-                "type": type,
-                "id": client_uuid,
-                "message": message
-            }));
+            clientSocket.send(JSON.stringify(message));
         }
     }
 }
@@ -154,6 +200,8 @@ function msg_send_all(type, client_uuid, message) {
 // WebSocket open && stay connecting action
 wss.on('connection', function(ws) {
     var client_uuid = uuid.v4();
+    var client_ws = ws;
+    var user_status = {"login":false,"info":{}};
     //clients.push({ "id": client_uuid, "ws": ws});
     console.log('client [%s] connected', client_uuid);
 
@@ -161,13 +209,24 @@ wss.on('connection', function(ws) {
     ws.on('message', function(message) {
         var data = JSON.parse(message);
         console.log('client [%s] message [%s]', client_uuid, message);
-        if (data.action == LOGIN_ACTION){
-            login_check(data.username, data.password, ws, client_uuid);
-        }else if (data.action == REGISTER_ACTION){
-            register(data.username, data.password, data.email, data.name, ws);
-        }else if (data.action == MESSAGE_ACTION){
-            register(data.username, data.password, data.email, data.name, ws);
+        if (user_status.login == false){
+            if (data.action == LOGIN_ACTION){
+                login_check(data.username, data.password, client_ws, client_uuid, user_status);
+            }else if (data.action == REGISTER_ACTION){
+                register(data.username, data.password, data.email, data.name, client_ws);
+            }
+        }else{
+            if (data.action == MESSAGE_ACTION){
+                register(data.username, data.password, data.email, data.name, client_ws);
+            }else if (data.action == FRIEND_GET){
+                fetch_friend_list(user_status.info);
+            }else if (data.action == FRIEND_SEARCH){
+                search_user(user_status.info, data.username);
+            }else if (data.action == FRIEND_ADD){
+                add_friend(user_status.info, data.username);
+            }
         }
+        //console.log('Status [%s] [%s]', user_status.login, user_status.info.id);
     });
 
     // A client disconnected

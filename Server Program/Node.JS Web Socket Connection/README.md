@@ -1,4 +1,4 @@
-WebSocket Server
+House Tatch WebSocket Server
 
 Requirements:
 
@@ -12,7 +12,7 @@ Requirements:
 
 To install Node.JS
 
-    - Download && install latest Node.JS from https://nodejs.org/en/
+    - Download && install latest Node.JS from https://nodejs.org/
 
 To install MariaDB
 
@@ -40,4 +40,4 @@ To run the server
 
         - cd /%YOUR PATH%//ht
 
-        - sudo node index.js
+        - node server.js
