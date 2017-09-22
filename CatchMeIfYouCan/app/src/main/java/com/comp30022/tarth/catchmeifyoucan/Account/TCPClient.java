@@ -1,4 +1,4 @@
-package com.comp30022.tarth.catchmeifyoucan;
+package com.comp30022.tarth.catchmeifyoucan.Account;
 
 import android.util.Log;
 
@@ -11,21 +11,20 @@ import java.net.InetAddress;
 import java.net.Socket;
 
 /*
- * TCP Client
+ * TCP TCPClient
  */
-public class Client {
+public class TCPClient {
 
-    public static final String IP = "35.197.172.195";
-    public static final Integer PORT = 80;
+    private static final String SERVER_IP = "35.197.172.195";
+    private static final Integer SERVER_PORT = 80;
 
     private String mServerMessage;
     private OnMessageReceived mMessageListener = null;
     private Boolean mRun = false;
+    private PrintWriter mBufferOut;
+    private BufferedReader mBufferIn;
 
-    PrintWriter mBufferOut;
-    BufferedReader mBufferIn;
-
-    public Client(OnMessageReceived listener) {
+    public TCPClient(OnMessageReceived listener) {
         mMessageListener = listener;
     }
 
@@ -46,10 +45,10 @@ public class Client {
     public void run() {
         mRun = true;
         try {
-            InetAddress serverAddr = InetAddress.getByName(IP);
-            Log.e("TCP Client", "C: Connecting...");
+            InetAddress serverAddr = InetAddress.getByName(SERVER_IP);
+            Log.e("TCP TCPClient", "C: Connecting...");
             // Creates a socket to open a connection
-            Socket socket = new Socket(serverAddr, PORT);
+            Socket socket = new Socket(serverAddr, SERVER_PORT);
             try {
                 // Sends messages to the server
                 mBufferOut = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
@@ -73,6 +72,7 @@ public class Client {
             } catch (Exception e) {
                 Log.e("TCP", "S: Error", e);
             } finally {
+                close();
                 // Socket must be closed
                 socket.close();
             }
@@ -101,7 +101,7 @@ public class Client {
      * The method messageReceived(String) must be implemented in the activity
      */
     public interface OnMessageReceived {
-        public void messageReceived(String message);
+        void messageReceived(String message);
     }
 
 }
