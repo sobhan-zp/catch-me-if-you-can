@@ -111,11 +111,7 @@ function sys_send_to_id(id, message){
         if (clients[i].id = id){
             var clientSocket = clients[i].ws;
             if (clientSocket.readyState === WebSocket.OPEN) {
-                clientSocket.send(JSON.stringify({
-                    "type": "notification",
-                    "id": id,
-                    "message": message
-                }));
+                clientSocket.send(JSON.stringify(message));
             }
             console.log('A system message has been sent');
             break;
@@ -125,10 +121,7 @@ function sys_send_to_id(id, message){
 
 function sys_send_to_sock(sock, message){
         if (sock.readyState === WebSocket.OPEN) {
-            sock.send(JSON.stringify({
-                "type": "notification",
-                "message": message
-            }));
+            sock.send(JSON.stringify(message));
         }
         console.log('A system message has been sent');
 }
@@ -138,11 +131,7 @@ function user_send_to_name(from_id, to_name, message){
         if (clients[i].username = to_name){
             var clientSocket = clients[i].ws;
             if (clientSocket.readyState === WebSocket.OPEN) {
-                clientSocket.send(JSON.stringify({
-                    "type": "notification",
-                    "from": from_id,
-                    "message": message
-                }));
+                clientSocket.send(JSON.stringify(message));
             }
             break;
         }
