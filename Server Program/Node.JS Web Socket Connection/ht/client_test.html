@@ -6,9 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <script>
         //Connection
-        var ws;
-        function ws_operation(){
-            ws = new WebSocket("ws://" + document.getElementById('id').value);
+        var ws= new WebSocket("ws://45.77.49.3");
             ws.onopen = function (e) {
                 appendLog("Server connected");
                 //console.log('Connection to server opened');
@@ -23,7 +21,6 @@
                 appendLog("Server connection closed");
                 //console.log("Connection closed");
             }
-        }
 
         //View message
         function appendLog(message) {
@@ -59,6 +56,18 @@
         function g2(){
             document.getElementById('message').value = '{"action":500}';
         }
+
+        function g3(){
+            document.getElementById('message').value = '{"username":"admin","message":"abcd","action":600}';
+        }
+
+        function g4(){
+            document.getElementById('message').value = '{"username":"1","password":"2","action":101}';
+        }
+
+        function g5(){
+            document.getElementById('message').value = '{"action":1000}';
+        }
     </script>
 </head>
 
@@ -72,29 +81,35 @@
                     <input class="form-control" type="text" id="message" name="message"
                            placeholder="Type text to echo in here" value="" autofocus/>
                 </div>
-                <div class="form-group">
-                    <input class="form-control" type="text" id="ip" name="ip"
-                           placeholder="Server IP" value="45.77.49.3" autofocus/>
-                </div>
+
                 <button type="button" id="send" class="btn btn-primary"
                         onclick="sendMessage();">
                     Send Message
                 </button>
                 <button type="button" id="send" class="btn btn-primary"
+                        onclick="location.reload();">
+                    Reload Page
+                </button>
+				<p></p>
+                <button type="button" id="send" class="btn btn-primary"
                         onclick="g1();">
-                    Generate Login Test 1
+                    Generate Login Test "Admin"
+                </button>
+                <button type="button" id="send" class="btn btn-primary"
+                        onclick="g4();">
+                    Generate Login Test "1"
                 </button>
                 <button type="button" id="send" class="btn btn-primary"
                         onclick="g2();">
-                    Generate Fetch Friend Test 1
+                    Generate Fetch Friend Test
                 </button>
                 <button type="button" id="send" class="btn btn-primary"
-                        onclick="ws_operation();">
-                    Connect To Server
+                        onclick="g3();">
+                    Generate Send Message Test
                 </button>
                 <button type="button" id="send" class="btn btn-primary"
-                        onclick="location.reload();">
-                    Reload Page
+                        onclick="g5();">
+                    Generate Test Message
                 </button>
             </form>
         </div>
