@@ -3,7 +3,6 @@ DEFAULT_USER_LEVEL = 0;
 SERVER_PORT = 80;
 REGISTER_ACTION = 100;
 LOGIN_ACTION = 101;
-MESSAGE_ACTION = 102;
 LOGIN_SUCCESS_CODE = 200;
 LOGIN_USER_NON_EXIST_CODE = 201;
 LOGIN_EXIST_CODE = 202;
@@ -18,6 +17,19 @@ FRIEND_SEARCH_SUCCESS = 505;
 FRIEND_ADD = 506;
 FRIEND_ADD_FAIL = 507;
 FRIEND_ADD_SUCCESS = 508;
+FRIEND_CHECK = 509;
+FRIEND_CHECK_FAIL = 510;
+FRIEND_CHECK_SUCCESS = 511;
+MESSAGE_SEND = 600;
+MESSAGE_RECEIVE = 601;
+MESSAGE_SEND_SUCCESS_ONLINE = 602;
+MESSAGE_SEND_SUCCESS_OFFLINE = 603;
+MESSAGE_SEND_FAIL = 604;
+MESSAGE_OFFLINE_GET = 605;
+MESSAGE_READ = 1;
+MESSAGE_UNREAD = 0;
+
+TEST_MSG = 1000;
 
 // Requires
 var WebSocket = require('ws');
@@ -124,6 +136,29 @@ function db_excution_send_msg(sock, sql_statement, success_code, fail_code, retu
     });
 }
 
+function check_online(userinfo, username){
+    var feedback;
+    var online = false;
+    for (var i = 0; i < clients.length; i++) {
+        if (clients[i].username == username) {
+            feedback = {
+                "status": "success",
+                "code": FRIEND_CHECK_SUCCESS
+            };
+            sys_send_to_sock(userinfo.ws, JSON.stringify(feedback));
+            online = true;
+            break;
+        }
+    }
+    if (!online){
+        feedback = {
+            "status": "failed",
+            "code": FRIEND_CHECK_FAIL
+        };
+        sys_send_to_sock(userinfo.ws, JSON.stringify(feedback));
+    }
+}
+
 function add_friend(userinfo, add_username){
     var sql_is_in_db = "SELECT friend_id from friend WHERE self_id = " + userinfo.db_id + " and friend_id = (SELECT id FROM account WHERE username = '" + add_username + "')";
     var sql = "INSERT INTO friend (self_id, friend_id) VALUES (" + userinfo.db_id + ", (SELECT id FROM account WHERE username = '" + add_username + "'))";
@@ -158,7 +193,7 @@ function register(username, password, email, name, sock){
 
 function sys_send_to_id(id, message){
     for (var i = 0; i < clients.length; i++) {
-        if (clients[i].id = id){
+        if (clients[i].id == id){
             var clientSocket = clients[i].ws;
             if (clientSocket.readyState === WebSocket.OPEN) {
                 clientSocket.send(JSON.stringify(message));
@@ -171,21 +206,51 @@ function sys_send_to_id(id, message){
 
 function sys_send_to_sock(sock, message){
         if (sock.readyState === WebSocket.OPEN) {
-            sock.send(JSON.stringify(message));
+            sock.send(JSON.stringify(message)); // i dont know why it needs twice
+            console.log('A system message has been sent');
+        }else{
+            console.log('Client socket is not ready');
         }
-        console.log('A system message has been sent');
+
 }
 
-function user_send_to_name(from_id, to_name, message){
+function user_send_to_name(userinfo, to_name, message){
+    var found = MESSAGE_UNREAD;
+    var feedback_from;
     for (var i = 0; i < clients.length; i++) {
-        if (clients[i].username = to_name){
-            var clientSocket = clients[i].ws;
-            if (clientSocket.readyState === WebSocket.OPEN) {
-                clientSocket.send(JSON.stringify(message));
-            }
+        if (clients[i].username == to_name){
+            found = MESSAGE_READ;
+            var feedback_to = {
+                "action": MESSAGE_RECEIVE,
+                "message": message,
+                "from": userinfo.username
+            };
+            feedback_from = {
+                "status": "success",
+                "code": MESSAGE_SEND_SUCCESS_ONLINE
+            };
+            sys_send_to_sock(clients[i].ws, JSON.stringify(feedback_to));
+            console.log(feedback_to);
             break;
         }
     }
+    var sql = "INSERT INTO user_chatlog (content, from_user, to_user, read_status) VALUES ('" + message + "','" + userinfo.username + "', (SELECT id FROM account WHERE username = '" + to_name + "'), " + found + ")";
+    con.query(sql, function (err, result) {
+        if (err) {
+            feedback_from = {
+                "status": "success",
+                "code": MESSAGE_SEND_FAIL
+            };
+        }
+    });
+    if (found == MESSAGE_UNREAD){
+        feedback_from = {
+            "status": "success",
+            "code": MESSAGE_SEND_SUCCESS_OFFLINE
+        };
+    }
+    console.log(feedback_from);
+    sys_send_to_sock(userinfo.ws, JSON.stringify(feedback_from));
 }
 
 function msg_send_all(type, client_uuid, message) {
@@ -195,6 +260,36 @@ function msg_send_all(type, client_uuid, message) {
             clientSocket.send(JSON.stringify(message));
         }
     }
+}
+
+function offline_msg_check(userinfo){
+    var sql = "SELECT * FROM user_chatlog WHERE to_user = " + userinfo.db_id + " and read_status = 0";
+    con.query(sql, function (err, result) {
+        console.log(JSON.stringify(result));
+        if (result.length>0){
+            for (var i=0; i<result.length; i++){
+                var msg = {
+                    "action": MESSAGE_RECEIVE,
+                    "message": result[i].content,
+                    "from": result[i].from_user
+                }
+                msg_set_read(result[i].id);
+                sys_send_to_sock(userinfo.ws, JSON.stringify(msg));
+            }
+        }else{
+            sys_send_to_sock(userinfo.ws, JSON.stringify([]));
+        }
+
+    });
+}
+
+function msg_set_read(msg_id){
+    var sql = "UPDATE user_chatlog SET read_status = 1 WHERE id = " + msg_id;
+    con.query(sql, function (err, result) {
+        if (err) {
+            console.log(err)
+        }
+    });
 }
 
 // WebSocket open && stay connecting action
@@ -216,14 +311,18 @@ wss.on('connection', function(ws) {
                 register(data.username, data.password, data.email, data.name, client_ws);
             }
         }else{
-            if (data.action == MESSAGE_ACTION){
-                register(data.username, data.password, data.email, data.name, client_ws);
+            if (data.action == MESSAGE_SEND){
+                user_send_to_name(user_status.info, data.username, data.message);
             }else if (data.action == FRIEND_GET){
                 fetch_friend_list(user_status.info);
             }else if (data.action == FRIEND_SEARCH){
                 search_user(user_status.info, data.username);
             }else if (data.action == FRIEND_ADD){
                 add_friend(user_status.info, data.username);
+            }else if (data.action == FRIEND_CHECK){
+                check_online(user_status.info, data.username);
+            }else if (data.action == MESSAGE_OFFLINE_GET){
+                offline_msg_check(user_status.info);
             }
         }
         //console.log('Status [%s] [%s]', user_status.login, user_status.info.id);
