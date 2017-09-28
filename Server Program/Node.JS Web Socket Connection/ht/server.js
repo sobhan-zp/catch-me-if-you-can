@@ -92,11 +92,15 @@ function login_check(username, password, sock, client_uuid, user_status){
                 user_status.login = true;
                 user_status.info = temp_info;
                 clients.push(temp_info);
-                sys_send_to_sock(sock, JSON.stringify(feedback));
             }else{
                 fails = true;
                 code = LOGIN_USER_NON_EXIST_CODE;
+                var feedback = {
+                    "status": "failed",
+                    "code": code
+                };
             }
+            sys_send_to_sock(sock, JSON.stringify(feedback));
         });
     }
     if (fails){
