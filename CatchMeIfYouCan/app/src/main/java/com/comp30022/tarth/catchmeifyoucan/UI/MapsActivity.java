@@ -28,7 +28,7 @@ import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
-        GoogleMap.OnMarkerClickListener, LocationListener {
+        GoogleMap.OnMarkerClickListener, LocationListener, GoogleMap.OnMapClickListener {
 
     private GoogleMap mMap;
 
@@ -43,7 +43,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             UPDATE_INTERVAL_IN_MILLISECONDS / 2;
 
     private LocationRequest mLocationRequest;
-    private boolean mLocationUpdateState;///@@@!!!
+    private boolean mLocationUpdateState;
     private static final int REQUEST_CHECK_SETTINGS = 2;
 
     @Override
@@ -65,6 +65,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         createLocationRequest();
+
     }
 
 
@@ -88,6 +89,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.setOnMarkerClickListener(this);
+        mMap.setOnMapClickListener(this);
     }
 
     @Override
@@ -125,10 +127,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 LatLng currentLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation
                         .getLongitude());
                 //add pin at user's location
-//                placeMarkerOnMap(currentLocation);
+                //placeMarkerOnMap(currentLocation);
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 12));
             }
         }
+    }
+
+    // when user clicks on the map
+    @Override
+    public void onMapClick(LatLng latLng) {
+        Marker waypoint = mMap.addMarker(new MarkerOptions()
+                .position(latLng)
+                .title("waypoint")
+                .snippet(latLng.toString()));
+        waypoint.showInfoWindow();
+    }
+    // whether show the google map toolbar when the marker is clicked
+    // return true for not showing toolbar
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        return false;
     }
 
     // place a marker on a location
@@ -227,10 +245,4 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    // whether show the google map toolbar when the marker is clicked
-    // return true for not showing toolbar
-    @Override
-    public boolean onMarkerClick(Marker marker) {
-        return false;
-    }
 }
