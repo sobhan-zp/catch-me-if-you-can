@@ -1,6 +1,7 @@
 package com.comp30022.tarth.catchmeifyoucan.UI;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -57,6 +58,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     boolean addWaypoints = false;
     MapDirectionsData lastDirectionsData = null;
     List<Marker> mMarkers = new ArrayList<Marker>();
+    private static final double WP_RADIUS = 100;
+    private boolean nearWp = false;
 
 
     @Override
@@ -201,6 +204,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             String currLocation = curr_latitude+","+curr_longitude;
             Toast.makeText(MapsActivity.this, currLocation, Toast.LENGTH_LONG).show();
         }
+
+        checkNearWaypoint();
+    }
+
+    protected void checkNearWaypoint(){
+        int count = mMarkers.size();
+        for(int i=0; i<count; i++){
+            double wp_latitude = mMarkers.get(i).getPosition().latitude;
+            double wp_longitude = mMarkers.get(i).getPosition().longitude;
+            if((curr_latitude-wp_latitude)*(curr_latitude-wp_latitude)+(curr_longitude-wp_longitude)*(curr_longitude-wp_longitude)
+                    <= WP_RADIUS*WP_RADIUS){
+                Toast.makeText(MapsActivity.this, "A WP is nearby", Toast.LENGTH_LONG).show();
+                nearWp = true;
+                break;
+            }
+        }
     }
 
     protected void startLocationUpdates() {
@@ -313,6 +332,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 directionsData.execute(dataTransfer);
                 lastDirectionsData = directionsData;
                 break;
+
+            case R.id.B_ar:
+                if(nearWp){
+                    nearWp = false;
+                    Intent intent = new Intent(this, DashboardActivity.class);
+                    startActivity(intent);
+                }
         }
     }
 

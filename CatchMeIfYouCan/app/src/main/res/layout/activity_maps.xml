@@ -35,10 +35,10 @@
         android:id="@+id/B_route"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_below="@+id/TF_location"
         android:onClick="onClick"
-        android:text="route" />
+        android:text="route"
+        android:layout_below="@+id/TF_location"
+        android:layout_toEndOf="@+id/B_finishAddWP" />
 
     <Button
         android:id="@+id/B_addWaypoints"
@@ -53,10 +53,21 @@
         android:id="@+id/B_finishAddWP"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/TF_location"
-        android:layout_marginStart="10dp"
-        android:layout_toEndOf="@+id/B_addWaypoints"
         android:onClick="onClick"
-        android:text="finish add WP" />
+        android:text="finish add WP"
+        android:layout_alignBaseline="@+id/B_addWaypoints"
+        android:layout_alignBottom="@+id/B_addWaypoints"
+        android:layout_toEndOf="@+id/B_addWaypoints" />
+
+    <Button
+        android:id="@+id/B_ar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/map"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/TF_location"
+        android:layout_toEndOf="@+id/B_route"
+        android:onClick="onClick"
+        android:text="AR" />
 </RelativeLayout>
 
