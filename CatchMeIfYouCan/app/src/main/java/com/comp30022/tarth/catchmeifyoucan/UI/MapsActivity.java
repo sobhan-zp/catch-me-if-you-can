@@ -49,6 +49,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     double latitude, longitude;
     double end_latitude, end_longitude;
     boolean addWaypoints = false;
+    MapDirectionsData lastDirectionsData = null;
 
 
     @Override
@@ -278,12 +279,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 break;
 
             case R.id.B_route:
+                if(lastDirectionsData != null){
+                    lastDirectionsData.clearPolyline();
+                }
                 String url = getDirectionsUrl();
-                MapDirectionsData getDirectionsData = new MapDirectionsData();
+                MapDirectionsData directionsData = new MapDirectionsData();
                 dataTransfer[0] = mMap;
                 dataTransfer[1] = url;
                 dataTransfer[2] = new LatLng(end_latitude, end_longitude);
-                getDirectionsData.execute(dataTransfer);
+                directionsData.execute(dataTransfer);
+                lastDirectionsData = directionsData;
                 break;
         }
     }
@@ -306,6 +311,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        // disconnect when user leaves the interface
+        if( mGoogleApiClient != null && mGoogleApiClient.isConnected() ) {
+            mGoogleApiClient.disconnect();
+        }
     }
 
 

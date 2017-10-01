@@ -5,10 +5,13 @@ import android.os.AsyncTask;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.PolyUtil;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MapDirectionsData extends AsyncTask<Object,String,String> {
 
@@ -16,6 +19,7 @@ public class MapDirectionsData extends AsyncTask<Object,String,String> {
     String url;
     String googleDirectionsData;
     LatLng latLng;
+    List<Polyline> mPolylines = new ArrayList<Polyline>();
 
     @Override
     protected String doInBackground(Object... objects) {
@@ -41,7 +45,6 @@ public class MapDirectionsData extends AsyncTask<Object,String,String> {
     }
 
     public void displayDirection(String[] directionsList) {
-
         int count = directionsList.length;
         for(int i = 0;i<count;i++) {
             PolylineOptions options = new PolylineOptions();
@@ -49,7 +52,15 @@ public class MapDirectionsData extends AsyncTask<Object,String,String> {
             options.width(10);
             options.addAll(PolyUtil.decode(directionsList[i]));
 
-            mMap.addPolyline(options);
+            Polyline polyline = mMap.addPolyline(options);
+            mPolylines.add(polyline);
+        }
+    }
+
+    public void clearPolyline(){
+        int count = mPolylines.size();
+        for(int i = count-1;i>=0;i--) {
+            mPolylines.get(i).remove();
         }
     }
 }
