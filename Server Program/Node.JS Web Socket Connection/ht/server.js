@@ -3,6 +3,7 @@ DEFAULT_USER_LEVEL = 0;
 SERVER_PORT = 80;
 REGISTER_ACTION = 100;
 LOGIN_ACTION = 101;
+UNKNOWN_ACTION = 199;
 LOGIN_SUCCESS_CODE = 200;
 LOGIN_USER_NON_EXIST_CODE = 201;
 LOGIN_EXIST_CODE = 202;
@@ -26,8 +27,13 @@ MESSAGE_SEND_SUCCESS_ONLINE = 602;
 MESSAGE_SEND_SUCCESS_OFFLINE = 603;
 MESSAGE_SEND_FAIL = 604;
 MESSAGE_OFFLINE_GET = 605;
+MESSAGE_COMMAND_SEND = 606;
+MESSAGE_COMMAND_SUCCESS = 607;
+MESSAGE_COMMAND_FAIL = 608;
+MESSAGE_COMMAND_RECEIVE = 609;
 MESSAGE_READ = 1;
 MESSAGE_UNREAD = 0;
+
 
 TEST_MSG = 1000;
 
@@ -257,6 +263,36 @@ function user_send_to_name(userinfo, to_name, message){
     sys_send_to_sock(userinfo.ws, JSON.stringify(feedback_from));
 }
 
+function user_command(userinfo, to_name, message){
+    var found = false;
+    var feedback_from;
+    for (var i = 0; i < clients.length; i++) {
+        if (clients[i].username == to_name){
+            found = true;
+            var feedback_to = {
+                "action": MESSAGE_COMMAND_RECEIVE,
+                "message": message,
+                "from": userinfo.username
+            };
+            feedback_from = {
+                "status": "success",
+                "code": MESSAGE_COMMAND_SUCCESS
+            };
+            sys_send_to_sock(clients[i].ws, JSON.stringify(feedback_to));
+            console.log(feedback_to);
+            break;
+        }
+    }
+    if (!found){
+        feedback_from = {
+            "status": "failed",
+            "code": MESSAGE_COMMAND_FAIL
+        };
+    }
+    console.log(feedback_from);
+    sys_send_to_sock(userinfo.ws, JSON.stringify(feedback_from));
+}
+
 function msg_send_all(type, client_uuid, message) {
     for (var i = 0; i < clients.length; i++) {
         var clientSocket = clients[i].ws;
@@ -296,40 +332,79 @@ function msg_set_read(msg_id){
     });
 }
 
+function invalid_msg(userinfo){
+    var feedback = {
+        "status": "unknow",
+        "code": UNKNOWN_ACTION
+    };
+    sys_send_to_sock(userinfo.ws, JSON.stringify(feedback));
+}
+
+function is_json(str) {
+    if (typeof str == 'string') {
+        try {
+            JSON.parse(str);
+            return true;
+        } catch(e) {
+            console.log(e);
+            return false;
+        }
+    }
+}
+
 // WebSocket open && stay connecting action
 wss.on('connection', function(ws) {
     var client_uuid = uuid.v4();
     var client_ws = ws;
     var user_status = {"login":false,"info":{}};
-    //clients.push({ "id": client_uuid, "ws": ws});
     console.log('client [%s] connected', client_uuid);
 
     // WebSocket received message action
     ws.on('message', function(message) {
-        var data = JSON.parse(message);
-        console.log('client [%s] message [%s]', client_uuid, message);
-        if (user_status.login == false){
-            if (data.action == LOGIN_ACTION){
-                login_check(data.username, data.password, client_ws, client_uuid, user_status);
-            }else if (data.action == REGISTER_ACTION){
-                register(data.username, data.password, data.email, data.name, client_ws);
+        if (is_json(message)){
+            var data = JSON.parse(message);
+            console.log('client [%s] message [%s]', client_uuid, message);
+            if (user_status.login == false){
+                switch(data.action){
+                    case LOGIN_ACTION:
+                        login_check(data.username, data.password, client_ws, client_uuid, user_status);
+                        break;
+                    case REGISTER_ACTION:
+                        register(data.username, data.password, data.email, data.name, client_ws);
+                        break;
+                    default:
+                        invalid_msg(user_status.info);
+                }
+            }else{
+                switch(data.action){
+                    case MESSAGE_SEND:
+                        user_send_to_name(user_status.info, data.username, data.message);
+                        break;
+                    case FRIEND_GET:
+                        fetch_friend_list(user_status.info);
+                        break;
+                    case FRIEND_SEARCH:
+                        search_user(user_status.info, data.username);
+                        break;
+                    case FRIEND_ADD:
+                        add_friend(user_status.info, data.username);
+                        break;
+                    case FRIEND_CHECK:
+                        check_online(user_status.info, data.username);
+                        break;
+                    case MESSAGE_OFFLINE_GET:
+                        offline_msg_check(user_status.info);
+                        break;
+                    case MESSAGE_COMMAND_SEND:
+                        user_command(user_status.info, data.username, data.message);
+                        break;
+                    default:
+                        invalid_msg(user_status.info);
+                }
             }
         }else{
-            if (data.action == MESSAGE_SEND){
-                user_send_to_name(user_status.info, data.username, data.message);
-            }else if (data.action == FRIEND_GET){
-                fetch_friend_list(user_status.info);
-            }else if (data.action == FRIEND_SEARCH){
-                search_user(user_status.info, data.username);
-            }else if (data.action == FRIEND_ADD){
-                add_friend(user_status.info, data.username);
-            }else if (data.action == FRIEND_CHECK){
-                check_online(user_status.info, data.username);
-            }else if (data.action == MESSAGE_OFFLINE_GET){
-                offline_msg_check(user_status.info);
-            }
+            invalid_msg(user_status.info);
         }
-        //console.log('Status [%s] [%s]', user_status.login, user_status.info.id);
     });
 
     // A client disconnected
