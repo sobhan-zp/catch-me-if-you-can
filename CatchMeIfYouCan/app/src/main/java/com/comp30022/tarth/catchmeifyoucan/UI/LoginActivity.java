@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.comp30022.tarth.catchmeifyoucan.Account.EchoWebSocketListener;
+import com.comp30022.tarth.catchmeifyoucan.Account.Message;
 import com.comp30022.tarth.catchmeifyoucan.R;
 
 import org.json.JSONObject;
@@ -56,8 +57,6 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 connect();
                 login();
-                disconnect();
-                openDashboard();
             }
         });
 
@@ -77,7 +76,20 @@ public class LoginActivity extends AppCompatActivity {
     // Opens a WebSocket connection with the server
     private void connect() {
         Request request = new Request.Builder().url("ws://" + SERVER_IP).build();
-        EchoWebSocketListener listener = new EchoWebSocketListener();
+        EchoWebSocketListener listener = new EchoWebSocketListener() {
+            // Receives response from the server
+            @Override
+            public void response(final Message message) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        TextView textView = (TextView)findViewById(R.id.textViewResponse);
+                        textView.setText(message.toString());
+                        verify(message);
+                    }
+                });
+            }
+        };
         webSocket = mClient.newWebSocket(request, listener);
     }
 
@@ -103,6 +115,20 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         sendMessage(obj.toString());
+    }
+
+    private void verify(Message message) {
+        if (message.getCode().equals(LOGIN_SUCCESS_CODE)) {
+            System.out.println("Login success");
+            openDashboard();
+            disconnect();
+        } else if (message.getCode().equals(LOGIN_EXIST_CODE)) {
+            System.out.println("Login failed, user is logged in on another device");
+        } else if (message.getCode().equals(LOGIN_USER_NON_EXIST_CODE)) {
+            System.out.println("Login failed, username or password is incorrect");
+        } else {
+            System.out.println("Error: Unknown response received");
+        }
     }
 
     // Obtains the IP Address of the host

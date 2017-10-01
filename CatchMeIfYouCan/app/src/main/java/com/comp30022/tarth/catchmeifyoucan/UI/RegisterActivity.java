@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.comp30022.tarth.catchmeifyoucan.Account.EchoWebSocketListener;
+import com.comp30022.tarth.catchmeifyoucan.Account.Message;
 import com.comp30022.tarth.catchmeifyoucan.R;
 
 import org.json.JSONObject;
@@ -26,8 +27,8 @@ import okhttp3.WebSocket;
 public class RegisterActivity extends AppCompatActivity {
 
     private static final Integer ACTION_REGISTER = 100;       // Register action
-    private static final Integer RESISTER_SUCCESS = 300;
-    private static final Integer REGISTER_FAIL = 301;
+    private static final Integer REGISTER_SUCCESS = 300;      // Register success
+    private static final Integer REGISTER_FAIL = 301;         // Register failure
     private static final String SERVER_IP = "35.197.172.195"; // CentOS 6 Server
     //public static final String SERVER_IP = "45.77.49.3";    // CentOS 7 Server
 
@@ -49,10 +50,8 @@ public class RegisterActivity extends AppCompatActivity {
         buttonCreate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                connect();
-                createAccount();
-                openDashboard();
-                disconnect();
+            connect();
+            register();
             }
         });
     }
@@ -65,7 +64,20 @@ public class RegisterActivity extends AppCompatActivity {
     // Opens a WebSocket connection with the server
     private void connect() {
         Request request = new Request.Builder().url("ws://" + SERVER_IP).build();
-        EchoWebSocketListener listener = new EchoWebSocketListener();
+        EchoWebSocketListener listener = new EchoWebSocketListener() {
+            // Receives response from the server
+            @Override
+            public void response(final Message message) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                    TextView textView = (TextView)findViewById(R.id.textViewResponse);
+                    textView.setText(message.toString());
+                    verify(message);
+                    }
+                });
+            }
+        };
         webSocket = mClient.newWebSocket(request, listener);
     }
 
@@ -75,7 +87,7 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     // Extracts user-entered information into a JSON formatted string to be sent
-    private void createAccount() {
+    private void register() {
         TextView username = (TextView) findViewById(R.id.editTextUsername);
         TextView password = (TextView) findViewById(R.id.editTextPassword);
         TextView name = (TextView) findViewById(R.id.editTextName);
@@ -97,6 +109,18 @@ public class RegisterActivity extends AppCompatActivity {
         }
 
         sendMessage(obj.toString());
+    }
+
+    private void verify(Message message) {
+        if (message.getCode().equals(REGISTER_SUCCESS)) {
+            System.out.println("Register success");
+            openDashboard();
+            disconnect();
+        } else if (message.getCode().equals(REGISTER_FAIL)) {
+            System.out.println("Register failed, please try again.");
+        } else {
+            System.out.println("Error: Unknown response received");
+        }
     }
 
     // Obtains the IP Address of the host
