@@ -22,6 +22,12 @@ public class FriendlistActivity extends AppCompatActivity {
     private static final Integer FRIEND_SEARCH = 503;         // Friend search request
     private static final Integer FRIEND_SEARCH_FAIL = 504;    // Friend search failure
     private static final Integer FRIEND_SEARCH_SUCCESS = 505; // Friend search success
+    private static final Integer FRIEND_ADD = 506;            // Friend add request
+    private static final Integer FRIEND_ADD_FAIL = 507;       // Friend add failure
+    private static final Integer FRIEND_ADD_SUCCESS = 508;    // Friend add success
+    private static final Integer FRIEND_CHECK = 509;            // Friend check request
+    private static final Integer FRIEND_CHECK_FAIL = 510;       // Friend check failure
+    private static final Integer FRIEND_CHECK_SUCCESS = 511;    // Friend check success
     private static final String SERVER_IP = "35.197.172.195"; // CentOS 6 Server
     //public static final String SERVER_IP = "45.77.49.3";    // CentOS 7 Server
 
@@ -92,12 +98,33 @@ public class FriendlistActivity extends AppCompatActivity {
         finish();
     }
 
+    // Adds a new friend
+    private void addFriend() {
+
+    }
+
+    // Obtains friend details from the server
+    private void getFriend() {
+
+    }
+
+    // Searches for an existing friend
+    private void searchFriend() {
+
+    }
+
+    // Checks if a friend is online
+    private void checkFriend() {
+
+    }
+
     // Navigates to User Activity
     private void openUser() {
         Intent intent = new Intent(this, UserActivity.class);
         startActivity(intent);
     }
 
+    // Navigates to previous activity
     private void back() {
         finish();
     }
