@@ -1,10 +1,15 @@
 package com.comp30022.tarth.catchmeifyoucan.UI;
 
+import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
 import com.comp30022.tarth.catchmeifyoucan.R;
@@ -29,8 +34,47 @@ public class FriendlistActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_friendlist);
 
+        String[] projection = {
+                //name
+                //ID
+                //username
+                //location
+                //status
+        };
+
+        Cursor c = getContentResolver().query(
+                /*EntryProvider.CONTENT_URI*/null,
+                projection,
+                null,
+                null,
+                /*EntryProvider.NAME*/null
+        );
+
+        ListAdapter adapter = new SimpleCursorAdapter(
+                this,
+                R.layout.list_one_item,
+                c,
+                new String[] {
+                        //....
+                },
+                new int[] {
+                        R.id.item
+                }
+        );
+
         listView = (ListView)findViewById(android.R.id.list);
         textViewEmpty = (TextView)findViewById(android.R.id.empty);
+
+        listView.setAdapter(adapter);
+        listView.setEmptyView(textViewEmpty);
+
+        listView.setOnClickListener(new AdapterView.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openUser();
+            }
+        });
+
         buttonBack = (Button) findViewById(R.id.buttonBack);
 
         buttonBack.setOnClickListener(new Button.OnClickListener() {
@@ -46,6 +90,12 @@ public class FriendlistActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         finish();
+    }
+
+    // Navigates to User Activity
+    private void openUser() {
+        Intent intent = new Intent(this, UserActivity.class);
+        startActivity(intent);
     }
 
     private void back() {
