@@ -41,6 +41,11 @@
             android:name=".UI.FriendlistActivity"
             android:label="Friendlist">
         </activity>
+
+        <activity
+            android:name=".UI.UserActivity"
+            android:label="User">
+        </activity>
     </application>
 
 </manifest>

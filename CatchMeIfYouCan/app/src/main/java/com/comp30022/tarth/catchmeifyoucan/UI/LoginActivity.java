@@ -63,7 +63,7 @@ public class LoginActivity extends AppCompatActivity {
         buttonBack.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                back(v);
+                back();
             }
         });
     }
@@ -169,7 +169,8 @@ public class LoginActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void back(View view) {
+    // Navigates to previous activity
+    public void back() {
         finish();
     }
 }
