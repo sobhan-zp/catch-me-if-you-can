@@ -11,6 +11,15 @@ import com.comp30022.tarth.catchmeifyoucan.R;
 
 public class FriendlistActivity extends AppCompatActivity {
 
+    private static final Integer FRIEND_GET = 500;            // Friend get request
+    private static final Integer FRIEND_GET_FAIL = 501;       // Friend get failure
+    private static final Integer FRIEND_GET_SUCCESS = 502;    // Friend get success
+    private static final Integer FRIEND_SEARCH = 503;         // Friend search request
+    private static final Integer FRIEND_SEARCH_FAIL = 504;    // Friend search failure
+    private static final Integer FRIEND_SEARCH_SUCCESS = 505; // Friend search success
+    private static final String SERVER_IP = "35.197.172.195"; // CentOS 6 Server
+    //public static final String SERVER_IP = "45.77.49.3";    // CentOS 7 Server
+
     private Button buttonBack;
     private ListView listView;
     private TextView textViewEmpty;
@@ -27,7 +36,7 @@ public class FriendlistActivity extends AppCompatActivity {
         buttonBack.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                back(v);
+                back();
             }
         });
 
@@ -39,7 +48,7 @@ public class FriendlistActivity extends AppCompatActivity {
         finish();
     }
 
-    private void back(View v) {
+    private void back() {
         finish();
     }
 }
