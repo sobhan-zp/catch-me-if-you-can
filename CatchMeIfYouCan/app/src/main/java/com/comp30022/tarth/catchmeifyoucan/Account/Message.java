@@ -7,7 +7,9 @@ public class Message {
 
     String status;
     String type;
+    String result;
     Integer code;
+    User[] users;
 
     public String getStatus() {
         return status;
@@ -17,14 +19,34 @@ public class Message {
         return type;
     }
 
+    public String getResult() {
+        return result;
+    }
+
     public Integer getCode() {
         return code;
+    }
+
+    public User[] getUsers() {
+        return users;
     }
 
     public static Message parseJSON(String response) {
         Gson gson = new GsonBuilder().create();
         Message message = gson.fromJson(response, Message.class);
         return message;
+    }
+
+    @Override
+    public String toString() {
+        String str =  "{" + status + ", " + type + ", " + result + ", " + code + ", ";
+        if (users != null) {
+            for (User user : users) {
+                str += user.toString();
+            }
+        }
+        str += "}";
+        return str;
     }
 
 }

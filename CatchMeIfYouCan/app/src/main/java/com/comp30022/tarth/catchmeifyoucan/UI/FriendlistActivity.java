@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -136,7 +137,7 @@ public class FriendlistActivity extends AppCompatActivity {
         buttonSearch.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addFriend();
+                searchFriend();
             }
         });
 
@@ -165,6 +166,8 @@ public class FriendlistActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        Log.e("MESSAGE", Integer.toString(message.getCode()));
+                        Log.e("MESSAGE", message.toString());
                         verify(message);
                     }
                 });

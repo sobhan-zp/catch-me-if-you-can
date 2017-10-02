@@ -44,11 +44,10 @@ public class EchoWebSocketListener extends WebSocketListener {
     /** Invoked when a text (type {@code 0x1}) message has been received. */
     @Override
     public void onMessage(WebSocket webSocket, String text) {
-        String cleanText = text.substring(text.indexOf('{'), text.indexOf('}') + 1).replace("\\", "");
+        String filteredText = text.substring(text.indexOf('{'), text.indexOf('}') + 1).replace("\\", "");
         Gson gson = new GsonBuilder().create();
         try {
-            Message message = gson.fromJson(cleanText, Message.class);
-            System.out.println(message.getCode());
+            Message message = gson.fromJson(filteredText, Message.class);
             response(message);
         } catch (JsonSyntaxException e) {
             e.printStackTrace();
