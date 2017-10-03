@@ -8,7 +8,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.comp30022.tarth.catchmeifyoucan.Account.EchoWebSocketListener;
+import com.comp30022.tarth.catchmeifyoucan.Account.Communication;
+import com.comp30022.tarth.catchmeifyoucan.Account.Message;
+import com.comp30022.tarth.catchmeifyoucan.Account.WebSocketClient;
 import com.comp30022.tarth.catchmeifyoucan.R;
 
 import org.json.JSONObject;
@@ -19,18 +21,13 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
 
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.WebSocket;
-
-public class RegisterActivity extends AppCompatActivity {
+public class RegisterActivity extends AppCompatActivity implements Communication {
 
     private static final Integer ACTION_REGISTER = 100;       // Register action
-    private static final String SERVER_IP = "35.197.172.195"; // CentOS 6 Server
-    //public static final String SERVER_IP = "45.77.49.3";    // CentOS 7 Server
+    private static final Integer REGISTER_SUCCESS = 300;      // Register success
+    private static final Integer REGISTER_FAIL = 301;         // Register failure
 
-    private OkHttpClient mClient;
-    private WebSocket webSocket;
+    private WebSocketClient mClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,16 +38,15 @@ public class RegisterActivity extends AppCompatActivity {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
-        mClient = new OkHttpClient();
+        mClient = new WebSocketClient();
+        mClient.connect();
+        mClient.setmCurrentActivity(this);
 
         Button buttonCreate = (Button) findViewById(R.id.buttonCreate);
         buttonCreate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                connect();
-                createAccount();
-                openDashboard();
-                disconnect();
+            register();
             }
         });
     }
@@ -60,20 +56,8 @@ public class RegisterActivity extends AppCompatActivity {
         finish();
     }
 
-    // Opens a WebSocket connection with the server
-    private void connect() {
-        Request request = new Request.Builder().url("ws://" + SERVER_IP).build();
-        EchoWebSocketListener listener = new EchoWebSocketListener();
-        webSocket = mClient.newWebSocket(request, listener);
-    }
-
-    // Closes the WebSocket connection with the server
-    private void disconnect() {
-        mClient.dispatcher().executorService().shutdown();
-    }
-
     // Extracts user-entered information into a JSON formatted string to be sent
-    private void createAccount() {
+    private void register() {
         TextView username = (TextView) findViewById(R.id.editTextUsername);
         TextView password = (TextView) findViewById(R.id.editTextPassword);
         TextView name = (TextView) findViewById(R.id.editTextName);
@@ -93,8 +77,20 @@ public class RegisterActivity extends AppCompatActivity {
         } catch(Exception e) {
             e.printStackTrace();
         }
+        mClient.send(obj.toString());
+    }
 
-        sendMessage(obj.toString());
+    private void verify(Message message) {
+        TextView textView = (TextView)findViewById(R.id.textViewResponse);
+        textView.setText(message.toString());
+        if (message.getCode().equals(REGISTER_SUCCESS)) {
+            System.out.println("Register success");
+            openDashboard();
+        } else if (message.getCode().equals(REGISTER_FAIL)) {
+            System.out.println("Register failed, please try again.");
+        } else {
+            System.out.println("Error: Unknown response received");
+        }
     }
 
     // Obtains the IP Address of the host
@@ -124,14 +120,20 @@ public class RegisterActivity extends AppCompatActivity {
         return hostIp;
     }
 
-    // Sends a message to the WebSocket server
-    public void sendMessage(String message) {
-        webSocket.send(message);
-    }
-
     // Navigates to Dashboard Activity
     private void openDashboard() {
         Intent intent = new Intent(this, DashboardActivity.class);
         startActivity(intent);
     }
+
+    @Override
+    public void response(final Message message) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                verify(message);
+            }
+        });
+    }
 }
+

@@ -10,24 +10,30 @@
         android:layout_width="160dp"
         android:layout_height="160dp"
         android:layout_centerHorizontal="true"
-        app:srcCompat="@mipmap/doge" />
+        app:srcCompat="@drawable/doge" />
+
+    <Button
+        android:id="@+id/buttonFriendlist"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/imageViewTest"
+        android:layout_centerHorizontal="true"
+        android:text="Friendlist" />
+
+    <Button
+        android:id="@+id/buttonGame"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/buttonFriendlist"
+        android:layout_centerHorizontal="true"
+        android:text="Game" />
 
     <Button
         android:id="@+id/buttonBack"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Back"
-        android:layout_below="@+id/imageViewTest"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="52dp" />
-
-    <Button
-        android:id="@+id/buttonMaps"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/imageViewTest"
-        android:text="Map" />
+        android:layout_below="@+id/buttonGame"
+        android:layout_centerHorizontal="true"
+        android:text="Back" />
 
 </RelativeLayout>
