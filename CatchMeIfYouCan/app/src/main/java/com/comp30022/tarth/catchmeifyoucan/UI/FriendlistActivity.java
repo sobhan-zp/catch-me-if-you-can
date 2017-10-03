@@ -216,3 +216,4 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
         });
     }
 }
+

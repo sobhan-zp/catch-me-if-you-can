@@ -157,3 +157,4 @@ public class LoginActivity extends AppCompatActivity implements Communication {
         return mClient;
     }
 }
+

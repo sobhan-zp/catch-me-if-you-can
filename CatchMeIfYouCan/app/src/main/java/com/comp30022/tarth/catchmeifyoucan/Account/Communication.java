@@ -5,3 +5,4 @@ public interface Communication {
     public void response(final Message message);
 
 }
+
