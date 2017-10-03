@@ -1,7 +1,7 @@
 ﻿<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>WebSocket Echo Demo</title>
+    <title>House Tarch Test Client</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <script>
@@ -69,6 +69,38 @@
         function g5(){
             document.getElementById('message').value = '{"action":1000}';
         }
+
+        function g6(){
+            document.getElementById('message').value = '{"action":709}';
+        }
+
+        function g7(){
+            document.getElementById('message').value = '{"action":703, "id":1}';
+        }
+
+        function g8(){
+            document.getElementById('message').value = '{"action":706}';
+        }
+
+        function g9(){
+            document.getElementById('message').value = '{"action":712,"id":1}';
+        }
+
+        function g10(){
+            document.getElementById('message').value = '{"action":700,"name":"hello??"}';
+        }
+
+        function g11(){
+            document.getElementById('message').value = '{"action":718}';
+        }
+
+        function g12(){
+            document.getElementById('message').value = '{"action":723}';
+        }
+
+        function g13(){
+            document.getElementById('message').value = '{"action":721, "message": "12312321"}';
+        }
     </script>
 </head>
 
@@ -94,23 +126,55 @@
 				<p></p>
                 <button type="button" id="send" class="btn btn-primary"
                         onclick="g1();">
-                    Generate Login Test "Admin"
+                    Login As "Admin"
                 </button>
                 <button type="button" id="send" class="btn btn-primary"
                         onclick="g4();">
-                    Generate Login Test "1"
+                    Login As "1"
                 </button>
                 <button type="button" id="send" class="btn btn-primary"
                         onclick="g2();">
-                    Generate Fetch Friend Test
+                    Fetch Friend
                 </button>
                 <button type="button" id="send" class="btn btn-primary"
                         onclick="g3();">
-                    Generate Send Message Test
+                    Send Message Test
+                </button>
+                <button type="button" id="send" class="btn btn-primary"
+                        onclick="g13();">
+                    Send Notification Test
+                </button>
+                <button type="button" id="send" class="btn btn-primary"
+                        onclick="g10();">
+                    Create Game
+                </button>
+                <button type="button" id="send" class="btn btn-primary"
+                        onclick="g6();">
+                    Get All Game
+                </button>
+                <button type="button" id="send" class="btn btn-primary"
+                        onclick="g11();">
+                    Get Joined Game
+                </button>
+                <button type="button" id="send" class="btn btn-primary"
+                        onclick="g12();">
+                    Get Game Users
+                </button>
+                <button type="button" id="send" class="btn btn-primary"
+                        onclick="g7();">
+                    Join Game Test
+                </button>
+                <button type="button" id="send" class="btn btn-primary"
+                        onclick="g8();">
+                    Exit Game Test
+                </button>
+                <button type="button" id="send" class="btn btn-primary"
+                        onclick="g9();">
+                    Delete Game Test
                 </button>
                 <button type="button" id="send" class="btn btn-primary"
                         onclick="g5();">
-                    Generate Test Message
+                    Test Message
                 </button>
             </form>
         </div>
