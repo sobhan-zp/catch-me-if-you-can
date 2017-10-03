@@ -43,8 +43,16 @@ HOUSE TARTH"
         android:text="Create Account" />
 
     <Button
+        android:id="@+id/buttonFriends"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/buttonCreateAccount"
+        android:layout_centerHorizontal="true"
+        android:text="Friends List"/>
+
+    <Button
         android:id="@+id/buttonExit"
-        android:layout_below="@+id/buttonCreateAccount"
+        android:layout_below="@+id/buttonFriends"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
