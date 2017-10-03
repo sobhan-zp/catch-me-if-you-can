@@ -1,30 +1,26 @@
 package com.comp30022.tarth.catchmeifyoucan.UI;
 
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
-import com.comp30022.tarth.catchmeifyoucan.Account.EchoWebSocketListener;
+import com.comp30022.tarth.catchmeifyoucan.Account.Communication;
 import com.comp30022.tarth.catchmeifyoucan.Account.Message;
+import com.comp30022.tarth.catchmeifyoucan.Account.User;
 import com.comp30022.tarth.catchmeifyoucan.R;
 
 import org.json.JSONObject;
 
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.WebSocket;
+import java.util.ArrayList;
 
-public class FriendlistActivity extends AppCompatActivity {
+public class FriendlistActivity extends AppCompatActivity implements Communication {
 
     private static final Integer FRIEND_GET = 500;            // Friend get request
     private static final Integer FRIEND_GET_FAIL = 501;       // Friend get failure
@@ -38,8 +34,6 @@ public class FriendlistActivity extends AppCompatActivity {
     private static final Integer FRIEND_CHECK = 509;          // Friend check request
     private static final Integer FRIEND_CHECK_FAIL = 510;     // Friend check failure
     private static final Integer FRIEND_CHECK_SUCCESS = 511;  // Friend check success
-    private static final String SERVER_IP = "35.197.172.195"; // CentOS 6 Server
-    //public static final String SERVER_IP = "45.77.49.3";    // CentOS 7 Server
 
     private Button buttonAdd;
     private Button buttonBack;
@@ -49,49 +43,15 @@ public class FriendlistActivity extends AppCompatActivity {
     private ListView listView;
     private TextView textViewEmpty;
 
-    private OkHttpClient mClient;
-    private WebSocket webSocket;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_friendlist);
+        LoginActivity.getClient().setmCurrentActivity(this);
 
         // Enable Internet permissions
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
-
-        mClient = new OkHttpClient();
-
-        /*
-        String[] projection = {
-                //name
-                //ID
-                //username
-                //location
-                //status
-        };
-
-        Cursor c = getContentResolver().query(
-                //EntryProvider.CONTENT_URInull,
-                projection,
-                null,
-                null,
-                //EntryProvider.NAMEnull
-        );
-
-        ListAdapter adapter = new SimpleCursorAdapter(
-                this,
-                R.layout.list_one_item,
-                c,
-                new String[] {
-                        //....
-                },
-                new int[] {
-                        R.id.item
-                }
-        );
-        */
 
         buttonAdd = (Button) findViewById(R.id.buttonAdd);
         buttonBack = (Button) findViewById(R.id.buttonBack);
@@ -100,18 +60,6 @@ public class FriendlistActivity extends AppCompatActivity {
         buttonSearch = (Button) findViewById(R.id.buttonSearch);
         listView = (ListView)findViewById(android.R.id.list);
         textViewEmpty = (TextView)findViewById(android.R.id.empty);
-
-        //listView.setAdapter(adapter);
-        listView.setEmptyView(textViewEmpty);
-
-        /*
-        listView.setOnClickListener(new AdapterView.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openUser();
-            }
-        });
-        */
 
         buttonAdd.setOnClickListener(new Button.OnClickListener() {
             @Override
@@ -147,8 +95,6 @@ public class FriendlistActivity extends AppCompatActivity {
                 back();
             }
         });
-
-        connect();
     }
 
     @Override
@@ -156,46 +102,16 @@ public class FriendlistActivity extends AppCompatActivity {
         finish();
     }
 
-    // Opens a WebSocket connection with the server
-    private void connect() {
-        Request request = new Request.Builder().url("ws://" + SERVER_IP).build();
-        EchoWebSocketListener listener = new EchoWebSocketListener() {
-            // Receives response from the server
-            @Override
-            public void response(final Message message) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Log.e("MESSAGE", Integer.toString(message.getCode()));
-                        Log.e("MESSAGE", message.toString());
-                        verify(message);
-                    }
-                });
-            }
-        };
-        webSocket = mClient.newWebSocket(request, listener);
-    }
-
-    // Closes the WebSocket connection with the server
-    private void disconnect() {
-        mClient.dispatcher().executorService().shutdown();
-    }
-
-    // Sends a message to the WebSocket server
-    public void sendMessage(String message) {
-        webSocket.send(message);
-    }
-
     // Adds a new friend
     private void addFriend() {
         JSONObject obj = new JSONObject();
         try {
             obj.put("action", FRIEND_ADD);
-            obj.put("username", "TEST");
+            obj.put("username", "1");
         } catch(Exception e) {
             e.printStackTrace();
         }
-        sendMessage(obj.toString());
+        LoginActivity.getClient().send(obj.toString());
     }
 
     // Checks if a friend is online
@@ -203,11 +119,11 @@ public class FriendlistActivity extends AppCompatActivity {
         JSONObject obj = new JSONObject();
         try {
             obj.put("action", FRIEND_CHECK);
-            obj.put("username", "TEST");
+            obj.put("username", "1");
         } catch(Exception e) {
             e.printStackTrace();
         }
-        sendMessage(obj.toString());
+        LoginActivity.getClient().send(obj.toString());
     }
 
     // Obtains a list of all friends from the server
@@ -218,7 +134,7 @@ public class FriendlistActivity extends AppCompatActivity {
         } catch(Exception e) {
             e.printStackTrace();
         }
-        sendMessage(obj.toString());
+        LoginActivity.getClient().send(obj.toString());
     }
 
     // Searches for the details of an existing user
@@ -230,10 +146,12 @@ public class FriendlistActivity extends AppCompatActivity {
         } catch(Exception e) {
             e.printStackTrace();
         }
-        sendMessage(obj.toString());
+        LoginActivity.getClient().send(obj.toString());
     }
 
     private void verify(Message message) {
+
+        System.out.println("CODE:" + Integer.toString(message.getCode()));
         if (message.getCode().equals(FRIEND_ADD_SUCCESS)) {
             System.out.println("Friend add success");
         } else if (message.getCode().equals(FRIEND_ADD_FAIL)) {
@@ -244,6 +162,28 @@ public class FriendlistActivity extends AppCompatActivity {
             System.out.println("Friend check failure");
         } else if (message.getCode().equals(FRIEND_GET_SUCCESS)) {
             System.out.println("Friend get success");
+
+            ArrayList<String> items = new ArrayList<String>();
+            User[] users = message.getResult();
+
+            for (User user : users) {
+                items.add(user.getUsername());
+            }
+            ArrayAdapter<String> adapter2 = new ArrayAdapter<String>(
+                    this,
+                    R.layout.list_one_item,
+                    items
+            );
+
+            listView.setAdapter(adapter2);
+            listView.setEmptyView(textViewEmpty);
+
+            listView.setOnClickListener(new AdapterView.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    openUser();
+                }
+            });
         } else if (message.getCode().equals(FRIEND_GET_FAIL)) {
             System.out.println("Friend get failure");
         } else if (message.getCode().equals(FRIEND_SEARCH_SUCCESS)) {
@@ -264,5 +204,15 @@ public class FriendlistActivity extends AppCompatActivity {
     // Navigates to previous activity
     private void back() {
         finish();
+    }
+
+    @Override
+    public void response(final Message message) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                verify(message);
+            }
+        });
     }
 }

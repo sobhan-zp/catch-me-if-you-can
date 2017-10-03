@@ -21,10 +21,10 @@ public class User {
         return name;
     }
 
-    public static User[] parseJSON(String response) {
+    public static User parseJSON(String response) {
         Gson gson = new GsonBuilder().create();
-        User[] users = gson.fromJson(response, User[].class);
-        return users;
+        User user = gson.fromJson(response, User.class);
+        return user;
     }
 
     @Override

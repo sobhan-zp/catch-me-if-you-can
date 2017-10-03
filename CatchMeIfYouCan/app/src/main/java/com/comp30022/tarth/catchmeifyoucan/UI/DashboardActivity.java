@@ -7,9 +7,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import com.comp30022.tarth.catchmeifyoucan.Account.Communication;
+import com.comp30022.tarth.catchmeifyoucan.Account.Message;
 import com.comp30022.tarth.catchmeifyoucan.R;
 
-public class DashboardActivity extends AppCompatActivity {
+public class DashboardActivity extends AppCompatActivity implements Communication {
 
     private Button buttonBack;
     private Button buttonFriendlist;
@@ -19,6 +21,7 @@ public class DashboardActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
+        //LoginActivity.getClient().setmCurrentActivity(this);
 
         buttonBack = (Button) findViewById(R.id.buttonBack);
         imageViewTest = (ImageView) findViewById(R.id.imageViewTest);
@@ -58,5 +61,10 @@ public class DashboardActivity extends AppCompatActivity {
 
     private void back() {
         finish();
+    }
+
+    @Override
+    public void response(final Message message) {
+
     }
 }

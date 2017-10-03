@@ -7,9 +7,8 @@ public class Message {
 
     String status;
     String type;
-    String result;
     Integer code;
-    User[] users;
+    User[] result;
 
     public String getStatus() {
         return status;
@@ -19,16 +18,12 @@ public class Message {
         return type;
     }
 
-    public String getResult() {
+    public User[] getResult() {
         return result;
     }
 
     public Integer getCode() {
         return code;
-    }
-
-    public User[] getUsers() {
-        return users;
     }
 
     public static Message parseJSON(String response) {
@@ -39,9 +34,9 @@ public class Message {
 
     @Override
     public String toString() {
-        String str =  "{" + status + ", " + type + ", " + result + ", " + code + ", ";
-        if (users != null) {
-            for (User user : users) {
+        String str =  "{" + status + ", " + type + ", " + code + ", ";
+        if (result != null) {
+            for (User user : result) {
                 str += user.toString();
             }
         }
