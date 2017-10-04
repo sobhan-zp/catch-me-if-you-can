@@ -1,39 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_marginTop="25dip"
+    >
 
     <ImageView
         android:id="@+id/imageViewTest"
         android:layout_width="160dp"
         android:layout_height="160dp"
         android:layout_centerHorizontal="true"
-        app:srcCompat="@drawable/doge" />
+        app:srcCompat="@mipmap/temp_placeholder" />
 
-    <Button
-        android:id="@+id/buttonFriendlist"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/imageViewTest"
+
+
+    <TextView
+        android:id="@+id/Username"
         android:layout_centerHorizontal="true"
-        android:text="Friendlist" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_below="@+id/imageViewTest"
+        android:layout_marginTop="13dp"
+        android:textStyle="italic|bold"
+        android:textSize="21dp"
+        android:text="username" />
 
     <Button
         android:id="@+id/buttonGame"
-        android:layout_width="match_parent"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/buttonFriendlist"
+        android:layout_below="@+id/Username"
+        android:layout_marginTop="25dp"
         android:layout_centerHorizontal="true"
-        android:text="Game" />
+        android:text="Create a Game" />
 
     <Button
-        android:id="@+id/buttonBack"
-        android:layout_width="match_parent"
+        android:id="@+id/buttonJoinGame"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/buttonGame"
+        android:layout_marginTop="4dp"
         android:layout_centerHorizontal="true"
-        android:text="Back" />
+        android:text="Join a Game" />
+
+    <Button
+        android:id="@+id/buttonSettings"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/buttonJoinGame"
+        android:layout_marginTop="4dp"
+        android:layout_centerHorizontal="true"
+        android:text="Settings" />
+
+    <Button
+        android:id="@+id/buttonFriendlist"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/buttonSettings"
+        android:layout_marginTop="4dp"
+        android:layout_centerHorizontal="true"
+        android:text="Friends &#38; Chat" />
+
+    <Button
+        android:id="@+id/buttonLogout"
+        android:theme="@style/AppTheme.Buttons"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/buttonFriendlist"
+        android:layout_marginTop="27dp"
+        android:layout_centerHorizontal="true"
+        android:text="Logout" />
+
+
 
 </RelativeLayout>
