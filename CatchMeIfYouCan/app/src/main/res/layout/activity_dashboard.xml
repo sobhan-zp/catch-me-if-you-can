@@ -29,10 +29,18 @@
         android:text="Game" />
 
     <Button
-        android:id="@+id/buttonBack"
+        android:id="@+id/buttonChat"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/buttonGame"
+        android:layout_centerHorizontal="true"
+        android:text="Chat" />
+
+    <Button
+        android:id="@+id/buttonBack"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/buttonChat"
         android:layout_centerHorizontal="true"
         android:text="Back" />
 

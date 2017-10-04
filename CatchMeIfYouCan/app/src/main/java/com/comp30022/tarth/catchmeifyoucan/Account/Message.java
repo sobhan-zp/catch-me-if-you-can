@@ -10,6 +10,10 @@ public class Message {
     Integer code;
     User[] result;
 
+    Integer action;
+    String message;
+    String from;
+
     public String getStatus() {
         return status;
     }
@@ -24,6 +28,22 @@ public class Message {
 
     public Integer getCode() {
         return code;
+    }
+
+    public Integer getAction() {
+        return action;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public String getFrom() {
+        return from;
+    }
+
+    public Long getTime() {
+        return 0l;
     }
 
     public static Message parseJSON(String response) {

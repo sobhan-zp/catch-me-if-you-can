@@ -14,6 +14,7 @@ import com.comp30022.tarth.catchmeifyoucan.R;
 public class DashboardActivity extends AppCompatActivity implements Communication {
 
     private Button buttonBack;
+    private Button buttonChat;
     private Button buttonFriendlist;
     private ImageView imageViewTest;
 
@@ -24,6 +25,8 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
         //LoginActivity.getClient().setmCurrentActivity(this);
 
         buttonBack = (Button) findViewById(R.id.buttonBack);
+        buttonChat = (Button) findViewById(R.id.buttonChat);
+        buttonFriendlist = (Button) findViewById(R.id.buttonFriendlist);
         imageViewTest = (ImageView) findViewById(R.id.imageViewTest);
 
         buttonBack.setOnClickListener(new Button.OnClickListener() {
@@ -33,18 +36,24 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
             }
         });
 
-        imageViewTest.setOnClickListener(new ImageView.OnClickListener() {
+        buttonChat.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                imageViewTest.setImageResource(R.drawable.doge_angry);
+                openChat();
             }
         });
 
-        buttonFriendlist = (Button) findViewById(R.id.buttonFriendlist);
         buttonFriendlist.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
                 openFriendlist();
+            }
+        });
+
+        imageViewTest.setOnClickListener(new ImageView.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                imageViewTest.setImageResource(R.drawable.doge_angry);
             }
         });
     }
@@ -59,13 +68,19 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
         startActivity(intent);
     }
 
-    private void back() {
-        finish();
-    }
-
     @Override
     public void response(final Message message) {
 
+    }
+
+    // Navigates to Chat activity
+    private void openChat() {
+        Intent intent = new Intent(this, ChatActivity.class);
+        startActivity(intent);
+    }
+
+    private void back() {
+        finish();
     }
 }
 

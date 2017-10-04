@@ -150,8 +150,6 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
     }
 
     private void verify(Message message) {
-
-        System.out.println("CODE:" + Integer.toString(message.getCode()));
         if (message.getCode().equals(FRIEND_ADD_SUCCESS)) {
             System.out.println("Friend add success");
         } else if (message.getCode().equals(FRIEND_ADD_FAIL)) {
@@ -169,13 +167,13 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
             for (User user : users) {
                 items.add(user.getUsername());
             }
-            ArrayAdapter<String> adapter2 = new ArrayAdapter<String>(
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(
                     this,
                     R.layout.list_one_item,
                     items
             );
 
-            listView.setAdapter(adapter2);
+            listView.setAdapter(adapter);
             listView.setEmptyView(textViewEmpty);
 
             listView.setOnClickListener(new AdapterView.OnClickListener() {
