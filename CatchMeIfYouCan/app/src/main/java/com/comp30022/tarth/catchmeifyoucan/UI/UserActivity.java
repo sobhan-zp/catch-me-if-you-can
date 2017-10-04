@@ -22,19 +22,10 @@ public class UserActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user);
 
-        Button buttonBack = (Button) findViewById(R.id.buttonBack);
-        buttonBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                back();
-            }
-        });
-
-        textViewName = (TextView) findViewById(R.id.textViewName);
-        textViewID = (TextView) findViewById(R.id.textViewID);
-        textViewUsername = (TextView) findViewById(R.id.textViewUsername);
-        textViewLocation = (TextView) findViewById(R.id.textViewLocation);
-        textViewStatus = (TextView) findViewById(R.id.textViewStatus);
+        textViewName = (TextView) findViewById(R.id.Name);
+        textViewUsername = (TextView) findViewById(R.id.Username);
+        textViewLocation = (TextView) findViewById(R.id.Location);
+        textViewStatus = (TextView) findViewById(R.id.Status);
     }
 
     @Override

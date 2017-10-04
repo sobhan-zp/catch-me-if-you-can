@@ -1,67 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_marginTop="25dip"
+
+    >
 
     <ImageView
-        android:id="@+id/imageViewProfile"
+        android:id="@+id/ProfilePicture"
         android:layout_width="160dp"
         android:layout_height="160dp"
         android:layout_centerHorizontal="true"
-        app:srcCompat="@drawable/doge_angry" />
+        app:srcCompat="@mipmap/temp_placeholder" />
 
     <TextView
-        android:id="@+id/textViewName"
-        android:layout_width="match_parent"
+        android:id="@+id/Name"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/imageViewProfile"
-        android:text="Name"/>
+        android:gravity="center"
+        android:layout_below="@+id/ProfilePicture"
+        android:layout_marginTop="30dp"
+        android:textSize="21dp"
+        android:textStyle="bold"
+        android:text="FirstName LastName" />
 
     <TextView
-        android:id="@+id/textViewID"
-        android:layout_width="match_parent"
+        android:id="@+id/Username"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/textViewName"
-        android:text="ID"/>
+        android:gravity="center"
+        android:layout_below="@+id/Name"
+        android:layout_marginTop="8dp"
+        android:textSize="15dp"
+        android:textStyle="italic"
+        android:text="/@username" />
 
     <TextView
-        android:id="@+id/textViewUsername"
-        android:layout_width="match_parent"
+        android:id="@+id/Location"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/textViewID"
-        android:text="Username"/>
+        android:gravity="center"
+        android:layout_below="@+id/Username"
+        android:layout_marginTop="8dp"
+        android:textSize="15dp"
+        android:text="Location" />
 
     <TextView
-        android:id="@+id/textViewLocation"
-        android:layout_width="match_parent"
+        android:id="@+id/Status"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/textViewUsername"
-        android:text="Location"/>
-
-    <TextView
-        android:id="@+id/textViewStatus"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/textViewLocation"
-        android:text="Status"/>
-
-    <Button
-        android:id="@+id/buttonBack"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Back"
-        android:layout_below="@+id/textViewStatus"
-        android:layout_alignParentStart="true" />
+        android:gravity="center"
+        android:layout_below="@+id/Location"
+        android:layout_marginTop="8dp"
+        android:textSize="15dp"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
+        android:text="STATUS: Lorem ipsum dolor sit amet, consectetur adipiscin" />
 
 </RelativeLayout>
