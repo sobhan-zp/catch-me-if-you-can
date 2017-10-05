@@ -38,6 +38,7 @@ public class ChatActivity extends AppCompatActivity implements Communication {
     private static final Integer MESSAGE_UNREAD = 0;
 
     private ArrayAdapter<String> adapter;
+    private List<String> array;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +53,15 @@ public class ChatActivity extends AppCompatActivity implements Communication {
                 sendMessage();
             }
         });
+
+        ListView listViewMessages = (ListView) findViewById(R.id.list_of_messages);
+        array = new ArrayList<String>();
+        adapter = new ArrayAdapter<String>(
+                this,
+                R.layout.list_one_item,
+                array
+        );
+        listViewMessages.setAdapter(adapter);
 
         //getOfflineMessages();
     }
@@ -72,17 +82,24 @@ public class ChatActivity extends AppCompatActivity implements Communication {
     }
 
     private void verify(Message message) {
-        System.out.println("MESSAGE : " + message.toString());
-        if (message.getCode().equals(MESSAGE_RECEIVE)) {
-            System.out.println("Message received");
-            displayMessage(message);
-        } else if (message.getCode().equals(MESSAGE_SEND_SUCCESS_OFFLINE)) {
-            System.out.println("Message sent");
-        } else if (message.getCode().equals(MESSAGE_OFFLINE_GET)) {
-            System.out.println("Message received");
-            displayMessage(message);
-        } else {
-            System.out.println("Error: Unknown response received");
+        System.out.println("MESSAGE : " + message.getMessage());
+        if (message.getAction() != null) {
+            if (message.getAction().equals(MESSAGE_RECEIVE)) {
+                System.out.println("Message received");
+                displayMessage(message);
+            } else if (message.getAction().equals(MESSAGE_OFFLINE_GET)) {
+                System.out.println("Message received");
+                displayMessage(message);
+            } else {
+                System.out.println("Error: Unknown response received");
+            }
+        }
+        if (message.getCode() != null) {
+             if (message.getCode().equals(MESSAGE_SEND_SUCCESS_ONLINE)) {
+                 System.out.println("Message sent, user online");
+             } else if (message.getCode().equals(MESSAGE_SEND_SUCCESS_OFFLINE)) {
+                 System.out.println("Message sent, user offline");
+             }
         }
     }
 
@@ -97,31 +114,27 @@ public class ChatActivity extends AppCompatActivity implements Communication {
     }
 
     private void displayMessage(Message message) {
-        ListView listViewMessages = (ListView) findViewById(R.id.list_of_messages);
-        TextView textViewText = (TextView) findViewById(R.id.textViewText);
-        TextView textViewUser = (TextView) findViewById(R.id.textViewUser);
-        TextView textViewTime = (TextView) findViewById(R.id.textViewTime);
 
-        textViewText.setText(message.getMessage());
-        textViewUser.setText(message.getFrom());
-        textViewTime.setText(DateFormat.format("dd-MM-yyyy (HH:mm:ss)", message.getTime()));
+        //TextView textViewItem = (TextView) findViewById(R.id.item);
+        //TextView textViewText = (TextView) findViewById(R.id.textViewText);
+        //TextView textViewUser = (TextView) findViewById(R.id.textViewUser);
+        //TextView textViewTime = (TextView) findViewById(R.id.textViewTime);
 
-        List<String> array = new ArrayList<String>();
-        array.add(message.getMessage());
+        //textViewItem.setText(message.getMessage());
+        //textViewText.setText(message.getMessage());
+        //textViewUser.setText(message.getFrom());
+        //textViewTime.setText(DateFormat.format("dd-MM-yyyy (HH:mm:ss)", message.getTime()));
 
-        adapter = new ArrayAdapter<String>(
-                this,
-                R.layout.message,
-                array
-        );
-        listViewMessages.setAdapter(adapter);
+        array.add(message.getFrom() + ": " +  message.getMessage());
+        adapter.notifyDataSetChanged();
+
     }
 
     private void sendMessage() {
         EditText input = (EditText) findViewById(R.id.input);
 
         // Read input and push a new instance of ChatMessage to the database
-        ChatMessage msg = new ChatMessage(input.getText().toString(), "vikram");
+        ChatMessage msg = new ChatMessage(input.getText().toString(), "admin");
         JSONObject obj = new JSONObject();
         try {
             obj.put("action", MESSAGE_SEND);

@@ -54,7 +54,13 @@ public class Message {
 
     @Override
     public String toString() {
-        String str =  "{" + status + ", " + type + ", " + code + ", ";
+        String str =  "{"
+                + ((status != null) ? status + ", " : "")
+                + ((type != null) ? type + ", " : "")
+                + ((code != null) ? code + ", " : "")
+                + ((action != null) ? action + ", " : "")
+                + ((message != null) ? message + ", " : "")
+                + ((from != null) ? from + ", " : "");
         if (result != null) {
             for (User user : result) {
                 str += user.toString();
