@@ -12,6 +12,7 @@
         android:layout_width="160dp"
         android:layout_height="160dp"
         android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
         app:srcCompat="@mipmap/logo_circle" />
 
     <TextView
@@ -20,40 +21,34 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/imageViewLogo"
         android:layout_centerHorizontal="true"
-        android:text="COMP30022 IT PROJECT
+        android:text="COMP30022 IT PROJECT \n
 HOUSE TARTH"
         android:textAlignment="center"
         android:textColor="@color/colorPrimaryDark"
-        android:textSize="20sp"/>
+        android:textSize="20sp"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="30dp"/>
 
     <Button
         android:id="@+id/buttonLogin"
         android:layout_below="@+id/textViewTitle"
-        android:layout_width="match_parent"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:text="Login" />
 
     <Button
         android:id="@+id/buttonCreateAccount"
-        android:layout_width="match_parent"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/buttonLogin"
         android:layout_centerHorizontal="true"
         android:text="Create Account" />
 
     <Button
-        android:id="@+id/buttonFriends"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/buttonCreateAccount"
-        android:layout_centerHorizontal="true"
-        android:text="Friends List"/>
-
-    <Button
         android:id="@+id/buttonExit"
-        android:layout_below="@+id/buttonFriends"
-        android:layout_width="match_parent"
+        android:layout_below="@+id/buttonCreateAccount"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:text="Exit" />

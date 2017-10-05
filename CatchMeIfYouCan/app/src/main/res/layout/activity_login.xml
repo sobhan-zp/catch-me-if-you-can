@@ -6,16 +6,19 @@
 
     <EditText
         android:id="@+id/editTextUsername"
-        android:layout_width="match_parent"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:hint="Username"
+        android:layout_marginTop="30dp"
+        android:layout_centerHorizontal="true"
         android:textSize="20sp" />
 
     <EditText
         android:id="@+id/editTextPassword"
         android:layout_below="@+id/editTextUsername"
-        android:layout_width="match_parent"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
         android:hint="Password"
         android:textSize="20sp" />
 
@@ -23,23 +26,27 @@
         android:id="@+id/textViewResponse"
         android:layout_below="@+id/editTextPassword"
         android:layout_height="wrap_content"
-        android:layout_width="match_parent"
+        android:layout_width="300dp"
+        android:layout_marginTop="30dp"
+        android:layout_centerHorizontal="true"
         android:textSize="20dp"
-        android:text="--response--" />
+        android:text="##..Server Response..##" />
 
     <Button
         android:id="@+id/buttonLogin"
         android:layout_below="@+id/textViewResponse"
-        android:layout_width="match_parent"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
         android:layout_centerHorizontal="true"
         android:text="Login" />
 
     <Button
         android:id="@+id/buttonBack"
-        android:layout_width="match_parent"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/buttonLogin"
+        android:layout_marginTop="30dp"
         android:layout_centerHorizontal="true"
         android:text="Back" />
 

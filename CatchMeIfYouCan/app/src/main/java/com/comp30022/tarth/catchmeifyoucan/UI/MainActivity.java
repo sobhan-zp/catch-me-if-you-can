@@ -36,14 +36,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        buttonFriends = (Button) findViewById(R.id.buttonFriends);
-        buttonFriends.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                friends(v);
-            }
-        });
-
         buttonExit = (Button) findViewById(R.id.buttonExit);
         buttonExit.setOnClickListener(new Button.OnClickListener() {
             @Override
@@ -66,11 +58,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void login(View view) {
         Intent intent = new Intent(this, LoginActivity.class);
-        startActivity(intent);
-    }
-
-    public void friends(View view) {
-        Intent intent = new Intent(this, FriendsActivity.class);
         startActivity(intent);
     }
 
