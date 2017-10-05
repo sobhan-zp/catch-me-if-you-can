@@ -12,6 +12,7 @@ public class MainActivity extends AppCompatActivity {
 
     Button buttonCreateAccount;
     Button buttonLogin;
+    Button buttonFriends;
     Button buttonExit;
 
     @Override
@@ -32,6 +33,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 login(v);
+            }
+        });
+
+        buttonFriends = (Button) findViewById(R.id.buttonFriends);
+        buttonFriends.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                friends(v);
             }
         });
 
@@ -60,8 +69,14 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void friends(View view) {
+        Intent intent = new Intent(this, FriendsActivity.class);
+        startActivity(intent);
+    }
+
     public void exit(View view) {
         finish();
         System.exit(0);
     }
 }
+

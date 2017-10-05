@@ -5,23 +5,31 @@
     android:layout_height="match_parent">
 
     <EditText
-        android:id="@+id/editTextName"
+        android:id="@+id/editTextUsername"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Name"
+        android:hint="Username"
         android:textSize="20sp" />
 
     <EditText
         android:id="@+id/editTextPassword"
-        android:layout_below="@+id/editTextName"
+        android:layout_below="@+id/editTextUsername"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Password"
         android:textSize="20sp" />
 
+    <TextView
+        android:id="@+id/textViewResponse"
+        android:layout_below="@+id/editTextPassword"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:textSize="20dp"
+        android:text="--response--" />
+
     <Button
         android:id="@+id/buttonLogin"
-        android:layout_below="@+id/editTextPassword"
+        android:layout_below="@+id/textViewResponse"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
