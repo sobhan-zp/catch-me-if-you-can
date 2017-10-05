@@ -14,13 +14,12 @@ import com.comp30022.tarth.catchmeifyoucan.R;
 
 public class DashboardActivity extends AppCompatActivity implements Communication {
 
-    private Button buttonBack;
     private Button buttonChat;
     private Button buttonFriendlist;
     private Button buttonSettings;
     private Button buttonJoinGame;
     private Button buttonGame;
-    private ImageView imageViewProfilePic;
+    private ImageView imageViewTest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,7 +27,6 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
         setContentView(R.layout.activity_dashboard);
 
         // constructors
-        buttonBack = (Button) findViewById(R.id.buttonBack);
         buttonChat = (Button) findViewById(R.id.buttonChat);
         buttonFriendlist = (Button) findViewById(R.id.buttonFriendlist);
         imageViewTest = (ImageView) findViewById(R.id.imageViewTest);
@@ -57,10 +55,11 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
             }
         });
 
-        imageViewTest.setOnClickListener(new ImageView.OnClickListener() {
-            @Override
+        // set a onclick listener for when the button gets clicked
+        imageViewTest.setOnClickListener(new View.OnClickListener() {
+            // Start new list activity
             public void onClick(View v) {
-                imageViewTest.setImageResource(R.drawable.doge_angry);
+                userprofile();
             }
         });
     }
@@ -96,10 +95,6 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
     private void openChat() {
         Intent intent = new Intent(this, ChatActivity.class);
         startActivity(intent);
-    }
-
-    private void back() {
-        finish();
     }
 }
 

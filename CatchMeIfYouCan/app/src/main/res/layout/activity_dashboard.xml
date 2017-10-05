@@ -10,8 +10,8 @@
 
     <ImageView
         android:id="@+id/imageViewTest"
-        android:layout_width="160dp"
-        android:layout_height="160dp"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
         android:layout_centerHorizontal="true"
         app:srcCompat="@mipmap/temp_placeholder" />
 
@@ -37,6 +37,23 @@
         android:text="Create a Game" />
 
     <Button
+        android:id="@+id/buttonJoinGame"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/buttonGame"
+        android:layout_marginTop="4dp"
+        android:layout_centerHorizontal="true"
+        android:text="Join a Game" />
+
+    <Button
+        android:id="@+id/buttonSettings"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/buttonJoinGame"
+        android:layout_marginTop="4dp"
+        android:layout_centerHorizontal="true"
+        android:text="Settings" />
+  <!--  <Button
         android:id="@+id/buttonChat"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -45,23 +62,25 @@
         android:layout_centerHorizontal="true"
         android:text="Chat" />
 
-    <Button
-        android:id="@+id/buttonBack"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/buttonChat"
-        android:layout_centerHorizontal="true"
-        android:text="Back" />
+    -->
 
     <Button
-        android:id="@+id/buttonFriendlist"
+        android:id="@+id/buttonChat"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/buttonSettings"
         android:layout_marginTop="4dp"
         android:layout_centerHorizontal="true"
-        android:text="Friends &#38; Chat" />
+        android:text="Chat" />
 
+    <Button
+        android:id="@+id/buttonFriendlist"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/buttonChat"
+        android:layout_marginTop="4dp"
+        android:layout_centerHorizontal="true"
+        android:text="Friends" />
     <Button
         android:id="@+id/buttonLogout"
         android:theme="@style/AppTheme.Buttons"
