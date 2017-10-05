@@ -71,6 +71,11 @@
             android:name=".UI.ChatActivity"
             android:label="User">
         </activity>
+
+        <activity
+            android:name=".UI.MapsActivity"
+            android:label="User">
+        </activity>
     </application>
 
 </manifest>

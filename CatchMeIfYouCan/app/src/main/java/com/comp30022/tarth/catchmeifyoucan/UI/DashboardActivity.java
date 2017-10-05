@@ -28,6 +28,7 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
 
         // constructors
         buttonChat = (Button) findViewById(R.id.buttonChat);
+        buttonJoinGame = (Button) findViewById(R.id.buttonJoinGame);
         buttonFriendlist = (Button) findViewById(R.id.buttonFriendlist);
         imageViewTest = (ImageView) findViewById(R.id.imageViewTest);
         buttonFriendlist = (Button) findViewById(R.id.buttonFriendlist);
@@ -48,6 +49,12 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
             }
         });
 
+        buttonJoinGame.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openMaps();
+            }
+        });
         buttonFriendlist.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -94,6 +101,12 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
     // Navigates to Chat activity
     private void openChat() {
         Intent intent = new Intent(this, ChatActivity.class);
+        startActivity(intent);
+    }
+
+    // Navigates to Maps activity
+    private void openMaps() {
+        Intent intent = new Intent(this, MapsActivity.class);
         startActivity(intent);
     }
 }

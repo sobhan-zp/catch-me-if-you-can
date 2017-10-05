@@ -136,7 +136,7 @@ public class ChatActivity extends AppCompatActivity implements Communication {
         EditText input = (EditText) findViewById(R.id.input);
 
         // Read input and push a new instance of ChatMessage to the database
-        ChatMessage msg = new ChatMessage(input.getText().toString(), "vikram");
+        ChatMessage msg = new ChatMessage(input.getText().toString(), "admin");
         JSONObject obj = new JSONObject();
         try {
             obj.put("action", MESSAGE_SEND);
