@@ -6,6 +6,7 @@ import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.comp30022.tarth.catchmeifyoucan.Account.Communication;
@@ -143,7 +144,10 @@ public class LoginActivity extends AppCompatActivity implements Communication {
 
     // Navigates to Dashboard Activity
     private void openDashboard() {
-        Intent intent = new Intent(this, DashboardActivity.class);
+        EditText etName1 = (EditText) findViewById(R.id.editTextUsername);
+        Intent intent = new Intent(LoginActivity.this, DashboardActivity.class);
+        intent.putExtra("username", etName1.getText().toString());
+
         startActivity(intent);
     }
 
