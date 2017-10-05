@@ -1,70 +1,81 @@
 // Constant
+// Database settings
+DATABASE_HOST = "localhost";
+DATABASE_USERNAME = "root";
+DATABASE_PASSWORD = "ht!!!";
+DATABASE_DATABASE = "house_tarth";
+// Global user settings
 DEFAULT_USER_LEVEL = 0;
+// Server settings
 SERVER_PORT = 80;
+// Actions
 REGISTER_ACTION = 100;
 LOGIN_ACTION = 101;
+PROFILE_ACTION = 102;
 UNKNOWN_ACTION = 199;
-LOGIN_SUCCESS_CODE = 200;
-LOGIN_USER_NON_EXIST_CODE = 201;
-LOGIN_EXIST_CODE = 202;
-RESISTER_SUCCESS = 300;
-REGISTER_FAIL = 301;
 FRIEND_GET = 500;
-FRIEND_GET_FAIL = 501;
-FRIEND_GET_SUCCESS = 502;
 FRIEND_SEARCH = 503;
-FRIEND_SEARCH_FAIL = 504;
-FRIEND_SEARCH_SUCCESS = 505;
 FRIEND_ADD = 506;
-FRIEND_ADD_FAIL = 507;
-FRIEND_ADD_SUCCESS = 508;
 FRIEND_CHECK = 509;
-FRIEND_CHECK_FAIL = 510;
-FRIEND_CHECK_SUCCESS = 511;
 FRIEND_DELETE = 512;
-FRIEND_DELETE_SUCCESS = 513;
-FRIEND_DELETE_FAIL = 514;
 MESSAGE_SEND = 600;
 MESSAGE_RECEIVE = 601;
-MESSAGE_SEND_SUCCESS_ONLINE = 602;
-MESSAGE_SEND_SUCCESS_OFFLINE = 603;
-MESSAGE_SEND_FAIL = 604;
 MESSAGE_OFFLINE_GET = 605;
 MESSAGE_COMMAND_SEND = 606;
-MESSAGE_COMMAND_SUCCESS = 607;
-MESSAGE_COMMAND_FAIL = 608;
-MESSAGE_COMMAND_RECEIVE = 609;
-MESSAGE_READ = 1;
-MESSAGE_UNREAD = 0;
 GAME_CREATE = 700;
-GAME_CREATE_SUCCESS = 701;
-GAME_CREATE_FAIL = 702;
 GAME_ADD = 703;
-GAME_ADD_SUCCESS = 704;
-GAME_ADD_FAIL = 705;
 GAME_EXIT = 706;
-GAME_EXIT_SUCCESS = 707;
-GAME_EXIT_FAIL = 708;
 GAME_GET = 709;
-GAME_GET_SUCCESS = 710;
-GAME_GET_FAIL = 711;
 GAME_DELETE = 712;
-GAME_DELETE_SUCCESS = 713;
-GAME_DELETE_FAIL = 714;
 GAME_USER_REMOVE = 715;
-GAME_USER_REMOVE_SUCCESS = 716;
-GAME_USER_REMOVE_FAIL = 717;
 GAME_GET_CURRENT = 718;
-GAME_GET_CURRENT_SUCCESS = 719;
-GAME_GET_CURRENT_FAIL = 720;
 GAME_NOTIFICATION_SEND = 721;
 GAME_NOTIFICATION_RECEIVE = 722;
 GAME_GET_USER = 723;
-GAME_GET_USER_SUCCESS = 724;
-GAME_GET_USER_FAIL = 725;
+// Default status
+MESSAGE_READ = 1;
+MESSAGE_UNREAD = 0;
 GAME_OWNER = 1;
 GAME_PLAYER = 0;
-
+// Rsponse code
+LOGIN_SUCCESS_CODE = 200;
+LOGIN_USER_NON_EXIST_CODE = 201;
+LOGIN_EXIST_CODE = 202;
+PROFILE_GET = 203;
+RESISTER_SUCCESS = 300;
+REGISTER_FAIL = 301;
+FRIEND_GET_FAIL = 501;
+FRIEND_GET_SUCCESS = 502;
+FRIEND_SEARCH_FAIL = 504;
+FRIEND_SEARCH_SUCCESS = 505;
+FRIEND_ADD_FAIL = 507;
+FRIEND_ADD_SUCCESS = 508;
+FRIEND_CHECK_FAIL = 510;
+FRIEND_CHECK_SUCCESS = 511;
+FRIEND_DELETE_SUCCESS = 513;
+FRIEND_DELETE_FAIL = 514;
+MESSAGE_SEND_SUCCESS_ONLINE = 602;
+MESSAGE_SEND_SUCCESS_OFFLINE = 603;
+MESSAGE_SEND_FAIL = 604;
+MESSAGE_COMMAND_SUCCESS = 607;
+MESSAGE_COMMAND_FAIL = 608;
+MESSAGE_COMMAND_RECEIVE = 609;
+GAME_CREATE_SUCCESS = 701;
+GAME_CREATE_FAIL = 702;
+GAME_ADD_SUCCESS = 704;
+GAME_ADD_FAIL = 705;
+GAME_EXIT_SUCCESS = 707;
+GAME_EXIT_FAIL = 708;
+GAME_GET_SUCCESS = 710;
+GAME_GET_FAIL = 711;
+GAME_DELETE_SUCCESS = 713;
+GAME_DELETE_FAIL = 714;
+GAME_USER_REMOVE_SUCCESS = 716;
+GAME_USER_REMOVE_FAIL = 717;
+GAME_GET_CURRENT_SUCCESS = 719;
+GAME_GET_CURRENT_FAIL = 720;
+GAME_GET_USER_SUCCESS = 724;
+GAME_GET_USER_FAIL = 725;
 
 TEST_MSG = 1000;
 
@@ -77,10 +88,10 @@ var mysql = require('mysql');
 var WebSocketServer = WebSocket.Server,
     wss = new WebSocketServer({ port: SERVER_PORT });
 var con = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "ht!!!",
-    database: "house_tarth"
+    host: DATABASE_HOST,
+    user: DATABASE_USERNAME,
+    password: DATABASE_PASSWORD,
+    database: DATABASE_DATABASE
 });
 var clients = [];
 
@@ -142,6 +153,18 @@ function db_excution_send_msg(sock, sql_statement, success_code, fail_code, retu
 }
 
 // Account Management
+
+function fetch_account_info(userinfo){
+    var feedback = {
+      "action": PROFILE_GET,
+      "name": userinfo.name,
+      "username": userinfo.username,
+      "email": userinfo.email,
+      "id": userinfo.db_id,
+      "lv": userinfo.lv
+    }
+    sys_send_to_sock(userinfo.ws, JSON.stringify(feedback));
+}
 
 function login_check(username, password, sock, client_uuid, user_status){
     var fails = false;
@@ -593,6 +616,9 @@ wss.on('connection', function(ws) {
                         break;
                     case GAME_NOTIFICATION_SEND:
                         send_notification_to_all(user_status.info, data.message);
+                        break;
+                    case PROFILE_ACTION:
+                        fetch_account_info(user_status.info);
                         break;
                     //case GAME_DELETE:
                         //delete_game(user_status.info, data.id);
