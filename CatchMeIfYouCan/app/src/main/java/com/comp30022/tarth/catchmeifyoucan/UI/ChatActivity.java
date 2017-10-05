@@ -125,7 +125,9 @@ public class ChatActivity extends AppCompatActivity implements Communication {
         //textViewUser.setText(message.getFrom());
         //textViewTime.setText(DateFormat.format("dd-MM-yyyy (HH:mm:ss)", message.getTime()));
 
-        array.add(message.getFrom() + ": " +  message.getMessage());
+        array.add(
+                message.getFrom() + ": " +  message.getMessage() + "\n" + message.getTime()
+        );
         adapter.notifyDataSetChanged();
 
     }
@@ -134,7 +136,7 @@ public class ChatActivity extends AppCompatActivity implements Communication {
         EditText input = (EditText) findViewById(R.id.input);
 
         // Read input and push a new instance of ChatMessage to the database
-        ChatMessage msg = new ChatMessage(input.getText().toString(), "admin");
+        ChatMessage msg = new ChatMessage(input.getText().toString(), "vikram");
         JSONObject obj = new JSONObject();
         try {
             obj.put("action", MESSAGE_SEND);

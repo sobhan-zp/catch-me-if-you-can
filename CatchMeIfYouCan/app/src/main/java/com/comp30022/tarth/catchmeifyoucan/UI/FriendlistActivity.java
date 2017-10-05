@@ -19,6 +19,7 @@ import com.comp30022.tarth.catchmeifyoucan.R;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class FriendlistActivity extends AppCompatActivity implements Communication {
 
@@ -43,6 +44,9 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
     private ListView listView;
     private TextView textViewEmpty;
 
+    private ArrayAdapter<String> adapter;
+    private List<String> array;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,7 +63,23 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
         buttonGet = (Button) findViewById(R.id.buttonGet);
         buttonSearch = (Button) findViewById(R.id.buttonSearch);
         listView = (ListView)findViewById(android.R.id.list);
-        textViewEmpty = (TextView)findViewById(android.R.id.empty);
+        //textViewEmpty = (TextView)findViewById(android.R.id.empty);
+
+        final ListView listViewFriends = (ListView) findViewById(R.id.listViewFriends);
+        array = new ArrayList<String>();
+        adapter = new ArrayAdapter<String>(
+                this,
+                R.layout.list_one_item,
+                array
+        );
+        listViewFriends.setAdapter(adapter);
+
+        listViewFriends.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                openUser(listViewFriends.getItemAtPosition(position).toString());
+            }
+        });
 
         buttonAdd.setOnClickListener(new Button.OnClickListener() {
             @Override
@@ -161,27 +181,13 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
         } else if (message.getCode().equals(FRIEND_GET_SUCCESS)) {
             System.out.println("Friend get success");
 
-            ArrayList<String> items = new ArrayList<String>();
             User[] users = message.getResult();
 
             for (User user : users) {
-                items.add(user.getUsername());
+                array.add(user.getUsername());
             }
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-                    this,
-                    R.layout.list_one_item,
-                    items
-            );
+            adapter.notifyDataSetChanged();
 
-            listView.setAdapter(adapter);
-            listView.setEmptyView(textViewEmpty);
-
-            listView.setOnClickListener(new AdapterView.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    openUser();
-                }
-            });
         } else if (message.getCode().equals(FRIEND_GET_FAIL)) {
             System.out.println("Friend get failure");
         } else if (message.getCode().equals(FRIEND_SEARCH_SUCCESS)) {
@@ -194,8 +200,9 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
     }
 
     // Navigates to User Activity
-    private void openUser() {
+    private void openUser(String username) {
         Intent intent = new Intent(this, UserActivity.class);
+        intent.putExtra("username", username);
         startActivity(intent);
     }
 
