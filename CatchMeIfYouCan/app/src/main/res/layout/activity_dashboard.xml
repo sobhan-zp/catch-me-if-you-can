@@ -15,8 +15,6 @@
         android:layout_centerHorizontal="true"
         app:srcCompat="@mipmap/temp_placeholder" />
 
-
-
     <TextView
         android:id="@+id/Username"
         android:layout_centerHorizontal="true"
@@ -39,22 +37,21 @@
         android:text="Create a Game" />
 
     <Button
-        android:id="@+id/buttonJoinGame"
-        android:layout_width="300dp"
+        android:id="@+id/buttonChat"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/buttonGame"
         android:layout_marginTop="4dp"
         android:layout_centerHorizontal="true"
-        android:text="Join a Game" />
+        android:text="Chat" />
 
     <Button
-        android:id="@+id/buttonSettings"
-        android:layout_width="300dp"
+        android:id="@+id/buttonBack"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/buttonJoinGame"
-        android:layout_marginTop="4dp"
+        android:layout_below="@+id/buttonChat"
         android:layout_centerHorizontal="true"
-        android:text="Settings" />
+        android:text="Back" />
 
     <Button
         android:id="@+id/buttonFriendlist"
@@ -74,7 +71,5 @@
         android:layout_marginTop="27dp"
         android:layout_centerHorizontal="true"
         android:text="Logout" />
-
-
 
 </RelativeLayout>

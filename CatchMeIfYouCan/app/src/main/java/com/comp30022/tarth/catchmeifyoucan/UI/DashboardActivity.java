@@ -15,7 +15,7 @@ import com.comp30022.tarth.catchmeifyoucan.R;
 public class DashboardActivity extends AppCompatActivity implements Communication {
 
     private Button buttonBack;
-    private Button buttonLogout;
+    private Button buttonChat;
     private Button buttonFriendlist;
     private Button buttonSettings;
     private Button buttonJoinGame;
@@ -29,9 +29,10 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
 
         // constructors
         buttonBack = (Button) findViewById(R.id.buttonBack);
-        buttonLogout = (Button) findViewById(R.id.buttonLogout);
+        buttonChat = (Button) findViewById(R.id.buttonChat);
         buttonFriendlist = (Button) findViewById(R.id.buttonFriendlist);
-        imageViewProfilePic = (ImageView) findViewById(R.id.imageViewTest);
+        imageViewTest = (ImageView) findViewById(R.id.imageViewTest);
+        buttonFriendlist = (Button) findViewById(R.id.buttonFriendlist);
 
         TextView TxtViewUsername = (TextView) findViewById(R.id.Username);
         Intent intent = getIntent();
@@ -42,11 +43,10 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
             TxtViewUsername.setText("@" + getName);
         }
 
-        // set a onclick listener for when the button gets clicked
-        imageViewProfilePic.setOnClickListener(new View.OnClickListener() {
-            // Start new list activity
+        buttonChat.setOnClickListener(new Button.OnClickListener() {
+            @Override
             public void onClick(View v) {
-                userprofile();
+                openChat();
             }
         });
 
@@ -57,8 +57,12 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
             }
         });
 
-
-
+        imageViewTest.setOnClickListener(new ImageView.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                imageViewTest.setImageResource(R.drawable.doge_angry);
+            }
+        });
     }
 
     @Override
@@ -86,6 +90,16 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
     @Override
     public void response(final Message message) {
 
+    }
+
+    // Navigates to Chat activity
+    private void openChat() {
+        Intent intent = new Intent(this, ChatActivity.class);
+        startActivity(intent);
+    }
+
+    private void back() {
+        finish();
     }
 }
 
