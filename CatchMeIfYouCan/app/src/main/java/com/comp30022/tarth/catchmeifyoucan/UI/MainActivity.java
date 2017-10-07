@@ -14,6 +14,7 @@ public class MainActivity extends AppCompatActivity {
     Button buttonLogin;
     Button buttonFriends;
     Button buttonExit;
+    Button buttonAR;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +44,14 @@ public class MainActivity extends AppCompatActivity {
                 exit(v);
             }
         });
+
+        buttonAR = (Button) findViewById(R.id.buttonAR);
+        buttonAR.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ar(v);
+            }
+        });
     }
 
     @Override
@@ -64,6 +73,11 @@ public class MainActivity extends AppCompatActivity {
     public void exit(View view) {
         finish();
         System.exit(0);
+    }
+
+    public void ar(View view) {
+        Intent intent = new Intent(this, ArActivity.class);
+        startActivity(intent);
     }
 }
 

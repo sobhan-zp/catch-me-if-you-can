@@ -53,4 +53,12 @@ HOUSE TARTH"
         android:layout_centerHorizontal="true"
         android:text="Exit" />
 
+    <Button
+        android:id="@+id/buttonAR"
+        android:layout_below="@+id/buttonExit"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="AR" />
+
 </RelativeLayout>
