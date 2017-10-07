@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.comp30022.tarth.catchmeifyoucan.Account.Communication;
 import com.comp30022.tarth.catchmeifyoucan.Account.Message;
@@ -33,13 +34,12 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
         imageViewTest = (ImageView) findViewById(R.id.imageViewTest);
         buttonFriendlist = (Button) findViewById(R.id.buttonFriendlist);
 
-        TextView TxtViewUsername = (TextView) findViewById(R.id.Username);
+        TextView textViewUsername = (TextView) findViewById(R.id.Username);
         Intent intent = getIntent();
         Bundle bd = intent.getExtras();
-        if(bd != null)
-        {
+        if(bd != null) {
             String getName = (String) bd.get("username");
-            TxtViewUsername.setText("@" + getName);
+            textViewUsername.setText("@" + getName);
         }
 
         buttonChat.setOnClickListener(new Button.OnClickListener() {
@@ -66,7 +66,7 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
         imageViewTest.setOnClickListener(new View.OnClickListener() {
             // Start new list activity
             public void onClick(View v) {
-                userprofile();
+                openUser();
             }
         });
     }
@@ -76,26 +76,13 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
         finish();
     }
 
-    private void openProfile() {
-        Intent intent = new Intent(this, UserActivity.class);
-        startActivity(intent);
-    }
-
-    // Navigates to Friendslist Activity
-    private void friends() {
-        Intent intent = new Intent(this, FriendlistActivity.class);
-        startActivity(intent);
-    }
-
-    // Navigates to User Activity
-    private void userprofile() {
-        Intent intent = new Intent(this, UserActivity.class);
-        startActivity(intent);
-    }
-
     @Override
     public void response(final Message message) {
+    }
 
+    // Displays a toast message
+    private void toast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
     // Navigates to Chat activity
@@ -107,6 +94,18 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
     // Navigates to Maps activity
     private void openMaps() {
         Intent intent = new Intent(this, MapsActivity.class);
+        startActivity(intent);
+    }
+
+    // Navigates to Friendslist Activity
+    private void friends() {
+        Intent intent = new Intent(this, FriendlistActivity.class);
+        startActivity(intent);
+    }
+
+    // Navigates to User Activity
+    private void openUser() {
+        Intent intent = new Intent(this, UserActivity.class);
         startActivity(intent);
     }
 }

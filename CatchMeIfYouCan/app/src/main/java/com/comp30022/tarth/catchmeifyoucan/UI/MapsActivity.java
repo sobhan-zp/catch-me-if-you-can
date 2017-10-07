@@ -197,12 +197,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
             mMap.animateCamera(CameraUpdateFactory.zoomTo(12));
 
-            Toast.makeText(MapsActivity.this, "Your Current Location", Toast.LENGTH_LONG).show();
+            toast("Your Current Location");
         }
 
         if(mCurrLocationMarker != null){
             String currLocation = curr_latitude+","+curr_longitude;
-            Toast.makeText(MapsActivity.this, currLocation, Toast.LENGTH_LONG).show();
+            toast(currLocation);
         }
 
         checkNearWaypoint();
@@ -215,7 +215,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             double wp_longitude = mMarkers.get(i).getPosition().longitude;
             if((curr_latitude-wp_latitude)*(curr_latitude-wp_latitude)+(curr_longitude-wp_longitude)*(curr_longitude-wp_longitude)
                     <= WP_RADIUS*WP_RADIUS){
-                Toast.makeText(MapsActivity.this, "A WP is nearby", Toast.LENGTH_LONG).show();
+                toast("A waypoint is nearby");
                 nearWp = true;
                 break;
             }
@@ -272,7 +272,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 } else {
 
                     // Permission denied, Disable the functionality that depends on this permission.
-                    Toast.makeText(this, "permission denied", Toast.LENGTH_LONG).show();
+                    toast("Permission denied");
                 }
                 return;
             }
@@ -420,6 +420,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             mMarkers.add(waypoint);
         }
+    }
+
+    // Displays a toast message
+    private void toast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    // Broadcasts location to server
+    private void broadcastLocation() {
+        //curr_latitude, curr_longitude
     }
 
 }

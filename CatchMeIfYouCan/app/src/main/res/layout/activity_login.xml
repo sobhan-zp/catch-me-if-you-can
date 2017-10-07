@@ -22,19 +22,9 @@
         android:hint="Password"
         android:textSize="20sp" />
 
-    <TextView
-        android:id="@+id/textViewResponse"
-        android:layout_below="@+id/editTextPassword"
-        android:layout_height="wrap_content"
-        android:layout_width="300dp"
-        android:layout_marginTop="30dp"
-        android:layout_centerHorizontal="true"
-        android:textSize="20dp"
-        android:text="##..Server Response..##" />
-
     <Button
         android:id="@+id/buttonLogin"
-        android:layout_below="@+id/textViewResponse"
+        android:layout_below="@+id/editTextPassword"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
