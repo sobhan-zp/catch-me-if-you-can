@@ -54,7 +54,6 @@ public class ArActivity extends AppCompatActivity implements SensorEventListener
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ar);
-
         // Add back button
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -84,7 +83,6 @@ public class ArActivity extends AppCompatActivity implements SensorEventListener
 
 
         buttonMaps = (Button) findViewById(R.id.buttonMap);
-
         Intent intent = getIntent();
         Bundle bd = intent.getExtras();
 
@@ -155,7 +153,6 @@ public class ArActivity extends AppCompatActivity implements SensorEventListener
     }
 
 
-
     //Required for sensors
     @Override
     public void onSensorChanged(SensorEvent event) {
@@ -176,9 +173,7 @@ public class ArActivity extends AppCompatActivity implements SensorEventListener
     //Required for Sensors
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
-
     }
-
 
     // Compute the three orientation angles based on the most recent readings from
     // the device's accelerometer and magnetometer.
@@ -223,4 +218,10 @@ public class ArActivity extends AppCompatActivity implements SensorEventListener
         return c; // returns null if camera is unavailable
     }
 
+
+    // Navigates to Maps activity
+    // private void openMaps() {
+    //     Intent intent = new Intent(this, MapsActivity.class);
+    //     startActivity(intent);
+    // }
 }

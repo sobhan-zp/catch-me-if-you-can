@@ -2,6 +2,19 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.comp30022.tarth.catchmeifyoucan">
 
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="true" />
+    <uses-feature
+        android:name="android.hardware.location"
+        android:required="true" />
+    <uses-feature
+        android:name="android.hardware.sensor.accelerometer"
+        android:required="true" />
+    <uses-feature
+        android:name="android.hardware.sensor.compass"
+        android:required="true" />
+
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
          Google Maps Android API v2, but you must specify either coarse or fine
