@@ -1,7 +1,9 @@
 package com.comp30022.tarth.catchmeifyoucan.UI;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -74,7 +76,7 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
         buttonLogout.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                logout();
+                logoutWarning();
             }
         });
 
@@ -92,7 +94,21 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
     public void onBackPressed() {
     }
 
-    // Navigates to Settings
+    // Reveals pop up asking if user really wants to exit
+    public void logoutWarning() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.MyAlertDialogStyle);
+        builder.setTitle("AppCompatDialog");
+        builder.setMessage("Lorem ipsum dolor...");
+        builder.setPositiveButton("Get Me Out of Here!", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                logout();
+            }
+        });
+        builder.setNegativeButton("Cancel", null);
+        builder.show();
+    }
+
+    // Disconnects from server and returns to main menu
     public void logout() {
         LoginActivity.getClient().disconnect();
         Intent intent = new Intent(this, MainActivity.class);

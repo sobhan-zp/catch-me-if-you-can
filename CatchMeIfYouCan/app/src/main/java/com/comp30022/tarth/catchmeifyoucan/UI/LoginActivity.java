@@ -64,6 +64,7 @@ public class LoginActivity extends AppCompatActivity implements Communication {
                 back();
             }
         });
+
     }
 
     @Override
