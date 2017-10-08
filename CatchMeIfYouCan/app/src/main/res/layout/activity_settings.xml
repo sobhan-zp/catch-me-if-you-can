@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_marginTop="25dip"
+
+    >
+
+    <ImageView
+        android:id="@+id/ProfilePicture"
+        android:layout_width="160dp"
+        android:layout_height="160dp"
+        android:layout_centerHorizontal="true"
+        app:srcCompat="@mipmap/temp_placeholder" />
+
+    <TextView
+        android:id="@+id/Name"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_below="@+id/ProfilePicture"
+        android:layout_marginTop="30dp"
+        android:textSize="21dp"
+        android:textStyle="bold"
+        android:text="FirstName LastName" />
+
+    <TextView
+        android:id="@+id/Username"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_below="@+id/Name"
+        android:layout_marginTop="8dp"
+        android:textSize="15dp"
+        android:textStyle="italic"
+        android:text="/@username" />
+
+    <TextView
+        android:id="@+id/Location"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_below="@+id/Username"
+        android:layout_marginTop="8dp"
+        android:textSize="15dp"
+        android:text="Location" />
+
+    <TextView
+        android:id="@+id/Status"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_below="@+id/Location"
+        android:layout_marginTop="8dp"
+        android:textSize="15dp"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
+        android:text="STATUS: Lorem ipsum dolor sit amet, consectetur adipiscin" />
+
+
+    <Button
+        android:id="@+id/buttonGet"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:onClick="createOnClick"
+        android:text="GET"
+        android:layout_below="@+id/Status"
+        android:layout_centerHorizontal="true"
+        />
+
+
+</RelativeLayout>
