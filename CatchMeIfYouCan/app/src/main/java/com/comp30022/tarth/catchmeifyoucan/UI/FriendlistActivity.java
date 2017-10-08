@@ -191,11 +191,11 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
         } else if (message.getCode().equals(FRIEND_GET_FAIL)) {
             System.out.println("Friend get failure");
         } else if (message.getCode().equals(FRIEND_SEARCH_SUCCESS)) {
-            System.out.println("Friend search success");
+            System.out.println("Friend search success - here");
         } else if (message.getCode().equals(FRIEND_SEARCH_FAIL)) {
             System.out.println("Friend search failure");
         } else {
-            System.out.println("Error: Unknown response received");
+            System.out.println("Friendslist Error: Unknown response received");
         }
     }
 

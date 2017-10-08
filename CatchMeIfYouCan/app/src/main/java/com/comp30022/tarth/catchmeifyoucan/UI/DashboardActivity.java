@@ -15,11 +15,13 @@ import com.comp30022.tarth.catchmeifyoucan.R;
 public class DashboardActivity extends AppCompatActivity implements Communication {
 
     private Button buttonChat;
+    private Button buttonLogout;
     private Button buttonFriendlist;
     private Button buttonSettings;
     private Button buttonJoinGame;
     private Button buttonGame;
     private ImageView imageViewTest;
+    private String getName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,13 +34,16 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
         buttonFriendlist = (Button) findViewById(R.id.buttonFriendlist);
         imageViewTest = (ImageView) findViewById(R.id.imageViewTest);
         buttonFriendlist = (Button) findViewById(R.id.buttonFriendlist);
+        buttonLogout = (Button) findViewById(R.id.buttonLogout);
+        buttonSettings = (Button) findViewById(R.id.buttonSettings);
+
 
         TextView TxtViewUsername = (TextView) findViewById(R.id.Username);
         Intent intent = getIntent();
         Bundle bd = intent.getExtras();
         if(bd != null)
         {
-            String getName = (String) bd.get("username");
+            getName = (String) bd.get("username");
             TxtViewUsername.setText("@" + getName);
         }
 
@@ -48,7 +53,6 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
                 openChat();
             }
         });
-
         buttonJoinGame.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -61,35 +65,56 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
                 friends();
             }
         });
+        buttonSettings.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                settings();
+            }
+        });
+        buttonLogout.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                logout();
+            }
+        });
 
         // set a onclick listener for when the button gets clicked
         imageViewTest.setOnClickListener(new View.OnClickListener() {
             // Start new list activity
             public void onClick(View v) {
-                userprofile();
+                openUser(getName);
             }
         });
     }
 
+    // Disables back button -- you nee dto click logout to exit
     @Override
     public void onBackPressed() {
-        finish();
     }
 
-    private void openProfile() {
+    // Navigates to Settings
+    public void logout() {
+        LoginActivity.getClient().disconnect();
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+    }
+
+    // Navigates to Settings
+    public void settings() {
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
+    }
+
+    // Navigates to User Activity
+    private void openUser(String username) {
         Intent intent = new Intent(this, UserActivity.class);
+        intent.putExtra("username", username);
         startActivity(intent);
     }
 
     // Navigates to Friendslist Activity
     private void friends() {
         Intent intent = new Intent(this, FriendlistActivity.class);
-        startActivity(intent);
-    }
-
-    // Navigates to User Activity
-    private void userprofile() {
-        Intent intent = new Intent(this, UserActivity.class);
         startActivity(intent);
     }
 

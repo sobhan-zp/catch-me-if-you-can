@@ -47,7 +47,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        finish();
         System.exit(0);
     }
 
@@ -62,7 +61,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void exit(View view) {
-        finish();
         System.exit(0);
     }
 }

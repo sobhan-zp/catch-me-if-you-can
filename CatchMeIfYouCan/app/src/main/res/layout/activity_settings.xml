@@ -15,6 +15,16 @@
         android:layout_centerHorizontal="true"
         app:srcCompat="@mipmap/temp_placeholder" />
 
+    <ImageButton
+        android:id="@+id/PictureSettings"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="45dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_mode_edit_black_24dp"
+        android:background="@android:color/holo_red_light"
+        />
+
     <TextView
         android:id="@+id/Name"
         android:layout_centerHorizontal="true"
@@ -27,6 +37,16 @@
         android:textStyle="bold"
         android:text="FirstName LastName" />
 
+    <ImageButton
+        android:id="@+id/NameSettings"
+        android:src="@drawable/ic_mode_edit_black_small"
+        android:layout_below="@+id/ProfilePicture"
+        android:background="@android:color/holo_red_light"
+        android:layout_marginTop="30dp"
+        android:layout_marginLeft="300dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
     <TextView
         android:id="@+id/Username"
         android:layout_centerHorizontal="true"
@@ -38,6 +58,16 @@
         android:textSize="15dp"
         android:textStyle="italic"
         android:text="/@username" />
+
+    <ImageButton
+        android:id="@+id/LocationSettings"
+        android:src="@drawable/ic_mode_edit_black_small"
+        android:layout_below="@+id/Username"
+        android:background="@android:color/holo_red_light"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="230dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
     <TextView
         android:id="@+id/Location"
@@ -63,17 +93,16 @@
         android:layout_marginRight="40dp"
         android:text="STATUS: Lorem ipsum dolor sit amet, consectetur adipiscin" />
 
+    <ImageButton
+        android:id="@+id/StatusSettings"
+        android:src="@drawable/ic_mode_edit_black_small"
+        android:layout_below="@+id/Location"
+        android:background="@android:color/holo_red_light"
+        android:layout_marginTop="15dp"
+        android:layout_marginLeft="330dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
-    <Button
-        android:id="@+id/buttonGet"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:onClick="createOnClick"
-        android:text="GET"
-        android:layout_below="@+id/Status"
-        android:layout_centerHorizontal="true"
-        />
 
 
 </RelativeLayout>
