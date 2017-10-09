@@ -1,5 +1,7 @@
 package com.comp30022.tarth.catchmeifyoucan.UI;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -20,8 +22,8 @@ public class AddActivity extends AppCompatActivity implements Communication {
     private static final Integer FRIEND_ADD_FAIL = 507;       // Friend add failure
     private static final Integer FRIEND_ADD_SUCCESS = 508;    // Friend add success
 
-    Button buttonAdd;
-    EditText editTextAdd;
+    private Button buttonAdd;
+    private EditText editTextAdd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,20 +55,30 @@ public class AddActivity extends AppCompatActivity implements Communication {
         LoginActivity.getClient().send(obj.toString());
     }
 
+    // Returns to the previous activity
     @Override
     public void onBackPressed() {
+        Intent returnIntent = new Intent();
+        setResult(Activity.RESULT_OK, returnIntent);
         finish();
     }
 
-    private void back() {
-        finish();
-    }
-
+    // Called by the WebSocket upon receiving a message
     @Override
-    public void response(Message message) {
+    public void response(final Message message) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                verify(message);
+            }
+        });
+    }
+
+    // Verifies responses from the server
+    private void verify(Message message) {
         if (message.getCode().equals(FRIEND_ADD_SUCCESS)) {
             toast("Friend add success");
-            back();
+            onBackPressed();
         } else if (message.getCode().equals(FRIEND_ADD_FAIL)) {
             toast("Friend add failure");
         }
