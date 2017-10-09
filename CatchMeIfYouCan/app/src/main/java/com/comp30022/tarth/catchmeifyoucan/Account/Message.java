@@ -8,7 +8,8 @@ public class Message {
     String status;
     String type;
     Integer code;
-    User[] result;
+    User[] users;
+    Result result;
 
     Integer action;
     String message;
@@ -23,7 +24,7 @@ public class Message {
     }
 
     public User[] getResult() {
-        return result;
+        return users;
     }
 
     public Integer getCode() {
@@ -62,7 +63,7 @@ public class Message {
                 + ((message != null) ? message + ", " : "")
                 + ((from != null) ? from + ", " : "");
         if (result != null) {
-            for (User user : result) {
+            for (User user : users) {
                 str += user.toString();
             }
         }
