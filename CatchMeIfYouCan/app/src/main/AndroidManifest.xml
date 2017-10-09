@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.comp30022.tarth.catchmeifyoucan">
-  
+
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
          Google Maps Android API v2, but you must specify either coarse or fine
@@ -13,7 +13,12 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-  
+
+    <!-- To auto-complete the email text field in the login form with the user's emails -->
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.READ_PROFILE" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/logo_circle"
@@ -21,7 +26,8 @@
         android:roundIcon="@mipmap/logo_circle"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".UI.MainActivity"
+        <activity
+            android:name=".UI.MainActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -29,26 +35,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".UI.RegisterActivity"
-            android:label="Create Account">
-        </activity>
-
+            android:label="Create Account"></activity>
         <activity
             android:name=".UI.LoginActivity"
-            android:label="Login">
-        </activity>
-
+            android:label="Login"></activity>
         <activity
             android:name=".UI.DashboardActivity"
-            android:label="Dashboard">
-        </activity>
-
+            android:label="Dashboard"></activity>
         <activity
             android:name=".UI.FriendlistActivity"
-            android:label="Friendlist">
-        </activity>
+            android:label="Friendlist"></activity>
 
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -64,25 +62,21 @@
 
         <activity
             android:name=".UI.UserActivity"
-            android:label="User">
-        </activity>
-
+            android:label="User"></activity>
         <activity
             android:name=".UI.ChatActivity"
-            android:label="User">
-        </activity>
-
+            android:label="User"></activity>
         <activity
             android:name=".UI.MapsActivity"
-            android:label="Map"
-            android:exported="true">
-        </activity>
-
+            android:exported="true"
+            android:label="Map"></activity>
         <activity
             android:name=".UI.SettingsActivity"
-            android:label="Map"
-            android:exported="true">
-        </activity>
+            android:exported="true"
+            android:label="Map"></activity>
+        <activity
+            android:name=".LoginActivitytest"
+            android:label="@string/title_activity_login_activitytest"></activity>
     </application>
 
 </manifest>

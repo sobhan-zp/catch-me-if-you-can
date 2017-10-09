@@ -8,8 +8,8 @@ import android.widget.Button;
 
 import com.comp30022.tarth.catchmeifyoucan.R;
 
+// Settings sends a json request of user input then recieved the request confirming the changes
 public class SettingsActivity extends AppCompatActivity {
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

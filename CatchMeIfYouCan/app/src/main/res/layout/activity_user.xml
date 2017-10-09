@@ -48,7 +48,7 @@
         android:layout_below="@+id/Username"
         android:layout_marginTop="8dp"
         android:textSize="15dp"
-        android:text="Location" />
+        android:text="Location Unknown" />
 
     <TextView
         android:id="@+id/Online"
@@ -59,7 +59,7 @@
         android:layout_below="@+id/Location"
         android:layout_marginTop="8dp"
         android:textSize="15dp"
-        android:text="ONLINE?" />
+        android:text="ONLINE/OFFLINE" />
 
     <TextView
         android:id="@+id/Status"
@@ -72,7 +72,7 @@
         android:textSize="15dp"
         android:layout_marginLeft="40dp"
         android:layout_marginRight="40dp"
-        android:text="STATUS: Lorem ipsum dolor sit amet, consectetur adipiscin" />
+        android:text="This user hasnt set a status. Message him to change it in his settings!" />
 
 
     <Button
