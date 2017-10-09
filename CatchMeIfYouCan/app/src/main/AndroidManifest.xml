@@ -19,6 +19,8 @@
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
 
+=======
+>>>>>>> Created initial layout for Game activity
     <application
         android:allowBackup="true"
         android:icon="@mipmap/logo_circle"
@@ -37,42 +39,28 @@
         </activity>
         <activity
             android:name=".UI.RegisterActivity"
-            android:label="Register">
-        </activity>
+            android:label="Register"></activity>
         <activity
             android:name=".UI.LoginActivity"
-            android:label="Login">
-        </activity>
+            android:label="Login"></activity>
         <activity
             android:name=".UI.DashboardActivity"
-            android:label="Dashboard">
-        </activity>
+            android:label="Dashboard"></activity>
         <activity
             android:name=".UI.FriendlistActivity"
-            android:label="Friendlist">
-        </activity>
+            android:label="Friendlist"></activity>
         <activity
             android:name=".UI.AddActivity"
-            android:label="Add">
-        </activity>
-
+            android:label="Add"></activity>
         <activity
             android:name=".UI.UserActivity"
-            android:label="User">
-        </activity>
+            android:label="User"></activity>
         <activity
             android:name=".UI.ChatActivity"
-            android:label="Chat">
-        </activity>
-        <activity
-            android:name=".UI.SettingsActivity"
-            android:exported="true"
-            android:label="Settings">
-        </activity>
+            android:label="Chat"></activity>
         <activity
             android:name=".UI.MapsActivity"
-            android:label="Maps">
-        </activity>
+            android:label="Maps"></activity>
 
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -85,6 +73,10 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
+
+        <activity
+            android:name=".UI.GameActivity"
+            android:label="@string/title_activity_game"></activity>
     </application>
 
 </manifest>
