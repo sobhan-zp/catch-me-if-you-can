@@ -42,5 +42,6 @@ dependencies {
     compile 'com.squareup.okhttp3:okhttp:3.6.0'
     compile 'com.google.code.gson:gson:2.8.0'
     compile 'com.google.android.gms:play-services-maps:9.0.0'
+    compile 'com.google.maps.android:android-maps-utils:0.5'
     testCompile 'junit:junit:4.12'
 }

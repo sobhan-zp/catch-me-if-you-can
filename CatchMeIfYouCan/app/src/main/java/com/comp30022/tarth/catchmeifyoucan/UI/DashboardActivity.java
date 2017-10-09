@@ -18,8 +18,8 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
     private Button buttonChat;
     private Button buttonFriendlist;
     private Button buttonSettings;
-    private Button buttonJoinGame;
-    private Button buttonGame;
+    private Button buttonJoin;
+    private Button buttonCreate;
     private ImageView imageViewTest;
 
     @Override
@@ -29,7 +29,8 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
 
         // constructors
         buttonChat = (Button) findViewById(R.id.buttonChat);
-        buttonJoinGame = (Button) findViewById(R.id.buttonJoinGame);
+        buttonCreate = (Button) findViewById(R.id.buttonCreate);
+        buttonJoin = (Button) findViewById(R.id.buttonJoin);
         buttonFriendlist = (Button) findViewById(R.id.buttonFriendlist);
         imageViewTest = (ImageView) findViewById(R.id.imageViewTest);
         buttonFriendlist = (Button) findViewById(R.id.buttonFriendlist);
@@ -49,7 +50,14 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
             }
         });
 
-        buttonJoinGame.setOnClickListener(new Button.OnClickListener() {
+        buttonCreate.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openGame();
+            }
+        });
+
+        buttonJoin.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
                 openMaps();
@@ -106,6 +114,12 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
     // Navigates to User Activity
     private void openUser() {
         Intent intent = new Intent(this, UserActivity.class);
+        startActivity(intent);
+    }
+
+    // Navigates to Game Activity
+    private void openGame() {
+        Intent intent = new Intent(this, GameActivity.class);
         startActivity(intent);
     }
 }
