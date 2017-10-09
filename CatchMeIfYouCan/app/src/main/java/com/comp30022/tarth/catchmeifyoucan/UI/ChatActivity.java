@@ -40,6 +40,9 @@ public class ChatActivity extends AppCompatActivity implements Communication {
     private ArrayAdapter<String> adapter;
     private List<String> array;
 
+    private String name = "admin";
+    private String friend = "vikram";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -136,7 +139,7 @@ public class ChatActivity extends AppCompatActivity implements Communication {
         EditText input = (EditText) findViewById(R.id.input);
 
         // Read input and push a new instance of ChatMessage to the database
-        ChatMessage msg = new ChatMessage(input.getText().toString(), "admin");
+        ChatMessage msg = new ChatMessage(input.getText().toString(), friend);
         JSONObject obj = new JSONObject();
         try {
             obj.put("action", MESSAGE_SEND);
@@ -146,6 +149,11 @@ public class ChatActivity extends AppCompatActivity implements Communication {
             e.printStackTrace();
         }
         LoginActivity.getClient().send(obj.toString());
+
+        array.add(
+                name + ": " +  msg.getText() + "\n" + "0"
+        );
+        adapter.notifyDataSetChanged();
 
         // Clear input
         input.setText("");

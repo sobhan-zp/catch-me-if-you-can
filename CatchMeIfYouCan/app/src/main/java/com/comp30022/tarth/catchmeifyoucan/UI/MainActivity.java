@@ -10,9 +10,8 @@ import com.comp30022.tarth.catchmeifyoucan.R;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button buttonCreateAccount;
+    Button buttonRegister;
     Button buttonLogin;
-    Button buttonFriends;
     Button buttonExit;
 
     @Override
@@ -20,8 +19,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        buttonCreateAccount = (Button) findViewById(R.id.buttonCreateAccount);
-        buttonCreateAccount.setOnClickListener(new Button.OnClickListener() {
+        buttonRegister = (Button) findViewById(R.id.buttonRegister);
+        buttonRegister.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
                 createAccount(v);

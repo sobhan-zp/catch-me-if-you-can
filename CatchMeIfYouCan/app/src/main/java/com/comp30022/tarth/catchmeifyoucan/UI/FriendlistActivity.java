@@ -4,12 +4,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.comp30022.tarth.catchmeifyoucan.Account.Communication;
 import com.comp30022.tarth.catchmeifyoucan.Account.Message;
@@ -29,15 +32,10 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
     private static final Integer FRIEND_SEARCH = 503;         // Friend search request
     private static final Integer FRIEND_SEARCH_FAIL = 504;    // Friend search failure
     private static final Integer FRIEND_SEARCH_SUCCESS = 505; // Friend search success
-    private static final Integer FRIEND_ADD = 506;            // Friend add request
-    private static final Integer FRIEND_ADD_FAIL = 507;       // Friend add failure
-    private static final Integer FRIEND_ADD_SUCCESS = 508;    // Friend add success
     private static final Integer FRIEND_CHECK = 509;          // Friend check request
     private static final Integer FRIEND_CHECK_FAIL = 510;     // Friend check failure
     private static final Integer FRIEND_CHECK_SUCCESS = 511;  // Friend check success
 
-    private Button buttonAdd;
-    private Button buttonBack;
     private Button buttonCheck;
     private Button buttonGet;
     private Button buttonSearch;
@@ -57,8 +55,6 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
-        buttonAdd = (Button) findViewById(R.id.buttonAdd);
-        buttonBack = (Button) findViewById(R.id.buttonBack);
         buttonCheck = (Button) findViewById(R.id.buttonCheck);
         buttonGet = (Button) findViewById(R.id.buttonGet);
         buttonSearch = (Button) findViewById(R.id.buttonSearch);
@@ -78,13 +74,6 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 openUser(listViewFriends.getItemAtPosition(position).toString());
-            }
-        });
-
-        buttonAdd.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                addFriend();
             }
         });
 
@@ -108,30 +97,33 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
                 searchFriend();
             }
         });
+    }
 
-        buttonBack.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                back();
-            }
-        });
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu_friendlist
+        getMenuInflater().inflate(R.menu.menu_friendlist, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem menuItem) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = menuItem.getItemId();
+
+        // noinspection SimplifiableIfStatement
+        if (id == R.id.action_name) {
+            openAdd();
+            return true;
+        }
+        return super.onOptionsItemSelected(menuItem);
     }
 
     @Override
     public void onBackPressed() {
         finish();
-    }
-
-    // Adds a new friend
-    private void addFriend() {
-        JSONObject obj = new JSONObject();
-        try {
-            obj.put("action", FRIEND_ADD);
-            obj.put("username", "1");
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
-        LoginActivity.getClient().send(obj.toString());
     }
 
     // Checks if a friend is online
@@ -170,16 +162,12 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
     }
 
     private void verify(Message message) {
-        if (message.getCode().equals(FRIEND_ADD_SUCCESS)) {
-            System.out.println("Friend add success");
-        } else if (message.getCode().equals(FRIEND_ADD_FAIL)) {
-            System.out.println("Friend add failure");
-        } else if (message.getCode().equals(FRIEND_CHECK_SUCCESS)) {
-            System.out.println("Friend check success");
+        if (message.getCode().equals(FRIEND_CHECK_SUCCESS)) {
+            toast("Friend check success");
         } else if (message.getCode().equals(FRIEND_CHECK_FAIL)) {
-            System.out.println("Friend check failure");
+            toast("Friend check failure");
         } else if (message.getCode().equals(FRIEND_GET_SUCCESS)) {
-            System.out.println("Friend get success");
+            toast("Friend get success");
 
             User[] users = message.getResult();
 
@@ -189,13 +177,13 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
             adapter.notifyDataSetChanged();
 
         } else if (message.getCode().equals(FRIEND_GET_FAIL)) {
-            System.out.println("Friend get failure");
+            toast("Friend get failure");
         } else if (message.getCode().equals(FRIEND_SEARCH_SUCCESS)) {
-            System.out.println("Friend search success");
+            toast("Friend search success");
         } else if (message.getCode().equals(FRIEND_SEARCH_FAIL)) {
-            System.out.println("Friend search failure");
+            toast("Friend search failure");
         } else {
-            System.out.println("Error: Unknown response received");
+            toast("Error: Unknown response received");
         }
     }
 
@@ -206,9 +194,10 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
         startActivity(intent);
     }
 
-    // Navigates to previous activity
-    private void back() {
-        finish();
+    // Navigates to Add Activity
+    private void openAdd() {
+        Intent intent = new Intent(this, AddActivity.class);
+        startActivity(intent);
     }
 
     @Override
@@ -219,6 +208,11 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
                 verify(message);
             }
         });
+    }
+
+    // Displays a toast message
+    private void toast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 }
 
