@@ -1,5 +1,6 @@
 package com.comp30022.tarth.catchmeifyoucan.UI;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -36,9 +37,6 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
     private static final Integer FRIEND_CHECK_FAIL = 510;     // Friend check failure
     private static final Integer FRIEND_CHECK_SUCCESS = 511;  // Friend check success
 
-    private Button buttonCheck;
-    private Button buttonGet;
-    private Button buttonSearch;
     private ListView listView;
     private TextView textViewEmpty;
 
@@ -55,9 +53,6 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
-        buttonCheck = (Button) findViewById(R.id.buttonCheck);
-        buttonGet = (Button) findViewById(R.id.buttonGet);
-        buttonSearch = (Button) findViewById(R.id.buttonSearch);
         listView = (ListView)findViewById(android.R.id.list);
         //textViewEmpty = (TextView)findViewById(android.R.id.empty);
 
@@ -77,26 +72,7 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
             }
         });
 
-        buttonCheck.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                checkFriend();
-            }
-        });
-
-        buttonGet.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getFriend();
-            }
-        });
-
-        buttonSearch.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                searchFriend();
-            }
-        });
+        getFriend();
     }
 
     @Override
@@ -126,18 +102,6 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
         finish();
     }
 
-    // Checks if a friend is online
-    private void checkFriend() {
-        JSONObject obj = new JSONObject();
-        try {
-            obj.put("action", FRIEND_CHECK);
-            obj.put("username", "1");
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
-        LoginActivity.getClient().send(obj.toString());
-    }
-
     // Obtains a list of all friends from the server
     private void getFriend() {
         JSONObject obj = new JSONObject();
@@ -149,6 +113,18 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
         LoginActivity.getClient().send(obj.toString());
     }
 
+    /*
+    // Checks if a friend is online
+    private void checkFriend() {
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("action", FRIEND_CHECK);
+            obj.put("username", "1");
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        LoginActivity.getClient().send(obj.toString());
+    }
     // Searches for the details of an existing user
     private void searchFriend() {
         JSONObject obj = new JSONObject();
@@ -160,17 +136,15 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
         }
         LoginActivity.getClient().send(obj.toString());
     }
+    */
 
     private void verify(Message message) {
-        if (message.getCode().equals(FRIEND_CHECK_SUCCESS)) {
-            toast("Friend check success");
-        } else if (message.getCode().equals(FRIEND_CHECK_FAIL)) {
-            toast("Friend check failure");
-        } else if (message.getCode().equals(FRIEND_GET_SUCCESS)) {
+        if (message.getCode().equals(FRIEND_GET_SUCCESS)) {
             toast("Friend get success");
 
+            // Repopulate friendlist
             User[] users = message.getResult();
-
+            array.clear();
             for (User user : users) {
                 array.add(user.getUsername());
             }
@@ -178,10 +152,6 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
 
         } else if (message.getCode().equals(FRIEND_GET_FAIL)) {
             toast("Friend get failure");
-        } else if (message.getCode().equals(FRIEND_SEARCH_SUCCESS)) {
-            toast("Friend search success");
-        } else if (message.getCode().equals(FRIEND_SEARCH_FAIL)) {
-            toast("Friend search failure");
         } else {
             toast("Error: Unknown response received");
         }
@@ -197,7 +167,17 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
     // Navigates to Add Activity
     private void openAdd() {
         Intent intent = new Intent(this, AddActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent, 1);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1) {
+            if (resultCode == Activity.RESULT_OK) {
+                LoginActivity.getClient().setmCurrentActivity(this);
+            }
+        }
+        getFriend();
     }
 
     @Override
@@ -214,5 +194,6 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
     private void toast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
+
 }
 

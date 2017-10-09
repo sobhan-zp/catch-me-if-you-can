@@ -1,5 +1,7 @@
 package com.comp30022.tarth.catchmeifyoucan.UI;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -55,18 +57,25 @@ public class AddActivity extends AppCompatActivity implements Communication {
 
     @Override
     public void onBackPressed() {
-        finish();
-    }
-
-    private void back() {
+        Intent returnIntent = new Intent();
+        setResult(Activity.RESULT_OK, returnIntent);
         finish();
     }
 
     @Override
-    public void response(Message message) {
+    public void response(final Message message) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                verify(message);
+            }
+        });
+    }
+
+    private void verify(Message message) {
         if (message.getCode().equals(FRIEND_ADD_SUCCESS)) {
             toast("Friend add success");
-            back();
+            onBackPressed();
         } else if (message.getCode().equals(FRIEND_ADD_FAIL)) {
             toast("Friend add failure");
         }
