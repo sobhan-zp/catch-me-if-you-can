@@ -22,8 +22,8 @@ public class AddActivity extends AppCompatActivity implements Communication {
     private static final Integer FRIEND_ADD_FAIL = 507;       // Friend add failure
     private static final Integer FRIEND_ADD_SUCCESS = 508;    // Friend add success
 
-    Button buttonAdd;
-    EditText editTextAdd;
+    private Button buttonAdd;
+    private EditText editTextAdd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +55,7 @@ public class AddActivity extends AppCompatActivity implements Communication {
         LoginActivity.getClient().send(obj.toString());
     }
 
+    // Returns to the previous activity
     @Override
     public void onBackPressed() {
         Intent returnIntent = new Intent();
@@ -62,6 +63,7 @@ public class AddActivity extends AppCompatActivity implements Communication {
         finish();
     }
 
+    // Called by the WebSocket upon receiving a message
     @Override
     public void response(final Message message) {
         runOnUiThread(new Runnable() {
@@ -72,6 +74,7 @@ public class AddActivity extends AppCompatActivity implements Communication {
         });
     }
 
+    // Verifies responses from the server
     private void verify(Message message) {
         if (message.getCode().equals(FRIEND_ADD_SUCCESS)) {
             toast("Friend add success");

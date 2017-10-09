@@ -37,9 +37,6 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
     private static final Integer FRIEND_CHECK_FAIL = 510;     // Friend check failure
     private static final Integer FRIEND_CHECK_SUCCESS = 511;  // Friend check success
 
-    private ListView listView;
-    private TextView textViewEmpty;
-
     private ArrayAdapter<String> adapter;
     private List<String> array;
 
@@ -53,9 +50,9 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
-        listView = (ListView)findViewById(android.R.id.list);
-        //textViewEmpty = (TextView)findViewById(android.R.id.empty);
-
+        // Sets up friendlist
+        ListView listView = (ListView)findViewById(android.R.id.list);
+        //TextView textViewEmpty = (TextView)findViewById(android.R.id.empty);
         final ListView listViewFriends = (ListView) findViewById(R.id.listViewFriends);
         array = new ArrayList<String>();
         adapter = new ArrayAdapter<String>(
@@ -72,6 +69,7 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
             }
         });
 
+        // Obtains the list of friends from the server upon incovation
         getFriend();
     }
 
@@ -138,11 +136,12 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
     }
     */
 
+    // Verifies responses from the server
     private void verify(Message message) {
         if (message.getCode().equals(FRIEND_GET_SUCCESS)) {
             toast("Friend get success");
 
-            // Repopulate friendlist
+            // Repopulates friendlist
             User[] users = message.getResult();
             array.clear();
             for (User user : users) {
@@ -170,6 +169,7 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
         startActivityForResult(intent, 1);
     }
 
+    // Resets the current activity connected to the WebSocket upon killing child activities
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1) {
@@ -180,6 +180,7 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
         getFriend();
     }
 
+    // Called by the WebSocket upon receiving a message
     @Override
     public void response(final Message message) {
         runOnUiThread(new Runnable() {
