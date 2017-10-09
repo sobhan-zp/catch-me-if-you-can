@@ -28,7 +28,7 @@
         android:text="username" />
 
     <Button
-        android:id="@+id/buttonGame"
+        android:id="@+id/buttonCreate"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/Username"
@@ -37,10 +37,10 @@
         android:text="Create a Game" />
 
     <Button
-        android:id="@+id/buttonJoinGame"
+        android:id="@+id/buttonJoin"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/buttonGame"
+        android:layout_below="@+id/buttonCreate"
         android:layout_marginTop="4dp"
         android:layout_centerHorizontal="true"
         android:text="Join a Game" />
@@ -49,7 +49,7 @@
         android:id="@+id/buttonSettings"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/buttonJoinGame"
+        android:layout_below="@+id/buttonJoin"
         android:layout_marginTop="4dp"
         android:layout_centerHorizontal="true"
         android:text="Settings" />

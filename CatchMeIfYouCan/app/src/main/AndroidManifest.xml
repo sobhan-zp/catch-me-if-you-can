@@ -61,6 +61,9 @@
         <activity
             android:name=".UI.MapsActivity"
             android:label="Maps"></activity>
+        <activity
+            android:name=".UI.GameActivity"
+            android:label="@string/title_activity_game"></activity>
 
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -73,10 +76,6 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
-
-        <activity
-            android:name=".UI.GameActivity"
-            android:label="@string/title_activity_game"></activity>
     </application>
 
 </manifest>
