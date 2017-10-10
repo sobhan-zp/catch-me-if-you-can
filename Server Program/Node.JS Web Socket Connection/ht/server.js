@@ -12,6 +12,7 @@ SERVER_PORT = 80;
 REGISTER_ACTION = 100;
 LOGIN_ACTION = 101;
 PROFILE_ACTION = 102;
+PROFILE_UPDATE = 103;
 UNKNOWN_ACTION = 199;
 FRIEND_GET = 500;
 FRIEND_SEARCH = 503;
@@ -22,6 +23,8 @@ MESSAGE_SEND = 600;
 MESSAGE_RECEIVE = 601;
 MESSAGE_OFFLINE_GET = 605;
 MESSAGE_COMMAND_SEND = 606;
+MESSAGE_LOCATION_SEND = 610;
+MESSAGE_LOCATION_RECEIVE = 613;
 GAME_CREATE = 700;
 GAME_ADD = 703;
 GAME_EXIT = 706;
@@ -37,7 +40,9 @@ MESSAGE_READ = 1;
 MESSAGE_UNREAD = 0;
 GAME_OWNER = 1;
 GAME_PLAYER = 0;
-// Rsponse code
+// Response code
+PROFILE_UPDATE_SUCCESS = 104;
+PROFILE_UPDATE_FAIL = 105;
 LOGIN_SUCCESS_CODE = 200;
 LOGIN_USER_NON_EXIST_CODE = 201;
 LOGIN_EXIST_CODE = 202;
@@ -60,6 +65,8 @@ MESSAGE_SEND_FAIL = 604;
 MESSAGE_COMMAND_SUCCESS = 607;
 MESSAGE_COMMAND_FAIL = 608;
 MESSAGE_COMMAND_RECEIVE = 609;
+MESSAGE_LOCATION_SUCCESS = 611;
+MESSAGE_LOCATION_FAIL = 612;
 GAME_CREATE_SUCCESS = 701;
 GAME_CREATE_FAIL = 702;
 GAME_ADD_SUCCESS = 704;
@@ -76,6 +83,8 @@ GAME_GET_CURRENT_SUCCESS = 719;
 GAME_GET_CURRENT_FAIL = 720;
 GAME_GET_USER_SUCCESS = 724;
 GAME_GET_USER_FAIL = 725;
+
+
 
 TEST_MSG = 1000;
 
@@ -156,14 +165,40 @@ function db_excution_send_msg(sock, sql_statement, success_code, fail_code, retu
 
 function fetch_account_info(userinfo){
     var feedback = {
-      "action": PROFILE_GET,
-      "name": userinfo.name,
-      "username": userinfo.username,
-      "email": userinfo.email,
-      "id": userinfo.db_id,
-      "lv": userinfo.lv
+        "action": PROFILE_GET,
+        "name": userinfo.name,
+        "username": userinfo.username,
+        "email": userinfo.email,
+        "id": userinfo.db_id,
+        "lv": userinfo.lv,
+        "location": userinfo.location,
+        "status": userinfo.status
     }
     sys_send_to_sock(userinfo.ws, JSON.stringify(feedback));
+}
+
+function update_user_infor(userinfo, name, email, location, status){
+    var sql = "UPDATE account SET name = '"+name+"', email = '"+email+"', location = '"+location+"', status = '"+status+"' WHERE id = " + userinfo.db_id;
+    con.query(sql, function (err, result) {
+        var feedback;
+        if (err) {
+            feedback = {
+                "status": "error occurs on updates",
+                "code": PROFILE_UPDATE_FAIL
+            }
+            console.log("update error occurs");
+        }else{
+            feedback = {
+                "status": "updates success",
+                "code": PROFILE_UPDATE_SUCCESS
+            }
+            userinfo.name = name;
+            userinfo.email = email;
+            userinfo.location = location;
+            userinfo.status = status;
+        }
+        sys_send_to_sock(userinfo.ws, JSON.stringify(feedback));
+    });
 }
 
 function login_check(username, password, sock, client_uuid, user_status){
@@ -188,7 +223,9 @@ function login_check(username, password, sock, client_uuid, user_status){
                     "name": result[0]['name'],
                     "email": result[0]['email'],
                     "db_id": result[0]['id'],
-                    "lv": result[0]['user_level']
+                    "lv": result[0]['user_level'],
+                    "location": result[0]['location'],
+                    "status": result[0]['status']
                 };
                 var feedback = {
                     "status": "success",
@@ -384,6 +421,34 @@ function get_all_game_user(userinfo){
     db_excution_send_msg(userinfo.ws, sql, GAME_GET_USER_SUCCESS, GAME_GET_USER_FAIL, true);
 }
 
+function send_location_to_creator(userinfo, location){
+    var sql = "SELECT account_id FROM account_in_game WHERE game_id in (SELECT game_id FROM account_in_game WHERE account_id = " + userinfo.db_id + ") and is_owner = " + GAME_OWNER;
+    con.query(sql, function (err, result) {
+        var feedback;
+        if (err){
+            console.console.log("An ERROR occurs.");
+            feedback = {
+                "status": "error on delivering",
+                "code": MESSAGE_LOCATION_FAIL
+            }
+        }else{
+            for (var i=0; i<result.length; i++){
+                var location_message = {
+                    "action": MESSAGE_LOCATION_RECEIVE,
+                    "location": location
+                }
+                sys_send_to_id(result[i].account_id, JSON.stringify(location_message));
+            }
+            feedback = {
+                "status": "message delivered",
+                "code": MESSAGE_LOCATION_SUCCESS
+            }
+
+        }
+        sys_send_to_sock(userinfo.ws, JSON.stringify(feedback));
+    });
+}
+
 function send_notification_to_all(userinfo, message){
     var sql = "SELECT account_id FROM account_in_game WHERE game_id in (SELECT game_id FROM account_in_game WHERE account_id = " + userinfo.db_id + ")";
     var notification = {
@@ -391,9 +456,13 @@ function send_notification_to_all(userinfo, message){
         "message": message
     };
     con.query(sql, function (err, result) {
-        for (var i=0; i<result.length; i++){
-            if (result[i].account_id != userinfo.db_id){
-                sys_send_to_id(result[i].account_id, JSON.stringify(notification));
+        if (err){
+            console.console.log("An ERROR occurs.");
+        }else{
+            for (var i=0; i<result.length; i++){
+                if (result[i].account_id != userinfo.db_id){
+                    sys_send_to_id(result[i].account_id, JSON.stringify(notification));
+                }
             }
         }
     });
@@ -522,7 +591,7 @@ function msg_set_read(msg_id){
     var sql = "UPDATE user_chatlog SET read_status = 1 WHERE id = " + msg_id;
     con.query(sql, function (err, result) {
         if (err) {
-            console.log(err)
+            console.log(err);
         }
     });
 }
@@ -619,6 +688,12 @@ wss.on('connection', function(ws) {
                         break;
                     case PROFILE_ACTION:
                         fetch_account_info(user_status.info);
+                        break;
+                    case MESSAGE_LOCATION_SEND:
+                        send_location_to_creator(user_status.info, data.location);
+                        break;
+                    case PROFILE_UPDATE:
+                        update_user_infor(user_status.info, data.name, data.email, data.location, data.status);
                         break;
                     //case GAME_DELETE:
                         //delete_game(user_status.info, data.id);
