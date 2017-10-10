@@ -101,6 +101,14 @@
         function g13(){
             document.getElementById('message').value = '{"action":721, "message": "12312321"}';
         }
+
+        function g14(){
+            document.getElementById('message').value = '{"action":102}';
+        }
+
+        function g15(){
+            document.getElementById('message').value = '{"action":610, "location":{"x":100, "y":200}}';
+        }
     </script>
 </head>
 
@@ -117,13 +125,13 @@
 
                 <button type="button" id="send" class="btn btn-primary"
                         onclick="sendMessage();">
-                    Send Message
+                    Send To Server
                 </button>
                 <button type="button" id="send" class="btn btn-primary"
                         onclick="location.reload();">
                     Reload Page
                 </button>
-				<p></p>
+				<p><h2>User Actions<h2></p>
                 <button type="button" id="send" class="btn btn-primary"
                         onclick="g1();">
                     Login As "Admin"
@@ -137,12 +145,21 @@
                     Fetch Friend
                 </button>
                 <button type="button" id="send" class="btn btn-primary"
+                        onclick="g14();">
+                    Fetch Profile
+                </button>
+                <button type="button" id="send" class="btn btn-primary"
                         onclick="g3();">
                     Send Message Test
                 </button>
+                <p><h2>Game Actions<h2></p>
                 <button type="button" id="send" class="btn btn-primary"
                         onclick="g13();">
                     Send Notification Test
+                </button>
+                <button type="button" id="send" class="btn btn-primary"
+                        onclick="g13();">
+                    Send Location Test
                 </button>
                 <button type="button" id="send" class="btn btn-primary"
                         onclick="g10();">
@@ -172,6 +189,7 @@
                         onclick="g9();">
                     Delete Game Test
                 </button>
+                <p><h2>Test Actions<h2></p>
                 <button type="button" id="send" class="btn btn-primary"
                         onclick="g5();">
                     Test Message
