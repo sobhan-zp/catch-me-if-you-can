@@ -98,7 +98,7 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
     // Reveals pop up asking if user really wants to exit
     public void logoutWarning() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.MyAlertDialogStyle);
-        builder.setTitle("Exiting Account...");
+        builder.setTitle("Exiting Login...");
         builder.setMessage("Are you sure you want to logout? If you are in any game you will leave the game and may end up never finding your friend.");
         builder.setPositiveButton("Get Me Out of Here!", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
