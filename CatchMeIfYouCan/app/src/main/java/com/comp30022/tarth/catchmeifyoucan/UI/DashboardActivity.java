@@ -209,12 +209,6 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
         startActivity(intent);
     }
 
-    // Navigates to Friendslist Activity
-    private void friends() {
-        Intent intent = new Intent(this, FriendlistActivity.class);
-        startActivity(intent);
-    }
-
     // Navigates to User Activity
     private void openUser() {
         Intent intent = new Intent(this, UserActivity.class);
