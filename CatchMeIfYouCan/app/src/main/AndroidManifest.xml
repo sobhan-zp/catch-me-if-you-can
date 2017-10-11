@@ -41,14 +41,16 @@
         </activity>
         <activity
             android:name=".UI.LoginActivity"
-            android:label="Login"></activity>
+            android:label="Login">
+        </activity>
         <activity
             android:name=".UI.DashboardActivity"
-            android:label="Dashboard"></activity>
+            android:label="Dashboard">
+        </activity>
         <activity
             android:name=".UI.FriendlistActivity"
-            android:label="Friendlist"></activity>
-
+            android:label="Friendlist">
+        </activity>
         <activity
             android:name=".UI.AddActivity"
             android:label="Add">
@@ -65,7 +67,7 @@
         <activity
             android:name=".UI.SettingsActivity"
             android:exported="true"
-            android:label="Settings"
+            android:label="Settings">
         </activity>
         <activity
             android:name=".UI.MapsActivity"
