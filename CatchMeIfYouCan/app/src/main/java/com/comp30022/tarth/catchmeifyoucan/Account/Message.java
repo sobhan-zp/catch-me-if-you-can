@@ -15,6 +15,7 @@ public class Message {
     String message;
     String from;
 
+    Integer game_id;
     String name;
     String username;
     String email;
@@ -76,6 +77,10 @@ public class Message {
 
     public Long getTime() {
         return 0l;
+    }
+
+    public Integer getGame_id() {
+        return game_id;
     }
 
     public static Message parseJSON(String response) {
