@@ -85,6 +85,7 @@ public class WebSocketClient extends OkHttpClient {
 
     // Closes the WebSocket connection with the server
     public void disconnect() {
+        webSocket.close(NORMAL_CLOSURE_STATUS, null);
         mClient.dispatcher().executorService().shutdown();
     }
 

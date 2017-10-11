@@ -94,7 +94,7 @@ public class ChatActivity extends AppCompatActivity implements Communication {
                 System.out.println("Message received");
                 displayMessage(message);
             } else {
-                System.out.println("Error: Unknown response received");
+                System.out.println("Chat Error: Unknown response received");
             }
         }
         if (message.getCode() != null) {
