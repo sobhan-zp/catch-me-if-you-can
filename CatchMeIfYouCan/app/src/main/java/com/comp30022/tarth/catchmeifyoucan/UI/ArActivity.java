@@ -80,7 +80,7 @@ public class ArActivity extends AppCompatActivity implements SensorEventListener
             accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
             magneticField = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
         }
-
+        
 
         buttonMaps = (Button) findViewById(R.id.buttonMap);
         Intent intent = getIntent();
