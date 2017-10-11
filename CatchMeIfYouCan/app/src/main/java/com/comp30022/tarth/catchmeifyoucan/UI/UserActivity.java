@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.comp30022.tarth.catchmeifyoucan.Account.Communication;
 import com.comp30022.tarth.catchmeifyoucan.Account.Message;
+import com.comp30022.tarth.catchmeifyoucan.Account.User;
 import com.comp30022.tarth.catchmeifyoucan.R;
 
 import org.json.JSONObject;
@@ -18,8 +19,9 @@ import org.json.JSONObject;
 
 public class UserActivity extends AppCompatActivity implements Communication{
 
-    private static final Integer PROFILE_ACTION_SUCCESS = 203;       // Profile get success
-    private static final Integer PROFILE_ACTION = 102;       // Profile request
+    private static final Integer FRIEND_SEARCH = 503;       // Profile request
+    private static final Integer FRIEND_SEARCH_FAIL = 504;       // Profile get failure
+    private static final Integer FRIEND_SEARCH_SUCCESS = 505;       // Profile get success
     private static final Integer FRIEND_CHECK = 509;       // Check if friend is online request
     private static final Integer FRIEND_CHECK_FAIL = 510; // Online check fail
     private static final Integer FRIEND_CHECK_SUCCESS = 511; // Online check success
@@ -30,6 +32,7 @@ public class UserActivity extends AppCompatActivity implements Communication{
     TextView textViewStatus;
     TextView textViewOnline;
     private Button buttonGet;
+    User profile;
     String getUsername;
 
     @Override
@@ -51,13 +54,13 @@ public class UserActivity extends AppCompatActivity implements Communication{
         if(bd != null)
         {
             getUsername = (String) bd.get("username");
+            System.out.println("getUsername" + getUsername);
         }
 
         buttonGet.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getInfo();
-                //getOnline();
+                getInfo(getUsername);
             }
         });
     }
@@ -67,11 +70,13 @@ public class UserActivity extends AppCompatActivity implements Communication{
         finish();
     }
 
-    private void getInfo() {
+    private void getInfo(String uname) {
         JSONObject obj = new JSONObject();
+        System.out.println("uname" + uname);
 
         try {
-            obj.put("action", PROFILE_ACTION);
+            obj.put("username", uname);
+            obj.put("action", FRIEND_SEARCH);
             System.out.println("SentInfo->" + obj.toString(4));
         } catch(Exception e) {
             e.printStackTrace();
@@ -95,35 +100,39 @@ public class UserActivity extends AppCompatActivity implements Communication{
     private void verify(Message message) {
         System.out.println("Message received");
 
-        System.out.println("recv->" + message.toString());
-        System.out.println("getAction->" + message.getCode());
 
-        if (message.getAction() != null) {
-            if (message.getAction().equals(PROFILE_ACTION_SUCCESS)) {
+        System.out.println("getCode->" + message.getCode());
 
-                textViewName.setText(message.getName());
-                textViewUsername.setText("@" + getUsername);
-                textViewLocation.setText(message.getLocation());
-                textViewStatus.setText(message.getStatus());
-                getOnline();
+        if (message.getCode().equals(FRIEND_SEARCH_SUCCESS)) {
+            profile = message.getResult()[0];
 
-                System.out.println("Profile get success");
-            }
-        } else if (message.getCode() != null) {
-            if (message.getCode().equals(FRIEND_CHECK_SUCCESS)) {
-                textViewOnline.setTextColor(Color.parseColor("#16B72E"));
-                textViewOnline.setText("ONLINE");
-                textViewOnline.setTypeface(null, Typeface.BOLD_ITALIC);
-            } else if (message.getCode().equals(FRIEND_CHECK_FAIL)) {
-                textViewOnline.setText("OFFLINE");
-                textViewOnline.setTextColor(Color.parseColor("#B72616"));
-                textViewOnline.setTypeface(null, Typeface.BOLD_ITALIC);
+            System.out.println("recvname->" + profile.getName());
+            System.out.println("recvusername->" + profile.getUsername());
+            System.out.println("recvemail->" + profile.getEmail());
+            System.out.println("recvstatus->" + profile.getStatus());
+            System.out.println("recvlocation->" + profile.getLocation());
 
+            textViewName.setText(profile.getName());
+            textViewUsername.setText("@" + profile.getUsername());
+            textViewLocation.setText(profile.getLocation());
+            textViewStatus.setText(profile.getStatus());
+            getOnline();
 
-            }
+            System.out.println("Profile get success");
+        }
+
+        if (message.getCode().equals(FRIEND_CHECK_SUCCESS)) {
+            textViewOnline.setTextColor(Color.parseColor("#16B72E"));
+            textViewOnline.setText("ONLINE");
+            textViewOnline.setTypeface(null, Typeface.BOLD_ITALIC);
+        } else if (message.getCode().equals(FRIEND_CHECK_FAIL)) {
+            textViewOnline.setText("OFFLINE");
+            textViewOnline.setTextColor(Color.parseColor("#B72616"));
+            textViewOnline.setTypeface(null, Typeface.BOLD_ITALIC);
         } else {
             System.out.println("User Error: Unknown response received");
         }
+
     }
 
     @Override
