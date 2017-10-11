@@ -52,16 +52,20 @@
         </activity>
         <activity
             android:name=".UI.RegisterActivity"
-            android:label="Register"></activity>
+            android:label="Register">
+        </activity>
         <activity
             android:name=".UI.LoginActivity"
-            android:label="Login"></activity>
+            android:label="Login">
+        </activity>
         <activity
             android:name=".UI.DashboardActivity"
-            android:label="Dashboard"></activity>
+            android:label="Dashboard">
+        </activity>
         <activity
             android:name=".UI.FriendlistActivity"
-            android:label="Friendlist"></activity>
+            android:label="Friendlist">
+        </activity>
         <activity
             android:name=".UI.AddActivity"
             android:label="Add">
@@ -72,7 +76,7 @@
         </activity>
         <activity
             android:name=".UI.ChatActivity"
-            android:label="User">
+            android:label="Chat">
         </activity>
         <activity
             android:name=".UI.SettingsActivity"
