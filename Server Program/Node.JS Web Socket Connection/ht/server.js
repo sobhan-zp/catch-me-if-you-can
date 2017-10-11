@@ -302,7 +302,7 @@ function add_friend(userinfo, add_username){
 }
 
 function search_user(userinfo, search_user){
-    var sql = "SELECT username, email, name FROM account WHERE username = '" + search_user + "'";
+    var sql = "SELECT username, email, name, status, location FROM account WHERE username = '" + search_user + "'";
     db_excution_send_msg(userinfo.ws, sql, FRIEND_SEARCH_SUCCESS, FRIEND_SEARCH_FAIL, true);
 }
 
