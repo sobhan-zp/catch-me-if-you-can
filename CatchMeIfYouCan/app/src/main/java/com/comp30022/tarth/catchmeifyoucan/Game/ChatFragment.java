@@ -16,10 +16,12 @@ public class ChatFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        /*
         ActionBar actionBar = ((AppCompatActivity)getActivity()).getSupportActionBar();
         if (actionBar != null) {
             actionBar.setTitle("Game Chat");
         }
+        */
     }
 
     @Override

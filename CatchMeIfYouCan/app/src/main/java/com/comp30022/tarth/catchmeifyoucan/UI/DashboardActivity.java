@@ -13,6 +13,8 @@ import com.comp30022.tarth.catchmeifyoucan.Account.Communication;
 import com.comp30022.tarth.catchmeifyoucan.Account.Message;
 import com.comp30022.tarth.catchmeifyoucan.R;
 
+import org.json.JSONObject;
+
 public class DashboardActivity extends AppCompatActivity implements Communication {
 
     private Button buttonChat;
@@ -22,10 +24,20 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
     private Button buttonCreate;
     private ImageView imageViewTest;
 
+    private static final Integer GAME_CREATE = 700;
+    private static final Integer GAME_CREATE_SUCCESS = 701;
+    private static final Integer GAME_CREATE_FAIL = 702;
+    private static final Integer GAME_ADD_SUCCESS = 704;
+    private static final Integer GAME_ADD_FAIL = 705;
+    private static final Integer GAME_EXIT = 706;
+    private static final Integer GAME_GET = 709;
+    private static final Integer GAME_DELETE = 712;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
+        LoginActivity.getClient().setmCurrentActivity(this);
 
         // constructors
         buttonChat = (Button) findViewById(R.id.buttonChat);
@@ -53,7 +65,13 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
         buttonCreate.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openGame();
+                JSONObject obj = new JSONObject();
+                try {
+                    obj.put("action", GAME_CREATE);
+                } catch(Exception e) {
+                    e.printStackTrace();
+                }
+                LoginActivity.getClient().send(obj.toString());
             }
         });
 
@@ -86,6 +104,32 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
 
     @Override
     public void response(final Message message) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                verify(message);
+            }
+        });
+    }
+
+    private void verify(Message message) {
+        if (message.getCode().equals(GAME_CREATE_SUCCESS)) {
+            toast("Game creation successful");
+        } else if (message.getCode().equals(GAME_CREATE_FAIL)) {
+            toast("Game creation failed");
+            JSONObject obj = new JSONObject();
+            try {
+                obj.put("action", GAME_EXIT);
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
+            LoginActivity.getClient().send(obj.toString());
+        } else if (message.getCode().equals(GAME_ADD_SUCCESS)) {
+            toast("You have been added to the game");
+            openGame(message);
+        } else {
+            toast("Error: Unknown response received");
+        }
     }
 
     // Displays a toast message
@@ -118,8 +162,9 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
     }
 
     // Navigates to Game Activity
-    private void openGame() {
+    private void openGame(Message message) {
         Intent intent = new Intent(this, GameActivity.class);
+        intent.putExtra("game_id", message.getGame_id());
         startActivity(intent);
     }
 }
