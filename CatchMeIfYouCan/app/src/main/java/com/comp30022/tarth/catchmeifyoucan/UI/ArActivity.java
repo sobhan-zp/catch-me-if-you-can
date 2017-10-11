@@ -3,6 +3,9 @@ package com.comp30022.tarth.catchmeifyoucan.UI;
 import android.Manifest;
 import android.content.Intent;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -21,6 +24,8 @@ import com.comp30022.tarth.catchmeifyoucan.R;
 public class ArActivity extends AppCompatActivity{
     private Camera camera;
     private ArCamera cameraView;
+    private Bitmap bitmap;
+    private Canvas canvas;
 
     private Button buttonMaps;
     private static final int REQUEST_CAMERA_PERMISSION = 1;
@@ -43,6 +48,9 @@ public class ArActivity extends AppCompatActivity{
             FrameLayout preview = (FrameLayout) findViewById(R.id.cameraPreview);
             preview.addView(cameraView);
         }
+
+        bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
+        canvas = new Canvas(bitmap);
 
         buttonMaps = (Button) findViewById(R.id.buttonChat);
 
