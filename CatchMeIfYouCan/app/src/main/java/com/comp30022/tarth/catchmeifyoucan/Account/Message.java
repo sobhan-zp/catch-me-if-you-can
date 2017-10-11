@@ -17,7 +17,36 @@ public class Message {
 
     Integer game_id;
     String name;
+    String username;
+    String email;
+    String location;
+    Integer id;
+    Integer lv;
 
+    public String getName() {
+        return name;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public Integer getLv() {
+        return lv;
+    }
+  
     public String getStatus() {
         return status;
     }
@@ -54,10 +83,6 @@ public class Message {
         return game_id;
     }
 
-    public String getName() {
-        return name;
-    }
-
     public static Message parseJSON(String response) {
         Gson gson = new GsonBuilder().create();
         Message message = gson.fromJson(response, Message.class);
@@ -71,6 +96,12 @@ public class Message {
                 + ((type != null) ? type + ", " : "")
                 + ((code != null) ? code + ", " : "")
                 + ((action != null) ? action + ", " : "")
+                + ((name != null) ? name + ", " : "")
+                + ((username != null) ? username + ", " : "")
+                + ((email != null) ? email + ", " : "")
+                + ((location != null) ? location + ", " : "")
+                + ((id != null) ? id + ", " : "")
+                + ((lv != null) ? lv + ", " : "")
                 + ((message != null) ? message + ", " : "")
                 + ((from != null) ? from + ", " : "");
         if (result != null) {

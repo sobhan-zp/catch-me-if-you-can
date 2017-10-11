@@ -84,7 +84,7 @@ public class RegisterActivity extends AppCompatActivity implements Communication
     private void verify(Message message) {
         if (message.getCode().equals(REGISTER_SUCCESS)) {
             toast("Register success");
-            openDashboard();
+            backToMain();
         } else if (message.getCode().equals(REGISTER_FAIL)) {
             toast("Register failed, please try again.");
         } else {
@@ -119,10 +119,9 @@ public class RegisterActivity extends AppCompatActivity implements Communication
         return hostIp;
     }
 
-    // Navigates to Dashboard Activity
-    private void openDashboard() {
-        Intent intent = new Intent(this, DashboardActivity.class);
-        startActivity(intent);
+    // Navigates to Main Activity
+    private void backToMain() {
+        finish();
     }
 
     // Displays a toast message

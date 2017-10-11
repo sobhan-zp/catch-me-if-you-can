@@ -87,11 +87,11 @@
         />
 
     <Button
-        android:id="@+id/buttonChat"
+        android:id="@+id/buttonUpdate"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:onClick="createOnClick"
-        android:text="Send message"
+        android:text="Update Profile"
         android:layout_below="@+id/buttonGet"
         android:layout_centerHorizontal="true"
         />
