@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.comp30022.tarth.catchmeifyoucan.Account.Communication;
 import com.comp30022.tarth.catchmeifyoucan.Account.Message;
@@ -40,13 +41,12 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
         buttonSettings = (Button) findViewById(R.id.buttonSettings);
 
 
-        TextView TxtViewUsername = (TextView) findViewById(R.id.Username);
+        TextView textViewUsername = (TextView) findViewById(R.id.Username);
         Intent intent = getIntent();
         Bundle bd = intent.getExtras();
-        if(bd != null)
-        {
-            getName = (String) bd.get("username");
-            TxtViewUsername.setText("@" + getName);
+        if(bd != null) {
+            String getName = (String) bd.get("username");
+            textViewUsername.setText("@" + getName);
         }
 
         buttonChat.setOnClickListener(new Button.OnClickListener() {
@@ -137,7 +137,11 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
 
     @Override
     public void response(final Message message) {
+    }
 
+    // Displays a toast message
+    private void toast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
     // Navigates to Chat activity
@@ -151,5 +155,6 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
         Intent intent = new Intent(this, MapsActivity.class);
         startActivity(intent);
     }
+
 }
 

@@ -9,8 +9,7 @@
         android:drawSelectorOnTop="false"
         android:layout_alignParentTop="true"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/buttonBack" />
+        android:layout_height="wrap_content" />
 
     <!--TextView
         android:id="@android:id/empty"
@@ -20,40 +19,5 @@
         android:textAlignment="center"
         android:textSize="20dp"
         android:text="No friends :(" /-->
-
-    <Button
-        android:id="@+id/buttonAdd"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/buttonCheck"
-        android:text="Add" />
-
-    <Button
-        android:id="@+id/buttonCheck"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/buttonGet"
-        android:text="Check" />
-
-    <Button
-        android:id="@+id/buttonGet"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/buttonSearch"
-        android:text="Get" />
-
-    <Button
-        android:id="@+id/buttonSearch"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/buttonBack"
-        android:text="Search" />
-
-    <Button
-        android:id="@+id/buttonBack"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:text="Back" />
 
 </RelativeLayout>

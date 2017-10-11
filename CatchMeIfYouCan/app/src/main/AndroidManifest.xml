@@ -37,7 +37,8 @@
         </activity>
         <activity
             android:name=".UI.RegisterActivity"
-            android:label="Create Account"></activity>
+            android:label="Register">
+        </activity>
         <activity
             android:name=".UI.LoginActivity"
             android:label="Login"></activity>
@@ -48,35 +49,40 @@
             android:name=".UI.FriendlistActivity"
             android:label="Friendlist"></activity>
 
+        <activity
+            android:name=".UI.AddActivity"
+            android:label="Add">
+        </activity>
+
+        <activity
+            android:name=".UI.UserActivity"
+            android:label="User">
+        </activity>
+        <activity
+            android:name=".UI.ChatActivity"
+            android:label="Chat">
+        </activity>
+        <activity
+            android:name=".UI.SettingsActivity"
+            android:exported="true"
+            android:label="Settings"
+        </activity>
+        <activity
+            android:name=".UI.MapsActivity"
+            android:label="Maps">
+        </activity>
+
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
              Note that the API key is linked to the encryption key used to sign the APK.
              You need a different API key for each encryption key, including the release key that is used to
              sign the APK for publishing.
-             You can define the keys for the debug and release targets in src/debug/ and src/release/. 
+             You can define the keys for the debug and release targets in src/debug/ and src/release/.
         -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
-
-        <activity
-            android:name=".UI.UserActivity"
-            android:label="User"></activity>
-        <activity
-            android:name=".UI.ChatActivity"
-            android:label="User"></activity>
-        <activity
-            android:name=".UI.MapsActivity"
-            android:exported="true"
-            android:label="Map"></activity>
-        <activity
-            android:name=".UI.SettingsActivity"
-            android:exported="true"
-            android:label="Map"></activity>
-        <activity
-            android:name=".LoginActivitytest"
-            android:label="@string/title_activity_login_activitytest"></activity>
     </application>
 
 </manifest>

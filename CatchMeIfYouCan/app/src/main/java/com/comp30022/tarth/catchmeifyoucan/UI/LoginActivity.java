@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.comp30022.tarth.catchmeifyoucan.Account.Communication;
 import com.comp30022.tarth.catchmeifyoucan.Account.Message;
@@ -92,17 +93,15 @@ public class LoginActivity extends AppCompatActivity implements Communication {
     }
 
     private void verify(Message message) {
-        TextView textView = (TextView)findViewById(R.id.textViewResponse);
-        textView.setText(message.toString());
         if (message.getCode().equals(LOGIN_SUCCESS_CODE)) {
-            System.out.println("Login success");
+            toast("Login success");
             openDashboard();
         } else if (message.getCode().equals(LOGIN_EXIST_CODE)) {
-            System.out.println("Login failed, user is logged in on another device");
+            toast("Login failed, user is logged in on another device");
         } else if (message.getCode().equals(LOGIN_USER_NON_EXIST_CODE)) {
-            System.out.println("Login failed, username or password is incorrect");
+            toast("Login failed, username or password is incorrect");
         } else {
-            System.out.println("Error: Unknown response received");
+            toast("Error: Unknown response received");
         }
     }
 
@@ -148,7 +147,6 @@ public class LoginActivity extends AppCompatActivity implements Communication {
         EditText etName1 = (EditText) findViewById(R.id.editTextUsername);
         Intent intent = new Intent(LoginActivity.this, DashboardActivity.class);
         intent.putExtra("username", etName1.getText().toString());
-
         startActivity(intent);
     }
 
@@ -156,6 +154,11 @@ public class LoginActivity extends AppCompatActivity implements Communication {
     public void back() {
         mClient.disconnect();
         finish();
+    }
+
+    // Displays a toast message
+    private void toast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
     public static WebSocketClient getClient() {

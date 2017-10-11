@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.comp30022.tarth.catchmeifyoucan.Account.Communication;
 import com.comp30022.tarth.catchmeifyoucan.Account.Message;
@@ -81,15 +82,13 @@ public class RegisterActivity extends AppCompatActivity implements Communication
     }
 
     private void verify(Message message) {
-        TextView textView = (TextView)findViewById(R.id.textViewResponse);
-        textView.setText(message.toString());
         if (message.getCode().equals(REGISTER_SUCCESS)) {
-            System.out.println("Register success");
+            toast("Register success");
             backToMain();
         } else if (message.getCode().equals(REGISTER_FAIL)) {
-            System.out.println("Register failed, please try again.");
+            toast("Register failed, please try again.");
         } else {
-            System.out.println("Error: Unknown response received");
+            toast("Error: Unknown response received");
         }
     }
 
@@ -123,6 +122,11 @@ public class RegisterActivity extends AppCompatActivity implements Communication
     // Navigates to Main Activity
     private void backToMain() {
         finish();
+    }
+
+    // Displays a toast message
+    private void toast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
     @Override
