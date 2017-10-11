@@ -1,6 +1,8 @@
 package com.comp30022.tarth.catchmeifyoucan.UI;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -10,9 +12,8 @@ import com.comp30022.tarth.catchmeifyoucan.R;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button buttonCreateAccount;
+    Button buttonRegister;
     Button buttonLogin;
-    Button buttonFriends;
     Button buttonExit;
     Button buttonAR;
 
@@ -21,8 +22,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        buttonCreateAccount = (Button) findViewById(R.id.buttonCreateAccount);
-        buttonCreateAccount.setOnClickListener(new Button.OnClickListener() {
+        buttonRegister = (Button) findViewById(R.id.buttonRegister);
+        buttonRegister.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
                 createAccount(v);
@@ -41,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
         buttonExit.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                exit(v);
+                logoutWarning();
             }
         });
 
@@ -56,8 +57,28 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        finish();
-        System.exit(0);
+        logoutWarning();
+    }
+
+    // Reveals pop up asking if user really wants to exit
+    public void logoutWarning() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.MyAlertDialogStyle);
+        builder.setTitle("Exiting Account...");
+        builder.setMessage("Are you sure you want to exit?");
+        builder.setPositiveButton("Get Me Out of Here!", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                logout();
+            }
+        });
+        builder.setNegativeButton("Cancel", null);
+        builder.show();
+    }
+
+    // Disconnects from server and returns to main menu
+    public void logout() {
+        moveTaskToBack(true);
+        android.os.Process.killProcess(android.os.Process.myPid());
+        System.exit(1);
     }
 
     public void createAccount(View view) {
@@ -71,7 +92,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void exit(View view) {
-        finish();
         System.exit(0);
     }
 

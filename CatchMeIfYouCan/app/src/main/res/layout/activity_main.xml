@@ -38,16 +38,16 @@ HOUSE TARTH"
         android:text="Login" />
 
     <Button
-        android:id="@+id/buttonCreateAccount"
+        android:id="@+id/buttonRegister"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/buttonLogin"
         android:layout_centerHorizontal="true"
-        android:text="Create Account" />
+        android:text="Register" />
 
     <Button
         android:id="@+id/buttonExit"
-        android:layout_below="@+id/buttonCreateAccount"
+        android:layout_below="@+id/buttonRegister"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"

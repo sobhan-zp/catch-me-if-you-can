@@ -1,12 +1,18 @@
 package com.comp30022.tarth.catchmeifyoucan.UI;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.InputFilter;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.comp30022.tarth.catchmeifyoucan.Account.Communication;
@@ -16,7 +22,7 @@ import com.comp30022.tarth.catchmeifyoucan.R;
 import org.json.JSONObject;
 
 
-public class UserActivity extends AppCompatActivity implements Communication{
+public class SettingsActivity extends AppCompatActivity implements Communication{
 
     private static final Integer PROFILE_ACTION_SUCCESS = 203;       // Profile get success
     private static final Integer PROFILE_ACTION = 102;       // Profile request
@@ -30,15 +36,22 @@ public class UserActivity extends AppCompatActivity implements Communication{
     TextView textViewStatus;
     TextView textViewOnline;
     private Button buttonGet;
+    private Button buttonUpdate;
     String getUsername;
+
+    EditText inputName;
+    EditText inputLocation;
+    EditText inputEmail;
+    EditText inputStatus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_user);
+        setContentView(R.layout.activity_settings);
         LoginActivity.getClient().setmCurrentActivity(this);
 
         buttonGet = (Button) findViewById(R.id.buttonGet);
+        buttonUpdate = (Button) findViewById(R.id.buttonUpdate);
 
         textViewLocation = (TextView) findViewById(R.id.Location);
         textViewStatus = (TextView) findViewById(R.id.Status);
@@ -57,9 +70,43 @@ public class UserActivity extends AppCompatActivity implements Communication{
             @Override
             public void onClick(View v) {
                 getInfo();
-                //getOnline();
             }
         });
+
+        buttonUpdate.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeSettings();
+            }
+        });
+    }
+
+    private void changeSettings() {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.MyAlertDialogStyle);
+        LayoutInflater inflater = this.getLayoutInflater();
+        builder.setTitle("Enter New Profile Settings");
+        builder.setView(R.layout.settings_dialog);
+
+        inputName = (EditText) findViewById(R.id.editName);
+
+        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                //String valueName = inputName.getText().toString();
+                //textViewName.setText(valueName);
+
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                // Canceled.
+            }
+        });
+
+
+        builder.show();
+        builder.create();
     }
 
     @Override
@@ -79,11 +126,11 @@ public class UserActivity extends AppCompatActivity implements Communication{
         LoginActivity.getClient().send(obj.toString());
     }
 
-    private void getOnline() {
+    private void getOnline(String user) {
         JSONObject obj = new JSONObject();
 
         try {
-            obj.put("username", getUsername);
+            obj.put("username", user);
             obj.put("action", FRIEND_CHECK);
             System.out.println("SentOnline->" + obj.toString(4));
         } catch(Exception e) {
@@ -102,10 +149,10 @@ public class UserActivity extends AppCompatActivity implements Communication{
             if (message.getAction().equals(PROFILE_ACTION_SUCCESS)) {
 
                 textViewName.setText(message.getName());
-                textViewUsername.setText("@" + getUsername);
+                textViewUsername.setText("@" + message.getUsername());
                 textViewLocation.setText(message.getLocation());
                 textViewStatus.setText(message.getStatus());
-                getOnline();
+                getOnline(message.getUsername());
 
                 System.out.println("Profile get success");
             }

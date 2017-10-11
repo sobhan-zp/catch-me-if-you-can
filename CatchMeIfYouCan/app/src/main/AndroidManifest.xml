@@ -15,6 +15,7 @@
         android:name="android.hardware.sensor.compass"
         android:required="true" />
 
+
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
          Google Maps Android API v2, but you must specify either coarse or fine
@@ -27,6 +28,11 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CAMERA" />
+
+    <!-- To auto-complete the email text field in the login form with the user's emails -->
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.READ_PROFILE" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <application
         android:allowBackup="true"
@@ -46,7 +52,7 @@
         </activity>
         <activity
             android:name=".UI.RegisterActivity"
-            android:label="Create Account"></activity>
+            android:label="Register"></activity>
         <activity
             android:name=".UI.LoginActivity"
             android:label="Login"></activity>
@@ -56,6 +62,32 @@
         <activity
             android:name=".UI.FriendlistActivity"
             android:label="Friendlist"></activity>
+        <activity
+            android:name=".UI.AddActivity"
+            android:label="Add">
+        </activity>
+        <activity
+            android:name=".UI.UserActivity"
+            android:label="User">
+        </activity>
+        <activity
+            android:name=".UI.ChatActivity"
+            android:label="User">
+        </activity>
+        <activity
+            android:name=".UI.SettingsActivity"
+            android:exported="true"
+            android:label="Settings">
+        </activity>
+        <activity
+            android:name=".UI.MapsActivity"
+            android:label="Maps">
+        </activity>
+        <activity
+            android:name=".UI.ArActivity"
+            android:label="AR"
+            android:screenOrientation="portrait">
+        </activity>
 
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -68,21 +100,6 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
-
-        <activity
-            android:name=".UI.UserActivity"
-            android:label="User"></activity>
-        <activity
-            android:name=".UI.ChatActivity"
-            android:label="User"></activity>
-        <activity
-            android:name=".UI.MapsActivity"
-            android:label="User"></activity>
-        <activity
-            android:name=".UI.ArActivity"
-            android:label="AR"
-            android:screenOrientation="portrait"></activity>
-
     </application>
 
 </manifest>
