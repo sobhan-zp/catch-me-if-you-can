@@ -59,7 +59,7 @@
         android:layout_marginTop="30dp"
         android:onClick="createOnClick"
         android:text="Create"
-        android:layout_below="@+id/editTextEmail"
+        android:layout_below="@+id/editTextDOB"
         android:layout_centerHorizontal="true"
         />
 
