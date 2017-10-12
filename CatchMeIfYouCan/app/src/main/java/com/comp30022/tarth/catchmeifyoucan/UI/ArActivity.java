@@ -195,6 +195,8 @@ public class ArActivity extends AppCompatActivity implements SensorEventListener
         return this.mOrientationAngles;
     }
 
+
+
     /** Check if this device has a camera */
     private boolean checkCameraHardware(Context context) {
         if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)){
