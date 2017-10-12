@@ -1,6 +1,6 @@
-package com.comp30022.tarth.catchmeifyoucan.Account;
+package com.comp30022.tarth.catchmeifyoucan.Game;
 
-public class Result {
+public class Participant {
 
     private Integer account_id;
     private Integer game_id;
@@ -16,6 +16,11 @@ public class Result {
 
     public Integer getIs_owner() {
         return is_owner;
+    }
+
+    @Override
+    public String toString() {
+        return "{" + Integer.toString(account_id) + ", " + Integer.toString(game_id) + ", " + Integer.toString(is_owner) + "}";
     }
 
 }

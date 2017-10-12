@@ -142,7 +142,7 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
             toast("Friend get success");
 
             // Repopulates friendlist
-            User[] users = message.getResult();
+            User[] users = message.getUsers();
             array.clear();
             for (User user : users) {
                 array.add(user.getUsername());
