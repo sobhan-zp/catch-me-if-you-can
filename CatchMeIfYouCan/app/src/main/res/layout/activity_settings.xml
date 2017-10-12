@@ -87,12 +87,37 @@
 
 
     <TextView
-        android:id="@+id/title3"
+        android:id="@+id/title4"
         android:layout_centerHorizontal="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:layout_below="@+id/Location"
+        android:layout_marginTop="10dp"
+        android:textSize="10dp"
+        android:text="EMAIL" />
+
+    <EditText
+        android:id="@+id/Email"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_below="@+id/title4"
+        android:layout_marginTop="-10dp"
+        android:textSize="15dp"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
+        android:maxLength="30"
+        android:text="Enter Email" />
+
+    <TextView
+        android:id="@+id/title3"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_below="@+id/Email"
         android:layout_marginTop="10dp"
         android:textSize="10dp"
         android:text="STATUS MESSAGE" />
@@ -112,7 +137,7 @@
         android:text="Add a custom message for all to see!" />
 
 
-    <Button
+ <!--   <Button
         android:id="@+id/buttonGet"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
@@ -121,7 +146,7 @@
         android:text="GET"
         android:layout_below="@+id/Status"
         android:layout_centerHorizontal="true"
-        />
+        />-->
 
     <Button
         android:id="@+id/buttonUpdate"
@@ -129,7 +154,8 @@
         android:layout_height="wrap_content"
         android:onClick="createOnClick"
         android:text="Update Profile"
-        android:layout_below="@+id/buttonGet"
+        android:layout_marginTop="30dp"
+        android:layout_below="@+id/Status"
         android:layout_centerHorizontal="true"
         />
 

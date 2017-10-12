@@ -16,7 +16,7 @@ import com.comp30022.tarth.catchmeifyoucan.R;
 
 import org.json.JSONObject;
 
-/* Checks opens a detailed view of a user by querying the server*/
+/* Opens a detailed view of a user by querying the server */
 public class UserActivity extends AppCompatActivity implements Communication {
 
 
@@ -171,6 +171,7 @@ public class UserActivity extends AppCompatActivity implements Communication {
 
     }
 
+        /* Grabs response from server */
     @Override
     public void response(final Message message) {
         runOnUiThread(new Runnable() {
