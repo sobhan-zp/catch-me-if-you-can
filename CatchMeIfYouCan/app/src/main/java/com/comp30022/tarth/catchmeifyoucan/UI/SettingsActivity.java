@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.comp30022.tarth.catchmeifyoucan.Account.Communication;
 import com.comp30022.tarth.catchmeifyoucan.Account.Message;
@@ -29,20 +30,22 @@ public class SettingsActivity extends AppCompatActivity implements Communication
     private static final Integer FRIEND_CHECK = 509;       // Check if friend is online request
     private static final Integer FRIEND_CHECK_FAIL = 510; // Online check fail
     private static final Integer FRIEND_CHECK_SUCCESS = 511; // Online check success
+    private static final Integer PROFILE_UPDATE = 103; // Profile Update request
+    private static final Integer PROFILE_UPDATE_SUCCESS = 104; // Profile Update success
+    private static final Integer PROFILE_UPDATE_FAIL = 105; // Profile Update failure
 
-    TextView textViewName;
+
+    EditText EditTextName;
+    EditText EditTextLocation;
+    EditText EditTextStatus;
     TextView textViewUsername;
-    TextView textViewLocation;
-    TextView textViewStatus;
     TextView textViewOnline;
+    String email;
+
     private Button buttonGet;
     private Button buttonUpdate;
-    String getUsername;
 
-    EditText inputName;
-    EditText inputLocation;
-    EditText inputEmail;
-    EditText inputStatus;
+    String getUsername;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,11 +56,13 @@ public class SettingsActivity extends AppCompatActivity implements Communication
         buttonGet = (Button) findViewById(R.id.buttonGet);
         buttonUpdate = (Button) findViewById(R.id.buttonUpdate);
 
-        textViewLocation = (TextView) findViewById(R.id.Location);
-        textViewStatus = (TextView) findViewById(R.id.Status);
+        // Set unchangable fields
         textViewUsername = (TextView) findViewById(R.id.Username);
-        textViewName = (TextView) findViewById(R.id.Name);
         textViewOnline = (TextView) findViewById(R.id.Online);
+
+        EditTextLocation = (EditText) findViewById(R.id.Location);
+        EditTextStatus = (EditText) findViewById(R.id.Status);
+        EditTextName = (EditText) findViewById(R.id.Name);
 
         Intent intent = getIntent();
         Bundle bd = intent.getExtras();
@@ -73,6 +78,7 @@ public class SettingsActivity extends AppCompatActivity implements Communication
             }
         });
 
+
         buttonUpdate.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -82,31 +88,24 @@ public class SettingsActivity extends AppCompatActivity implements Communication
     }
 
     private void changeSettings() {
+        JSONObject obj = new JSONObject();
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.MyAlertDialogStyle);
-        LayoutInflater inflater = this.getLayoutInflater();
-        builder.setTitle("Enter New Profile Settings");
-        builder.setView(R.layout.settings_dialog);
+        TextView name = (TextView) findViewById(R.id.Name);
+        TextView location = (TextView) findViewById(R.id.Location);
+        TextView status = (TextView) findViewById(R.id.Status);
 
-        inputName = (EditText) findViewById(R.id.editName);
+        try {
+            obj.put("action", PROFILE_UPDATE);
+            obj.put("name", name.getText());
+            obj.put("email", email);
+            obj.put("location", location.getText());
+            obj.put("status", status.getText());
 
-        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {
-                //String valueName = inputName.getText().toString();
-                //textViewName.setText(valueName);
-
-            }
-        });
-
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {
-                // Canceled.
-            }
-        });
-
-
-        builder.show();
-        builder.create();
+            System.out.println("SentInfo->" + obj.toString(4));
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        LoginActivity.getClient().send(obj.toString());
     }
 
     @Override
@@ -144,18 +143,32 @@ public class SettingsActivity extends AppCompatActivity implements Communication
 
         System.out.println("recv->" + message.toString());
         System.out.println("getAction->" + message.getCode());
+        System.out.println(message.getCode() + " + " + PROFILE_UPDATE_SUCCESS);
 
         if (message.getAction() != null) {
+
             if (message.getAction().equals(PROFILE_ACTION_SUCCESS)) {
 
-                textViewName.setText(message.getName());
                 textViewUsername.setText("@" + message.getUsername());
-                textViewLocation.setText(message.getLocation());
-                textViewStatus.setText(message.getStatus());
                 getOnline(message.getUsername());
+
+                EditTextLocation.setText(message.getLocation());
+                EditTextStatus.setText(message.getStatus());
+                EditTextName.setText(message.getName());
+                email = message.getEmail();
+                System.out.println(email);
+
+                if (message.getLocation() == "") {
+                    EditTextLocation.setText("Enter Location Here");
+                }
+
+                if (message.getStatus() == "") {
+                    EditTextStatus.setText("Enter Custom Status Here");
+                }
 
                 System.out.println("Profile get success");
             }
+
         } else if (message.getCode() != null) {
             if (message.getCode().equals(FRIEND_CHECK_SUCCESS)) {
                 textViewOnline.setTextColor(Color.parseColor("#16B72E"));
@@ -165,8 +178,9 @@ public class SettingsActivity extends AppCompatActivity implements Communication
                 textViewOnline.setText("OFFLINE");
                 textViewOnline.setTextColor(Color.parseColor("#B72616"));
                 textViewOnline.setTypeface(null, Typeface.BOLD_ITALIC);
-
-
+            } else if (message.getCode().equals(PROFILE_UPDATE_SUCCESS)) {
+                getInfo();
+                toast("Profile Update Successful");
             }
         } else {
             System.out.println("User Error: Unknown response received");
@@ -182,5 +196,12 @@ public class SettingsActivity extends AppCompatActivity implements Communication
             }
         });
     }
+
+    // Displays a toast message
+    private void toast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
 }
+
 

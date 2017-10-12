@@ -10,22 +10,34 @@
 
     <ImageView
         android:id="@+id/ProfilePicture"
-        android:layout_width="160dp"
-        android:layout_height="160dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:layout_centerHorizontal="true"
         app:srcCompat="@mipmap/temp_placeholder" />
 
     <TextView
-        android:id="@+id/Name"
+        android:id="@+id/title1"
         android:layout_centerHorizontal="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:layout_below="@+id/ProfilePicture"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="20dp"
+        android:textSize="10dp"
+        android:text="NAME" />
+
+    <EditText
+        android:id="@+id/Name"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_below="@+id/title1"
+        android:layout_marginTop="-10dp"
         android:textSize="21dp"
         android:textStyle="bold"
-        android:text="FirstName LastName" />
+        android:maxLength="25"
+        android:text="Enter Name Here" />
 
     <TextView
         android:id="@+id/Username"
@@ -40,15 +52,15 @@
         android:text="/@username" />
 
     <TextView
-        android:id="@+id/Location"
+        android:id="@+id/title2"
         android:layout_centerHorizontal="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:layout_below="@+id/Username"
-        android:layout_marginTop="8dp"
-        android:textSize="15dp"
-        android:text="Location Unknown" />
+        android:layout_below="@+id/Online"
+        android:layout_marginTop="10dp"
+        android:textSize="10dp"
+        android:text="LOCATION" />
 
     <TextView
         android:id="@+id/Online"
@@ -56,23 +68,48 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:layout_below="@+id/Location"
+        android:layout_below="@+id/Username"
         android:layout_marginTop="8dp"
         android:textSize="15dp"
-        android:text="ONLINE/OFFLINE" />
+        android:text="Online Status Unknown" />
+
+    <EditText
+        android:id="@+id/Location"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_below="@+id/title2"
+        android:layout_marginTop="-10dp"
+        android:textSize="15dp"
+        android:maxLength="15"
+        android:text="Enter Location Here" />
+
 
     <TextView
+        android:id="@+id/title3"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_below="@+id/Location"
+        android:layout_marginTop="10dp"
+        android:textSize="10dp"
+        android:text="STATUS MESSAGE" />
+
+    <EditText
         android:id="@+id/Status"
         android:layout_centerHorizontal="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:layout_below="@+id/Online"
-        android:layout_marginTop="8dp"
+        android:layout_below="@+id/title3"
+        android:layout_marginTop="-10dp"
         android:textSize="15dp"
         android:layout_marginLeft="40dp"
         android:layout_marginRight="40dp"
-        android:text="This user hasnt set a status. Message him to change it in his settings!" />
+        android:maxLength="45"
+        android:text="Add a custom message for all to see!" />
 
 
     <Button
