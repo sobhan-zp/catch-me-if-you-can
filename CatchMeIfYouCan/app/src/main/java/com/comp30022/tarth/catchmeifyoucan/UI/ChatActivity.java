@@ -1,5 +1,6 @@
 package com.comp30022.tarth.catchmeifyoucan.UI;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -19,7 +20,9 @@ import com.comp30022.tarth.catchmeifyoucan.R;
 
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class ChatActivity extends AppCompatActivity implements Communication {
@@ -40,14 +43,22 @@ public class ChatActivity extends AppCompatActivity implements Communication {
     private ArrayAdapter<String> adapter;
     private List<String> array;
 
-    private String name = "admin";
-    private String friend = "vikram";
+    private String name = "You";
+    private String friend = "";
+
+    SimpleDateFormat dateFormat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
         LoginActivity.getClient().setmCurrentActivity(this);
+
+        // get receiver info
+        setFriend();
+
+        // set date format
+        dateFormat = new SimpleDateFormat("HH:mm:ss, dd/MM/yy");
 
         Button fab = (Button) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -82,6 +93,15 @@ public class ChatActivity extends AppCompatActivity implements Communication {
                 verify(message);
             }
         });
+    }
+
+    public void setFriend() {
+        // Get username from dashboard
+        Intent intent = getIntent();
+        Bundle bd = intent.getExtras();
+        if(bd != null) {
+            friend = (String) bd.get("friend");
+        }
     }
 
     private void verify(Message message) {
@@ -128,8 +148,10 @@ public class ChatActivity extends AppCompatActivity implements Communication {
         //textViewUser.setText(message.getFrom());
         //textViewTime.setText(DateFormat.format("dd-MM-yyyy (HH:mm:ss)", message.getTime()));
 
+        String time  = dateFormat.format(new Date());
+
         array.add(
-                message.getFrom() + ": " +  message.getMessage() + "\n" + message.getTime()
+                message.getFrom() + ": " +  message.getMessage() + "\n" + time //+ message.getTime()
         );
         adapter.notifyDataSetChanged();
 
@@ -150,8 +172,10 @@ public class ChatActivity extends AppCompatActivity implements Communication {
         }
         LoginActivity.getClient().send(obj.toString());
 
+        String time  = dateFormat.format(new Date());
+
         array.add(
-                name + ": " +  msg.getText() + "\n" + "0"
+                name + ": " +  msg.getText() + "\n"  + time// + "0"
         );
         adapter.notifyDataSetChanged();
 

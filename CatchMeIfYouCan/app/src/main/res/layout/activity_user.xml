@@ -25,7 +25,7 @@
         android:layout_marginTop="30dp"
         android:textSize="21dp"
         android:textStyle="bold"
-        android:text="FirstName LastName" />
+        android:text="Name Unknown" />
 
     <TextView
         android:id="@+id/Username"
@@ -37,7 +37,7 @@
         android:layout_marginTop="8dp"
         android:textSize="15dp"
         android:textStyle="italic"
-        android:text="/@username" />
+        android:text="username unknown" />
 
     <TextView
         android:id="@+id/Location"
@@ -59,7 +59,7 @@
         android:layout_below="@+id/Location"
         android:layout_marginTop="8dp"
         android:textSize="15dp"
-        android:text="ONLINE/OFFLINE" />
+        android:text="Online Status Unknown" />
 
     <TextView
         android:id="@+id/Status"
@@ -75,6 +75,7 @@
         android:text="This user hasnt set a status. Message him to change it in his settings!" />
 
 
+<!--
     <Button
         android:id="@+id/buttonGet"
         android:layout_width="300dp"
@@ -85,6 +86,7 @@
         android:layout_below="@+id/Status"
         android:layout_centerHorizontal="true"
         />
+-->
 
     <Button
         android:id="@+id/buttonChat"
@@ -92,7 +94,8 @@
         android:layout_height="wrap_content"
         android:onClick="createOnClick"
         android:text="Send message"
-        android:layout_below="@+id/buttonGet"
+        android:layout_below="@+id/Status"
+        android:layout_marginTop="80dp"
         android:layout_centerHorizontal="true"
         />
 

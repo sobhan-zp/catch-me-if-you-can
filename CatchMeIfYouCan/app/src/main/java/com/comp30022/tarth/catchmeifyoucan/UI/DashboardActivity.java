@@ -26,6 +26,7 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
     private ImageView imageViewTest;
     private String getName;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,7 +46,7 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
         Intent intent = getIntent();
         Bundle bd = intent.getExtras();
         if(bd != null) {
-            String getName = (String) bd.get("username");
+            getName = (String) bd.get("username");
             textViewUsername.setText("@" + getName);
         }
 
@@ -126,6 +127,8 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
     private void openUser(String username) {
         Intent intent = new Intent(this, UserActivity.class);
         intent.putExtra("username", username);
+        // tell userActivity that you're coming from the dashboard so it doesn't load send message button
+        intent.putExtra("dashboard", true);
         startActivity(intent);
     }
 

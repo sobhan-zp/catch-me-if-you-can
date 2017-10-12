@@ -8,6 +8,16 @@ public class User {
     String username;
     String email;
     String name;
+    String status;
+    String location;
+
+    public String getStatus() {
+        return status;
+    }
+
+    public String getLocation() {
+        return location;
+    }
 
     public String getUsername() {
         return username;
@@ -28,8 +38,11 @@ public class User {
     }
 
     @Override
-    public String toString() {
+    /*public String toString() {
         return "{" + username + ", " + email + ", " + name + "}";
+    }*/
+    public String toString() {
+        return "{" + username + ", " + email + ", " + name + ", " + status + ", " + location +"}";
     }
 
 }
