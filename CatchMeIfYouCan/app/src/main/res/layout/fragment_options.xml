@@ -15,7 +15,7 @@ android:layout_height="match_parent">
         android:text="Players" />
 
     <ListView
-        android:id="@+id/listViewFriends"
+        android:id="@+id/listViewPlayers"
         android:drawSelectorOnTop="false"
         android:layout_below="@+id/textViewPlayers"
         android:layout_above="@+id/buttonExit"

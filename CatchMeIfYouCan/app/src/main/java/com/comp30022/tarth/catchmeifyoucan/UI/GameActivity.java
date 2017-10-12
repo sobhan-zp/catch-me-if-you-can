@@ -44,6 +44,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,7 +53,7 @@ import java.util.List;
 public class GameActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
         LocationListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnMarkerDragListener,
-        GoogleMap.OnMapClickListener, Communication {
+        GoogleMap.OnMapClickListener, Communication, OptionsFragment.FragmentCommunication {
 
     private static final Integer GAME_CREATE = 700;
     private static final Integer GAME_ADD = 703;
@@ -544,13 +546,34 @@ public class GameActivity extends FragmentActivity implements OnMapReadyCallback
         //curr_latitude, curr_longitude
     }
 
+    private void verify(Message message) {
+        if (message.getCode().equals(GAME_GET_USER_SUCCESS)) {
+            toast("Game get users successful");
+            ((OptionsFragment) optionsFragment).onResponse(message);
+        } else if (message.getCode().equals(GAME_GET_USER_FAIL)) {
+            toast("Game get users failure");
+        }
+    }
+
+    @Override
+    public void onSend(JSONObject obj) {
+        LoginActivity.getClient().send(obj.toString());
+    }
+
     @Override
     public void response(final Message message) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                //verify(message);
+                verify(message);
             }
         });
     }
+
+    @Override
+    public void onExit() {
+        onBackPressed();
+        onBackPressed();
+    }
+
 }

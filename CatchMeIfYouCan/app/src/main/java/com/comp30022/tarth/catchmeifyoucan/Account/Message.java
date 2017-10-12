@@ -1,5 +1,6 @@
 package com.comp30022.tarth.catchmeifyoucan.Account;
 
+import com.comp30022.tarth.catchmeifyoucan.Game.Participant;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -9,7 +10,7 @@ public class Message {
     String type;
     Integer code;
     User[] users;
-    Result result;
+    Participant[] result;
 
     Integer action;
     String message;
@@ -55,7 +56,7 @@ public class Message {
         return type;
     }
 
-    public User[] getResult() {
+    public User[] getUsers() {
         return users;
     }
 
@@ -83,6 +84,10 @@ public class Message {
         return game_id;
     }
 
+    public Participant[] getResult() {
+        return result;
+    }
+
     public static Message parseJSON(String response) {
         Gson gson = new GsonBuilder().create();
         Message message = gson.fromJson(response, Message.class);
@@ -105,8 +110,8 @@ public class Message {
                 + ((message != null) ? message + ", " : "")
                 + ((from != null) ? from + ", " : "");
         if (result != null) {
-            for (User user : users) {
-                str += user.toString();
+            for (Participant participant : result) {
+                str += participant.toString();
             }
         }
         str += "}";
