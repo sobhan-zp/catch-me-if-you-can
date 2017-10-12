@@ -127,7 +127,8 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
     private void openUser(String username) {
         Intent intent = new Intent(this, UserActivity.class);
         intent.putExtra("username", username);
-        System.out.println("sending in " + username);
+        // tell userActivity that you're coming from the dashboard so it doesn't load send message button
+        intent.putExtra("dashboard", true);
         startActivity(intent);
     }
 
