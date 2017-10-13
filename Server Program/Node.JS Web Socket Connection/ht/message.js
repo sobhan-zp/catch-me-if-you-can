@@ -14,10 +14,11 @@ exports.to_id = function(id, message, clients){
 exports.to_sock = function(sock, message){
     if (sock.readyState === WebSocket.OPEN) {
         sock.send(JSON.stringify(message)); // i dont know why it needs twice
-        console.log('Message has been delivered');
-    }else{
-        console.log('Client socket status: %s', sock.readyState);
-    }
+        //console.log('Message has been delivered');
+     }
+     //else{
+    //     console.log('Client socket status: %s', sock.readyState);
+    // }
 }
 
 exports.to_name = function(userinfo, to_name, message, clients){

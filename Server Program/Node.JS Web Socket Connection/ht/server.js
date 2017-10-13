@@ -9,13 +9,15 @@ var msg = require("./message");
 var friend = require("./friend");
 var game = require("./game");
 
+// Remove max listeners
+//process.setMaxListeners(0);
 
 // Variables
 var WebSocketServer = WebSocket.Server,
     wss = new WebSocketServer({ port: SERVER_PORT });
 var clients = [];
 
-console.log('Server Starts At Port %d', SERVER_PORT);
+//console.log('Server Starts At Port %d', SERVER_PORT);
 db.set_database_con();
 
 function invalid_msg(ws){
@@ -31,7 +33,7 @@ function is_json(str) {
             JSON.parse(str);
             return true;
         } catch(e) {
-            console.log("Received a non-JSON message");
+            //console.log("Received a non-JSON message");
             return false;
         }
     }
@@ -42,13 +44,13 @@ wss.on('connection', function(ws) {
     var client_uuid = uuid.v4();
     var client_ws = ws;
     var user_status = {"login":false,"info":{}};
-    console.log('client [%s] connected', client_uuid);
+    //console.log('client [%s] connected', client_uuid);
 
     // WebSocket received message action
     ws.on('message', function(message) {
         if (is_json(message)){
             var data = JSON.parse(message);
-            console.log('client [%s] message [%s]', client_uuid, message);
+            //console.log('client [%s] message [%s]', client_uuid, message);
             if (user_status.login == false){
                 switch(data.action){
                     case LOGIN_ACTION:
@@ -172,13 +174,13 @@ wss.on('connection', function(ws) {
         if (user_status.login){
             closeSocket();
         }
-        console.log('client [%s] disconnected', client_uuid);
+        //console.log('client [%s] disconnected', client_uuid);
     });
 
     // Server close action
     process.on('SIGINT', function () {
         console.log("Server Closing.....");
-        closeSocket('Server has disconnected');
+        //closeSocket('Server has disconnected');
         process.exit();
     });
 });

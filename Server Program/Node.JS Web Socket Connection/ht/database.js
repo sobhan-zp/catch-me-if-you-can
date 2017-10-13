@@ -15,7 +15,7 @@ exports.set_database_con = function(){
             console.log('%s', err);
             process.exit();
         }
-        console.log("Database Connected");
+        //console.log("Database Connected");
     });
 }
 
