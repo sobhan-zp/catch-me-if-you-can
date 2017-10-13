@@ -13,7 +13,6 @@ import android.widget.Toast;
 
 import com.comp30022.tarth.catchmeifyoucan.Account.Communication;
 import com.comp30022.tarth.catchmeifyoucan.Account.Message;
-import com.comp30022.tarth.catchmeifyoucan.Account.User;
 import com.comp30022.tarth.catchmeifyoucan.Game.Game;
 import com.comp30022.tarth.catchmeifyoucan.R;
 
@@ -27,6 +26,10 @@ public class GamelistActivity extends AppCompatActivity implements Communication
     private static final Integer GAME_GET = 709;
     private static final Integer GAME_GET_SUCCESS = 710;
     private static final Integer GAME_GET_FAIL = 711;
+
+    private static final Integer GAME_GET_CURRENT = 718;
+    private static final Integer GAME_GET_CURRENT_SUCCESS = 719;
+    private static final Integer GAME_GET_CURRENT_FAIL = 720;
 
     private ArrayAdapter<String> adapter;
     private List<String> array;
@@ -90,10 +93,15 @@ public class GamelistActivity extends AppCompatActivity implements Communication
 
     // Verifies responses from the server
     private void verify(Message message) {
-        if (message.getCode().equals(GAME_GET_SUCCESS)) {
+        if (message.getCode().equals(GAME_GET_CURRENT_SUCCESS)) {
+            toast("Game resume get success");
+            joinGame(message.getGames()[0].getName().toString());
+        } else if (message.getCode().equals(GAME_GET_CURRENT_FAIL)) {
+            toast("Game resume get failure");
+        } else if (message.getCode().equals(GAME_GET_SUCCESS)) {
             toast("Game get success");
 
-            // Repopulates friendlist
+            // Repopulates list
             Game[] games = message.getGames();
             array.clear();
             for (Game game : games) {
@@ -120,7 +128,7 @@ public class GamelistActivity extends AppCompatActivity implements Communication
     }
 
     // Navigates to User Activity
-    private void joinGame(String username) {
+    private void joinGame(String gameName) {
         Intent intent = new Intent(this, GameActivity.class);
         startActivity(intent);
     }
