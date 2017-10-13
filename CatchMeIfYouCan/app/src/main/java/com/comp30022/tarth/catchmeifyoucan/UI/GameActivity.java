@@ -53,7 +53,8 @@ import java.util.List;
 public class GameActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
         LocationListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnMarkerDragListener,
-        GoogleMap.OnMapClickListener, Communication, OptionsFragment.FragmentCommunication {
+        GoogleMap.OnMapClickListener, Communication, OptionsFragment.FragmentCommunication,
+        ChatFragment.FragmentCommunication {
 
     private static final Integer GAME_CREATE = 700;
     private static final Integer GAME_ADD = 703;
@@ -547,11 +548,14 @@ public class GameActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void verify(Message message) {
+        System.out.println("CODE" + message.getCode());
         if (message.getCode().equals(GAME_GET_USER_SUCCESS)) {
             toast("Game get users successful");
             ((OptionsFragment) optionsFragment).onResponse(message);
         } else if (message.getCode().equals(GAME_GET_USER_FAIL)) {
             toast("Game get users failure");
+        } else if (message.getCode().equals(GAME_NOTIFICATION_RECEIVE)) {
+            ((ChatFragment) chatFragment).onResponse(message);
         }
     }
 
