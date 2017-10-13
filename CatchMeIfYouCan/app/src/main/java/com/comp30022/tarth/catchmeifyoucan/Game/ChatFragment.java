@@ -5,8 +5,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +23,11 @@ public class ChatFragment extends Fragment {
 
     private static final Integer GAME_NOTIFICATION_SEND = 721;
     private static final Integer GAME_NOTIFICATION_RECEIVE = 722;
+
+    private static final Integer MESSAGE_COMMAND_SEND = 606;
+    private static final Integer MESSAGE_COMMAND_SUCCESS = 607;
+    private static final Integer MESSAGE_COMMAND_FAIL = 608;
+    private static final Integer MESSAGE_COMMAND_RECEIVE = 609;
 
     private Activity parent;
 
@@ -77,7 +80,7 @@ public class ChatFragment extends Fragment {
         // Queries server for location updates
         JSONObject obj = new JSONObject();
         try {
-            obj.put("action", GAME_NOTIFICATION_SEND);
+            obj.put("action", MESSAGE_COMMAND_SEND);
             obj.put("message", "test");
         } catch(Exception e) {
             e.printStackTrace();
