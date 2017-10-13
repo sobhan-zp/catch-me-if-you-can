@@ -7,6 +7,7 @@ var db = require("./database");
 var accounts = require("./account");
 var msg = require("./message");
 var friend = require("./friend");
+var game = require("./game");
 
 
 // Variables
@@ -100,22 +101,28 @@ wss.on('connection', function(ws) {
                         msg.user_command(user_status.info, data.username, data.message, clients);
                         break;
                     case GAME_ADD:
-                        join_game(user_status.info, data.id, GAME_PLAYER);
+                        game.join(user_status.info, data.id, GAME_PLAYER);
                         break;
                     case GAME_CREATE:
-                        create_game(user_status.info, data.name);
+                        game.new(user_status.info, data.name);
                         break;
                     case GAME_EXIT:
-                        exit_game(user_status.info);
+                        game.exit(user_status.info);
                         break;
                     case GAME_GET:
-                        get_game_list(user_status.info);
+                        game.get_all(user_status.info, function(result){
+                            msg.to_sock(client_ws, JSON.stringify(result));
+                        });
                         break;
                     case GAME_GET_USER:
-                        get_all_game_user(user_status.info);
+                        game.user(user_status.info, function(result){
+                            msg.to_sock(client_ws, JSON.stringify(result));
+                        });
                         break;
                     case GAME_GET_CURRENT:
-                        get_your_current_game(user_status.info);
+                        game.get_current(user_status.info, function(result){
+                            msg.to_sock(client_ws, JSON.stringify(result));
+                        });
                         break;
                     case GAME_NOTIFICATION_SEND:
                         send_notification_to_all(user_status.info, data.message);
@@ -123,8 +130,15 @@ wss.on('connection', function(ws) {
                     case PROFILE_ACTION:
                         accounts.fetch_account_info(user_status.info);
                         break;
-                    case MESSAGE_LOCATION_SEND:
-                        send_location_to_creator(user_status.info, data.location);
+                    case LOCATION_SEND:
+                        game.send_location(user_status.info, data.location, function(result){
+                            msg.to_sock(client_ws, JSON.stringify(result));
+                        });
+                        break;
+                    case LOCATION_GET:
+                        game.get_location(data.game_id, function(result){
+                            msg.to_sock(client_ws, JSON.stringify(result));
+                        });
                         break;
                     case PROFILE_UPDATE:
                         accounts.update_user_infor(user_status.info, data.name, data.email, data.location, data.status, function(result){
