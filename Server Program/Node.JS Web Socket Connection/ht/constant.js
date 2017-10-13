@@ -7,7 +7,7 @@ DATABASE_DATABASE = "house_tarth";
 // Global user settings
 DEFAULT_USER_LEVEL = 0;
 // Server settings
-SERVER_PORT = 81;
+SERVER_PORT = 80;
 // Actions
 REGISTER_ACTION = 100;
 LOGIN_ACTION = 101;
