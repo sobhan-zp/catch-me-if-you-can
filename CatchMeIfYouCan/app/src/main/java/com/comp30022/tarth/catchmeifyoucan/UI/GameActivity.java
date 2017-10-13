@@ -91,9 +91,9 @@ public class GameActivity extends FragmentActivity implements OnMapReadyCallback
     private final static int OPTIONS_ITEM_ID = 1;
 
     private BottomNavigationView navigation;
-    Fragment mapFragment;
-    Fragment chatFragment;
-    Fragment optionsFragment;
+    private Fragment mapFragment;
+    private Fragment chatFragment;
+    private Fragment optionsFragment;
 
     private GoogleMap mMap;
     // Google client to interact with Google API
