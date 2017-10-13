@@ -1,5 +1,6 @@
 package com.comp30022.tarth.catchmeifyoucan.Account;
 
+import com.comp30022.tarth.catchmeifyoucan.Game.Game;
 import com.comp30022.tarth.catchmeifyoucan.Game.Participant;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -10,7 +11,8 @@ public class Message {
     String type;
     Integer code;
     User[] users;
-    Participant[] result;
+    Game[] result;
+    //Participant[] result;
 
     Integer action;
     String message;
@@ -84,7 +86,14 @@ public class Message {
         return game_id;
     }
 
+    /*
     public Participant[] getResult() {
+        return result;
+    }
+    */
+
+    public Game[] getGames() {
+        //return games;
         return result;
     }
 
@@ -110,8 +119,10 @@ public class Message {
                 + ((message != null) ? message + ", " : "")
                 + ((from != null) ? from + ", " : "");
         if (result != null) {
-            for (Participant participant : result) {
-                str += participant.toString();
+            for (Game game : result) {
+                str += game.toString();
+            //for (Participant participant : result) {
+            //    str += participant.toString();
             }
         }
         str += "}";

@@ -73,6 +73,9 @@
         <activity
             android:name=".UI.GameActivity"
             android:label="Game"></activity>
+        <activity
+            android:name=".UI.GamelistActivity"
+            android:label="Gamelist"></activity>
 
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.

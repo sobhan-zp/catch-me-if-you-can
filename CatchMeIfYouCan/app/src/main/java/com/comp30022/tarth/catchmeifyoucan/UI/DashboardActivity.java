@@ -85,7 +85,7 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
         buttonJoin.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openMaps();
+                openGamelist();
             }
         });
         buttonFriendlist.setOnClickListener(new Button.OnClickListener() {
@@ -219,6 +219,12 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
     private void openGame(Message message) {
         Intent intent = new Intent(this, GameActivity.class);
         intent.putExtra("game_id", message.getGame_id());
+        startActivity(intent);
+    }
+
+    // Navigates to Gamelist Activity
+    private void openGamelist() {
+        Intent intent = new Intent(this, GamelistActivity.class);
         startActivity(intent);
     }
 

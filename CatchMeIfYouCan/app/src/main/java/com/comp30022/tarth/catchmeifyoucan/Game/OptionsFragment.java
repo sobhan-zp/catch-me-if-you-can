@@ -88,12 +88,14 @@ public class OptionsFragment extends Fragment {
 
     public void onResponse(final Message message) {
         // Repopulates friendlist
+        /*
         Participant[] participants = message.getResult();
         array.clear();
         for (Participant participant : participants) {
             array.add(participant.toString());
         }
         adapter.notifyDataSetChanged();
+        */
     }
 
     public interface FragmentCommunication {
