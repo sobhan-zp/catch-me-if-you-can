@@ -31,7 +31,7 @@ function is_json(str) {
             JSON.parse(str);
             return true;
         } catch(e) {
-            console.log(e);
+            console.log("Received a non-JSON message");
             return false;
         }
     }
@@ -75,7 +75,7 @@ wss.on('connection', function(ws) {
                         });
                         break;
                     case FRIEND_SEARCH:
-                        friend.search_user(user_status.info, data.username, function(result){
+                        friend.search_user(data.username, function(result){
                             msg.to_sock(client_ws, JSON.stringify(result));
                         });
                         break;
@@ -153,7 +153,7 @@ wss.on('connection', function(ws) {
                 }
             }
         }else{
-            invalid_msg(user_status.info);
+            invalid_msg(client_ws);
         }
     });
 
@@ -162,7 +162,6 @@ wss.on('connection', function(ws) {
     var closeSocket = function() {
         for (var i = 0; i < clients.length; i++) {
             if (clients[i].id == client_uuid) {
-                console.log('client [%s] disconnected', client_uuid);
                 clients.splice(i, 1);
             }
         }
@@ -170,7 +169,10 @@ wss.on('connection', function(ws) {
 
     // WebSocket close action
     ws.on('close', function () {
-        closeSocket();
+        if (user_status.login){
+            closeSocket();
+        }
+        console.log('client [%s] disconnected', client_uuid);
     });
 
     // Server close action

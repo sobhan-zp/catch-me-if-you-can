@@ -6,7 +6,6 @@ var msg = require("./message");
 exports.new = function(userinfo, name){
     var the_game = this;
     new_game(userinfo, name, function(result){
-        console.log(result);
         msg.to_sock(userinfo.ws, JSON.stringify(result));
         if (result.game_id){
             the_game.join(userinfo, result.game_id, GAME_OWNER);

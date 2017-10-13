@@ -54,10 +54,14 @@ exports.login_check = function(username, password, sock, client_uuid, user_statu
             };
             user_status.login = true;
             user_status.info = temp_info;
-            console.log(result.result[0]['username']);
             clients.push(temp_info);
+            return fn(feedback);
+        }else{
+            var feedback = {
+                "code": LOGIN_USER_NON_EXIST_CODE
+            };
+            return fn(feedback);
         }
-        return fn(feedback);
     });
 }
 
