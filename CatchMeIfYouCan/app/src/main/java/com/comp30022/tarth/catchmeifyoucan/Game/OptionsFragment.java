@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import com.comp30022.tarth.catchmeifyoucan.Account.Message;
+import com.comp30022.tarth.catchmeifyoucan.Account.Result;
 import com.comp30022.tarth.catchmeifyoucan.R;
 
 import org.json.JSONObject;
@@ -87,15 +88,16 @@ public class OptionsFragment extends Fragment {
     }
 
     public void onResponse(final Message message) {
-        // Repopulates friendlist
-        /*
-        Participant[] participants = message.getResult();
+        // Repopulates list
+        Result[] results = message.getResult();
         array.clear();
-        for (Participant participant : participants) {
-            array.add(participant.toString());
+        for (Result result : results) {
+            array.add(
+                    "account_id: " + result.getAccount_id()
+                    + ", is_owner: " + result.getIs_owner()
+            );
         }
         adapter.notifyDataSetChanged();
-        */
     }
 
     public interface FragmentCommunication {
