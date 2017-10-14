@@ -12,6 +12,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.comp30022.tarth.catchmeifyoucan.Account.Message;
+import com.comp30022.tarth.catchmeifyoucan.Account.Result;
 import com.comp30022.tarth.catchmeifyoucan.R;
 
 import org.json.JSONObject;
@@ -72,7 +73,13 @@ public class ChatFragment extends Fragment {
 
     public void onResponse(final Message message) {
         // Repopulates list
-        array.add(Integer.toString(message.getCode()));
+        //array.add(Integer.toString(message.getCode()));
+
+        // TESTING
+        Result[] results = message.getResult();
+        for (Result result : results) {
+            array.add(Double.toString(result.getX()) + ", " + Double.toString(result.getY()));
+        }
         adapter.notifyDataSetChanged();
     }
 
@@ -80,8 +87,10 @@ public class ChatFragment extends Fragment {
         // Queries server for location updates
         JSONObject obj = new JSONObject();
         try {
-            obj.put("action", MESSAGE_COMMAND_SEND);
-            obj.put("message", "test");
+            //obj.put("action", MESSAGE_COMMAND_SEND);
+            //obj.put("message", "test");
+            // TESTING
+            obj.put("action", 613);
         } catch(Exception e) {
             e.printStackTrace();
         }
