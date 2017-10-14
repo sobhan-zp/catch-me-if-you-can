@@ -133,12 +133,12 @@ wss.on('connection', function(ws) {
                         accounts.fetch_account_info(user_status.info);
                         break;
                     case LOCATION_SEND:
-                        game.send_location(user_status.info, data.location, function(result){
+                        game.store_location(user_status.info, data.location, function(result){
                             msg.to_sock(client_ws, JSON.stringify(result));
                         });
                         break;
                     case LOCATION_GET:
-                        game.get_location(data.game_id, function(result){
+                        game.get_location(user_status.info, function(result){
                             msg.to_sock(client_ws, JSON.stringify(result));
                         });
                         break;

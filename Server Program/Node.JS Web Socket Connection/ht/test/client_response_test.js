@@ -1,3 +1,9 @@
+// Testing users:
+// admin   abcd
+// 1       2
+// Following users should not in database:
+// aas4a4sd4651fwe
+
 require("../constant");
 var db = require("../database");
 var accounts = require("../account");
@@ -23,7 +29,7 @@ describe('Simulate Client Message Send Test', function() {
         ws2.close();
     })
     describe('Actions Test', function() {
-        it('Send invalid JSON messages should return {code:UNKNOWN_ACTION}', function(done) {
+        it('Send invalid JSON messages', function(done) {
             var count = 0;
             ws.on('open', function open() {
                 ws.send('something');
@@ -40,7 +46,7 @@ describe('Simulate Client Message Send Test', function() {
                 }
             });
         });
-        it('Send valid JSON but not correct messages should return {code:UNKNOWN_ACTION}', function(done) {
+        it('Send valid JSON but not correct messages', function(done) {
             ws.on('open', function open() {
                 ws.send('{"haha": 123}');
             });
@@ -52,7 +58,7 @@ describe('Simulate Client Message Send Test', function() {
         });
     });
     describe('Login Test', function() {
-        it('Send invalid login information should return {code:LOGIN_USER_NON_EXIST_CODE}', function(done) {
+        it('Send invalid login information', function(done) {
             var count = 0;
             ws.on('open', function open() {
                 ws.send('{"username":"!@#","password":"!@#fasd","action":101}');
@@ -70,12 +76,12 @@ describe('Simulate Client Message Send Test', function() {
             });
         });
 
-        it('Send login information after login should return {code:UNKNOWN_ACTION}', function(done) {
+        it('Send login information after login', function(done) {
             var count = 0;
             ws.on('open', function open() {
                 setTimeout(function () {
                     ws.send('{"username":"admin","password":"abcd","action":101}');
-                }, 50);
+                }, 10);
                 ws.send('{"username":"admin","password":"abcd","action":101}');
             });
             ws.on('message', function incoming(data) {
@@ -88,12 +94,14 @@ describe('Simulate Client Message Send Test', function() {
             });
         });
 
-        it('Send exist login information should return {code:LOGIN_EXIST_CODE}', function(done) {
+        it('Send exist login information', function(done) {
             ws.on('open', function open() {
+                ws.send('{"username":"admin","password":"abcd","action":101}');
+            });
+            ws2.on('open', function open() {
                 setTimeout(function () {
                     ws2.send('{"username":"admin","password":"abcd","action":101}');
-                }, 50);
-                ws.send('{"username":"admin","password":"abcd","action":101}');
+                }, 10);
             });
             ws2.on('message', function incoming(data) {
                 var fm = JSON.parse(JSON.parse(data));
@@ -103,7 +111,7 @@ describe('Simulate Client Message Send Test', function() {
         });
     });
     describe('Register Test', function() {
-        it('Send invalid register information should return {code:REGISTER_FAIL}', function(done) {
+        it('Send invalid register information', function(done) {
             var count = 0;
             ws.on('open', function open() {
                 ws.send('{"username":"!@#","password":"!@#fasd","name":"","email":"t@t.com","action":100}');
@@ -122,13 +130,13 @@ describe('Simulate Client Message Send Test', function() {
         });
     });
     describe('Friend Test', function() {
-        it('Send empty username to search should return {code:FRIEND_SEARCH_FAIL}', function(done) {
+        it('Send empty username to search', function(done) {
             var count = 0;
             ws.on('open', function open() {
                 ws.send('{"username":"admin","password":"abcd","action":101}');
                 setTimeout(function () {
                     ws.send('{"username":"", "action":503}');
-                }, 50);
+                }, 10);
             });
             ws.on('message', function incoming(data) {
                 var fm = JSON.parse(JSON.parse(data));
@@ -140,13 +148,13 @@ describe('Simulate Client Message Send Test', function() {
             });
         });
 
-        it('Send non-exist username to search should return {code:FRIEND_SEARCH_SUCCESS, result:[]}', function(done) {
+        it('Send non-exist username to search', function(done) {
             var count = 0;
             ws.on('open', function open() {
                 ws.send('{"username":"admin","password":"abcd","action":101}');
                 setTimeout(function () {
                     ws.send('{"username":"aas4a4sd4651fwe", "action":503}');
-                }, 50);
+                }, 10);
             });
             ws.on('message', function incoming(data) {
                 var fm = JSON.parse(JSON.parse(data));
@@ -158,14 +166,14 @@ describe('Simulate Client Message Send Test', function() {
             });
         });
 
-        it('Send correct username to search should return {code:FRIEND_SEARCH_SUCCESS}', function(done) {
+        it('Send correct username to search', function(done) {
             var count = 0;
             ws.on('open', function open() {
                 ws.send('{"username":"admin","password":"abcd","action":101}');
                 setTimeout(function () {
                     ws.send('{"username":"admin", "action":503}');
                     ws.send('{"username":"1", "action":503}');
-                }, 50);
+                }, 10);
             });
             ws.on('message', function incoming(data) {
                 var fm = JSON.parse(JSON.parse(data));
@@ -179,13 +187,13 @@ describe('Simulate Client Message Send Test', function() {
             });
         });
 
-        it('Get friend list should always return {code:FRIEND_GET_SUCCESS, result:[friend details]}', function(done) {
+        it('Get friend list test', function(done) {
             var count = 0;
             ws.on('open', function open() {
                 ws.send('{"username":"admin","password":"abcd","action":101}');
                 setTimeout(function () {
                     ws.send('{"action":500}');
-                }, 50);
+                }, 10);
             });
             ws.on('message', function incoming(data) {
                 var fm = JSON.parse(JSON.parse(data));
@@ -198,9 +206,203 @@ describe('Simulate Client Message Send Test', function() {
         });
     });
     describe('Game Test', function() {
-
+        it('Create a game multiple times', function(done) {
+            var count = 0;
+            ws.on('open', function open() {
+                ws.send('{"username":"admin","password":"abcd","action":101}');
+                setTimeout(function () {
+                    // Exit current all game
+                    ws.send('{"action":706}');
+                }, 10);
+                setTimeout(function () {
+                    ws.send('{"action":700,"name":"hello??"}');
+                }, 20);
+                setTimeout(function () {
+                    ws.send('{"action":700,"name":"hello??"}');
+                }, 30);
+            });
+            ws.on('message', function incoming(data) {
+                var fm = JSON.parse(JSON.parse(data));
+                count = count + 1;
+                if (count==3){
+                    expect(fm).to.have.a.property('code', GAME_CREATE_SUCCESS);
+                    expect(fm).to.have.a.property('game_id');
+                }
+                if (count==4){
+                    expect(fm).to.have.a.property('code', GAME_ADD_SUCCESS);
+                }
+                if (count>=5){
+                    expect(fm).to.have.a.property('code', GAME_CREATE_FAIL);
+                    done();
+                }
+            });
+        });
+        it('Get joined game test', function(done) {
+            var count = 0;
+            ws.on('open', function open() {
+                ws.send('{"username":"admin","password":"abcd","action":101}');
+                setTimeout(function () {
+                    ws.send('{"action":718}');
+                }, 10);
+            });
+            ws.on('message', function incoming(data) {
+                var fm = JSON.parse(JSON.parse(data));
+                count = count + 1;
+                if (count>=2){
+                    expect(fm).to.have.a.property('result');
+                    expect(fm).to.have.a.property('code', GAME_GET_CURRENT_SUCCESS);
+                    done();
+                }
+            });
+        });
+        it('Get all game test', function(done) {
+            var count = 0;
+            ws.on('open', function open() {
+                ws.send('{"username":"admin","password":"abcd","action":101}');
+                setTimeout(function () {
+                    ws.send('{"action":709}');
+                }, 10);
+            });
+            ws.on('message', function incoming(data) {
+                var fm = JSON.parse(JSON.parse(data));
+                count = count + 1;
+                if (count>=2){
+                    expect(fm).to.have.a.property('result');
+                    expect(fm).to.have.a.property('code', GAME_GET_SUCCESS);
+                    done();
+                }
+            });
+        });
+        it('Get gaming users test', function(done) {
+            var count = 0;
+            ws.on('open', function open() {
+                ws.send('{"username":"admin","password":"abcd","action":101}');
+                setTimeout(function () {
+                    ws.send('{"action":723}');
+                }, 10);
+            });
+            ws.on('message', function incoming(data) {
+                var fm = JSON.parse(JSON.parse(data));
+                count = count + 1;
+                if (count>=2){
+                    expect(fm).to.have.a.property('result');
+                    expect(fm).to.have.a.property('code', GAME_GET_USER_SUCCESS);
+                    done();
+                }
+            });
+        });
+        it('Exit game test', function(done) {
+            var count = 0;
+            ws.on('open', function open() {
+                ws.send('{"username":"admin","password":"abcd","action":101}');
+                setTimeout(function () {
+                    ws.send('{"action":706}');
+                }, 10);
+                setTimeout(function () {
+                    ws.send('{"action":700,"name":"hello??"}');
+                }, 20);
+                setTimeout(function () {
+                    ws.send('{"action":706}');
+                }, 30);
+            });
+            ws.on('message', function incoming(data) {
+                var fm = JSON.parse(JSON.parse(data));
+                count = count + 1;
+                if (count>=5){
+                    expect(fm).to.have.a.property('code', GAME_EXIT_SUCCESS);
+                    done();
+                }
+            });
+        });
+        it('Location send test', function(done) {
+            var count = 0;
+            ws.on('open', function open() {
+                ws.send('{"username":"admin","password":"abcd","action":101}');
+                setTimeout(function () {
+                    ws.send('{"action":610, "location":{"x":1.0,"y":2.0}}');
+                }, 10);
+            });
+            ws.on('message', function incoming(data) {
+                var fm = JSON.parse(JSON.parse(data));
+                count = count + 1;
+                if (count>=2){
+                    expect(fm).to.have.a.property('code', LOCATION_SUCCESS);
+                    done();
+                }
+            });
+        });
+        it('Location get test', function(done) {
+            var count = 0;
+            ws.on('open', function open() {
+                ws.send('{"username":"admin","password":"abcd","action":101}');
+                setTimeout(function () {
+                    ws.send('{"action":706}');
+                }, 10);
+                setTimeout(function () {
+                    // no joined game return nothing in result
+                    ws.send('{"action":613}');
+                }, 20);
+                setTimeout(function () {
+                    // create a game
+                    ws.send('{"action":700,"name":"hello??"}');
+                }, 30);
+                setTimeout(function () {
+                    ws.send('{"action":613}');
+                }, 40);
+            });
+            ws.on('message', function incoming(data) {
+                var fm = JSON.parse(JSON.parse(data));
+                count = count + 1;
+                if (count==3){
+                    expect(fm).to.have.a.property('code', LOCATION_GET_SUCCESS);
+                    expect(fm).to.have.a.property('result');
+                }
+                if (count>=6){
+                    expect(fm).to.have.a.property('code', LOCATION_GET_SUCCESS);
+                    expect(fm).to.have.a.property('result');
+                    expect(fm.result.length).to.be.equal(0);
+                    done();
+                }
+            });
+        });
     });
     describe('Chat Test', function() {
-
+        it('Send message to offline user', function(done) {
+            var count = 0;
+            ws.on('open', function open() {
+                ws.send('{"username":"admin","password":"abcd","action":101}');
+                setTimeout(function () {
+                    ws.send('{"username":"1","message":"abcd","action":600}');
+                }, 10);
+            });
+            ws.on('message', function incoming(data) {
+                var fm = JSON.parse(JSON.parse(data));
+                count = count + 1;
+                if (count>=2){
+                    expect(fm).to.have.a.property('code', MESSAGE_SEND_SUCCESS_OFFLINE);
+                    done();
+                }
+            });
+        });
+        it('Send message to online user', function(done) {
+            var count = 0;
+            ws.on('open', function open() {
+                ws.send('{"username":"admin","password":"abcd","action":101}');
+                setTimeout(function () {
+                    ws.send('{"username":"1","message":"abcd","action":600}');
+                }, 10);
+            });
+            ws2.on('open', function open() {
+                ws2.send('{"username":"1","password":"2","action":101}');
+            });
+            ws.on('message', function incoming(data) {
+                var fm = JSON.parse(JSON.parse(data));
+                count = count + 1;
+                if (count>=2){
+                    expect(fm).to.have.a.property('code', MESSAGE_SEND_SUCCESS_ONLINE);
+                    done();
+                }
+            });
+        });
     });
 });

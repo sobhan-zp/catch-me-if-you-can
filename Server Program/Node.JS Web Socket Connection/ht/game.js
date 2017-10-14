@@ -175,8 +175,8 @@ exports.user = function(userinfo, fn){
     });
 }
 
-exports.get_location = function(game_id, fn){
-    var sql = "SELECT account_id, x, y FROM account_in_game WHERE game_id = " + game_id + " and is_owner = " + GAME_PLAYER;
+exports.get_location = function(userinfo, fn){
+    var sql = "SELECT account_id, x, y FROM account_in_game WHERE game_id in (SELECT game_id FROM account_in_game WHERE account_id = " + userinfo.db_id + ") and is_owner = " + GAME_PLAYER;
     db.execute(sql, LOCATION_GET_SUCCESS, LOCATION_GET_FAIL, function(result){
         return fn(result);
     });
