@@ -151,6 +151,10 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
 
         } else if (message.getCode().equals(FRIEND_GET_FAIL)) {
             toast("Friend get failure");
+        } else if (message.getCode().equals(FRIEND_SEARCH_SUCCESS)) {
+            System.out.println("Friend search success - here");
+        } else if (message.getCode().equals(FRIEND_SEARCH_FAIL)) {
+            System.out.println("Friend search failure");
         } else {
             toast("Error: Unknown response received");
         }
@@ -160,6 +164,7 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
     private void openUser(String username) {
         Intent intent = new Intent(this, UserActivity.class);
         intent.putExtra("username", username);
+        intent.putExtra("dashboard", false);
         startActivity(intent);
     }
 
