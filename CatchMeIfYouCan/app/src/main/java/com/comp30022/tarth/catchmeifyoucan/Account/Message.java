@@ -5,41 +5,37 @@ import com.comp30022.tarth.catchmeifyoucan.Game.Participant;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.util.Date;
+
 public class Message {
 
-    String status;
-    String type;
-    Integer code;
-    User[] users;
-    Game[] result;
-    //Participant[] result;
+    private Integer action;
+    private Integer code;
+    private Integer game_id;
+    private Integer id;
+    private Integer lv;
 
-    Integer action;
-    String message;
-    String from;
+    private String email;
+    private String from;
+    private String location;
+    private String message;
+    private String name;
+    private String status;
+    private String type;
+    private String username;
 
-    Integer game_id;
-    String name;
-    String username;
-    String email;
-    String location;
-    Integer id;
-    Integer lv;
+    private Result[] result;
 
-    public String getName() {
-        return name;
+    public Integer getAction() {
+        return action;
     }
 
-    public String getUsername() {
-        return username;
+    public Integer getCode() {
+        return code;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public String getLocation() {
-        return location;
+    public Integer getGame_id() {
+        return game_id;
     }
 
     public Integer getId() {
@@ -50,6 +46,30 @@ public class Message {
         return lv;
     }
 
+    public Long getTime() {
+        return new Date().getTime();
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getFrom() {
+        return from;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public String getName() {
+        return name;
+    }
+
     public String getStatus() {
         return status;
     }
@@ -58,42 +78,11 @@ public class Message {
         return type;
     }
 
-    public User[] getUsers() {
-        return users;
+    public String getUsername() {
+        return username;
     }
 
-    public Integer getCode() {
-        return code;
-    }
-
-    public Integer getAction() {
-        return action;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public String getFrom() {
-        return from;
-    }
-
-    public Long getTime() {
-        return 0l;
-    }
-
-    public Integer getGame_id() {
-        return game_id;
-    }
-
-    /*
-    public Participant[] getResult() {
-        return result;
-    }
-    */
-
-    public Game[] getGames() {
-        //return games;
+    public Result[] getResult() {
         return result;
     }
 
@@ -105,27 +94,31 @@ public class Message {
 
     @Override
     public String toString() {
-        String str =  "{"
-                + ((status != null) ? status + ", " : "")
-                + ((type != null) ? type + ", " : "")
-                + ((code != null) ? code + ", " : "")
-                + ((action != null) ? action + ", " : "")
-                + ((name != null) ? name + ", " : "")
-                + ((username != null) ? username + ", " : "")
-                + ((email != null) ? email + ", " : "")
-                + ((location != null) ? location + ", " : "")
-                + ((id != null) ? id + ", " : "")
-                + ((lv != null) ? lv + ", " : "")
-                + ((message != null) ? message + ", " : "")
-                + ((from != null) ? from + ", " : "");
-        if (result != null) {
-            for (Game game : result) {
-                str += game.toString();
-            //for (Participant participant : result) {
-            //    str += participant.toString();
-            }
+        return(
+                "{"
+                + ((action != null) ? ", action: " + Integer.toString(action) : "")
+                + ((code != null) ? ", code: " + Integer.toString(code) : "")
+                + ((game_id != null) ? ", game_id: " + Integer.toString(game_id) : "")
+                + ((id != null) ? ", id: " + Integer.toString(id) : "")
+                + ((lv != null) ? ", lv: " + Integer.toString(lv) : "")
+                + ((email != null) ? ", email: " + email : "")
+                + ((from != null) ? ", from: " + from : "")
+                + ((location != null) ? ", location: " + location : "")
+                + ((message != null) ? ", message: " + message : "")
+                + ((name != null) ? ", name: " + name : "")
+                + ((status != null) ? ", status: " + status : "")
+                + ((type != null) ? ", type: " + type : "")
+                + ((username != null) ? ", username: " + username : "")
+                + ((result != null) ? ", result: " + resultToString() : "")
+                + "}"
+        );
+    }
+
+    private String resultToString() {
+        String str = "";
+        for (Result res : result) {
+            str += res.toString();
         }
-        str += "}";
         return str;
     }
 

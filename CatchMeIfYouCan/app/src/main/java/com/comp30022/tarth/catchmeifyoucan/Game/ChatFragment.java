@@ -72,7 +72,7 @@ public class ChatFragment extends Fragment {
 
     public void onResponse(final Message message) {
         // Repopulates list
-        array.add(message.getMessage());
+        array.add(Integer.toString(message.getCode()));
         adapter.notifyDataSetChanged();
     }
 

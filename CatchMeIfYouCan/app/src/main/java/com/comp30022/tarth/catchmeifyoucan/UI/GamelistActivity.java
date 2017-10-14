@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.comp30022.tarth.catchmeifyoucan.Account.Communication;
 import com.comp30022.tarth.catchmeifyoucan.Account.Message;
+import com.comp30022.tarth.catchmeifyoucan.Account.Result;
 import com.comp30022.tarth.catchmeifyoucan.Game.Game;
 import com.comp30022.tarth.catchmeifyoucan.R;
 
@@ -95,17 +96,20 @@ public class GamelistActivity extends AppCompatActivity implements Communication
     private void verify(Message message) {
         if (message.getCode().equals(GAME_GET_CURRENT_SUCCESS)) {
             toast("Game resume get success");
-            joinGame(message.getGames()[0].getName().toString());
+            joinGame(message.getResult()[0].getName().toString());
         } else if (message.getCode().equals(GAME_GET_CURRENT_FAIL)) {
             toast("Game resume get failure");
         } else if (message.getCode().equals(GAME_GET_SUCCESS)) {
             toast("Game get success");
 
             // Repopulates list
-            Game[] games = message.getGames();
+            Result[] results = message.getResult();
             array.clear();
-            for (Game game : games) {
-                array.add(game.toString());
+            for (Result result : results) {
+                array.add(
+                        "id: " + Integer.toString(result.getId())
+                        + ", name: " + result.getName()
+                );
             }
             adapter.notifyDataSetChanged();
 

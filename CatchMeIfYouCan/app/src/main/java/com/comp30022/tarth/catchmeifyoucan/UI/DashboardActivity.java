@@ -171,6 +171,7 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
     private void verify(Message message) {
         if (message.getCode().equals(GAME_CREATE_SUCCESS)) {
             toast("Game creation successful");
+            openGame(message);
         } else if (message.getCode().equals(GAME_CREATE_FAIL)) {
             toast("Game creation failed");
             JSONObject obj = new JSONObject();

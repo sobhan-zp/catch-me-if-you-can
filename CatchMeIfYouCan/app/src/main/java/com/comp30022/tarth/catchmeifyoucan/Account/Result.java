@@ -1,0 +1,63 @@
+package com.comp30022.tarth.catchmeifyoucan.Account;
+
+public class Result {
+
+    private Double x;
+    private Double y;
+
+    private Integer id;
+    private Integer account_id;
+    private Integer game_id;
+    private Integer is_owner;
+
+    private String email;
+    private String name;
+    private String username;
+
+    public Double getX() {
+        return x;
+    }
+    public Double getY() {
+        return y;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+    public Integer getAccount_id() {
+        return account_id;
+    }
+    public Integer getGame_id() {
+        return game_id;
+    }
+    public Integer getIs_owner() {
+        return is_owner;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+    public String getName() {
+        return name;
+    }
+    public String getUsername() {
+        return username;
+    }
+
+    @Override
+    public String toString() {
+        return (
+                "{"
+                + ((x != null) ? "x: " + Double.toString(x) : "")
+                + ((y != null) ? ", y: " + Double.toString(y) : "")
+                + ((id != null) ? ", id: " + Integer.toString(id) : "")
+                + ((account_id != null) ? ", account_id: " + Integer.toString(account_id) : "")
+                + ((game_id != null) ? ", game_id: " + Integer.toString(game_id) : "")
+                + ((is_owner != null) ? ", is_owner: " + Integer.toString(is_owner) : "")
+                + ((email != null) ? ", email: " + email : "")
+                + ((name != null) ? ", name: " + name : "")
+                + ((username != null) ? ", username: " + username : "")
+                + "}"
+        );
+    }
+}
