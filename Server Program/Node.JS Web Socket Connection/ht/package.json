@@ -1,7 +1,7 @@
 {
-  "name": "ht",
-  "version": "1.0.0",
-  "description": "house tarth project",
+  "name": "Catch Me If You Can",
+  "version": "0.0.1",
+  "description": "House Tarth Team IT Project",
   "main": "server.js",
   "scripts": {
     "test": "mocha"

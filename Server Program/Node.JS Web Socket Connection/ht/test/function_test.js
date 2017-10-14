@@ -6,7 +6,6 @@ var friend = require("../friend");
 var game = require("../game");
 var assert = require("assert");
 var expect = require('chai').expect;
-var sinon = require('sinon');
 
 SUCCESS = 1;
 FAIL = 0;
