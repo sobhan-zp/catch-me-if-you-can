@@ -24,6 +24,10 @@ import java.util.List;
 
 public class GamelistActivity extends AppCompatActivity implements Communication {
 
+    private static final Integer GAME_ADD = 703;
+    private static final Integer GAME_ADD_SUCCESS = 704;
+    private static final Integer GAME_ADD_FAIL = 705;
+
     private static final Integer GAME_GET = 709;
     private static final Integer GAME_GET_SUCCESS = 710;
     private static final Integer GAME_GET_FAIL = 711;
@@ -57,7 +61,8 @@ public class GamelistActivity extends AppCompatActivity implements Communication
         listViewGames.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                joinGame(listViewGames.getItemAtPosition(position).toString());
+                System.out.println(listViewGames.getItemAtPosition(position).toString());
+                joinGame(Integer.parseInt(listViewGames.getItemAtPosition(position).toString()));
             }
         });
 
@@ -96,7 +101,7 @@ public class GamelistActivity extends AppCompatActivity implements Communication
     private void verify(Message message) {
         if (message.getCode().equals(GAME_GET_CURRENT_SUCCESS)) {
             toast("Game resume get success");
-            joinGame(message.getResult()[0].getName().toString());
+            joinGame(message.getResult()[0].getGame_id());
         } else if (message.getCode().equals(GAME_GET_CURRENT_FAIL)) {
             toast("Game resume get failure");
         } else if (message.getCode().equals(GAME_GET_SUCCESS)) {
@@ -107,14 +112,18 @@ public class GamelistActivity extends AppCompatActivity implements Communication
             array.clear();
             for (Result result : results) {
                 array.add(
-                        "id: " + Integer.toString(result.getId())
-                        + ", name: " + result.getName()
+                        Integer.toString(result.getId())
                 );
             }
             adapter.notifyDataSetChanged();
 
         } else if (message.getCode().equals(GAME_GET_FAIL)) {
             toast("Game get failure");
+        } else if (message.getCode().equals(GAME_ADD_SUCCESS)) {
+            toast("Successfully joined game");
+            openGame();
+        } else if (message.getCode().equals(GAME_ADD_FAIL)) {
+            toast("Failed to join game");
         } else {
             toast("Error: Unknown response received");
         }
@@ -131,8 +140,22 @@ public class GamelistActivity extends AppCompatActivity implements Communication
         LoginActivity.getClient().send(obj.toString());
     }
 
-    // Navigates to User Activity
-    private void joinGame(String gameName) {
+    // Attempts to join a game
+    private void joinGame(Integer game_id) {
+        //{"action":703, "id":1}
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("action", GAME_ADD);
+            obj.put("id", game_id);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        System.out.println(obj.toString());
+        LoginActivity.getClient().send(obj.toString());
+    }
+
+    // Navigates to Game Activity
+    private void openGame() {
         Intent intent = new Intent(this, GameActivity.class);
         startActivity(intent);
     }

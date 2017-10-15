@@ -556,7 +556,10 @@ public class GameActivity extends FragmentActivity implements OnMapReadyCallback
             toast("Game get users failure");
         } else if (message.getCode().equals(614)) {
             // TESTING TESTING
+            toast("Location get successful");
             ((ChatFragment) chatFragment).onResponse(message);
+        } else if (message.getCode().equals(615)) {
+            toast("Location get failure");
         }
     }
 
