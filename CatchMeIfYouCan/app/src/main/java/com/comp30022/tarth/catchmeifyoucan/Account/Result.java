@@ -12,6 +12,7 @@ public class Result {
 
     private String email;
     private String name;
+    private String status;
     private String username;
 
     public Double getX() {
@@ -40,6 +41,9 @@ public class Result {
     public String getName() {
         return name;
     }
+    public String getStatus() {
+        return status;
+    }
     public String getUsername() {
         return username;
     }
@@ -56,6 +60,7 @@ public class Result {
                 + ((is_owner != null) ? ", is_owner: " + Integer.toString(is_owner) : "")
                 + ((email != null) ? ", email: " + email : "")
                 + ((name != null) ? ", name: " + name : "")
+                + ((status != null) ? ", status: " + status : "")
                 + ((username != null) ? ", username: " + username : "")
                 + "}"
         );
