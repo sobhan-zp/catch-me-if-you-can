@@ -1,11 +1,17 @@
 {
-  "name": "ht",
-  "version": "1.0.0",
-  "description": "house tarth project",
-  "main": "index.js",
+  "name": "Catch Me If You Can",
+  "version": "0.0.1",
+  "description": "House Tarth Team IT Project",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
   "author": "house tarth team",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "async": "^2.5.0",
+    "mysql": "^2.15.0",
+    "node-uuid": "^1.4.8",
+    "ws": "^3.2.0"
+  }
 }

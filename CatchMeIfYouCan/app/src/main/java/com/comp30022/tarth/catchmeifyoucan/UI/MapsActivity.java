@@ -3,8 +3,6 @@ package com.comp30022.tarth.catchmeifyoucan.UI;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,7 +12,6 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.comp30022.tarth.catchmeifyoucan.R;
@@ -33,7 +30,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,8 +54,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     boolean addWaypoints = false;
     MapDirectionsData lastDirectionsData = null;
     List<Marker> mMarkers = new ArrayList<Marker>();
-    private static final double WP_RADIUS = 100;
+    private static final double WP_RADIUS = 10;
     private boolean nearWp = false;
+
+    private List<Marker> othersMarker = new ArrayList<Marker>();
+    public List<Double> othersLocation = new ArrayList<Double>();
+
 
 
     @Override
@@ -284,31 +284,36 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         switch(v.getId()) {
             case R.id.B_search: {
-                EditText tf_location = (EditText) findViewById(R.id.TF_location);
-                String location = tf_location.getText().toString();
-                List<Address> addressList = null;
-                MarkerOptions markerOptions = new MarkerOptions();
-                Log.d("location = ", location);
-
-                if (!location.equals("")) {
-                    Geocoder geocoder = new Geocoder(this);
-                    try {
-                        addressList = geocoder.getFromLocationName(location, 5);
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                    if (addressList != null) {
-                        for (int i = 0; i < addressList.size(); i++) {
-                            Address myAddress = addressList.get(i);
-                            LatLng latLng = new LatLng(myAddress.getLatitude(), myAddress.getLongitude());
-                            markerOptions.position(latLng);
-                            mMap.addMarker(markerOptions);
-                            mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
-                        }
-                    }
-                }
+//                EditText tf_location = (EditText) findViewById(R.id.TF_location);
+//                String location = tf_location.getText().toString();
+//                List<Address> addressList = null;
+//                MarkerOptions markerOptions = new MarkerOptions();
+//                Log.d("location = ", location);
+//
+//                if (!location.equals("")) {
+//                    Geocoder geocoder = new Geocoder(this);
+//                    try {
+//                        addressList = geocoder.getFromLocationName(location, 5);
+//
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//
+//                    if (addressList != null) {
+//                        for (int i = 0; i < addressList.size(); i++) {
+//                            Address myAddress = addressList.get(i);
+//                            LatLng latLng = new LatLng(myAddress.getLatitude(), myAddress.getLongitude());
+//                            markerOptions.position(latLng);
+//                            mMap.addMarker(markerOptions);
+//                            mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+//                        }
+//                    }
+//                }
+                othersLocation.add(-37.814);
+                othersLocation.add(144.96332);
+                othersLocation.add(-37.6);
+                othersLocation.add(144.98);
+                updateOthers();
             }
             break;
 
@@ -430,6 +435,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     // Broadcasts location to server
     private void broadcastLocation() {
         //curr_latitude, curr_longitude
+    }
+
+
+    public void updateOthers(){
+        for(int j=othersMarker.size()-1; j>=0; j--){
+            othersMarker.get(j).remove();
+        }
+        int count = othersLocation.size()-1;
+        for(int i=0; i<count; i+=2){
+            LatLng latLng = new LatLng(othersLocation.get(i), othersLocation.get(i+1));
+            MarkerOptions markerOptions = new MarkerOptions();
+            markerOptions.position(latLng);
+            markerOptions.title("people");
+            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
+            Marker oMarker = mMap.addMarker(markerOptions);
+            othersMarker.add(oMarker);
+        }
     }
 
 }

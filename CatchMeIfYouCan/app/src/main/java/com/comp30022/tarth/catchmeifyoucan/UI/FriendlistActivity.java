@@ -165,6 +165,7 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
     private void openUser(String username) {
         Intent intent = new Intent(this, UserActivity.class);
         intent.putExtra("username", username);
+        intent.putExtra("dashboard", false);
         startActivity(intent);
     }
 
