@@ -13,6 +13,7 @@
         android:layout_centerHorizontal="true"
         android:textSize="20sp" />
 
+    
     <EditText
         android:id="@+id/editTextPassword"
         android:layout_below="@+id/editTextUsername"
