@@ -560,6 +560,14 @@ public class GameActivity extends FragmentActivity implements OnMapReadyCallback
             ((ChatFragment) chatFragment).onResponse(message);
         } else if (message.getCode().equals(615)) {
             toast("Location get failure");
+        } else if (message.getCode().equals(GAME_EXIT_SUCCESS)) {
+            toast("Game exit successful");
+        } else if (message.getCode().equals(GAME_EXIT_FAIL)) {
+            toast("Game exit failure");
+        } else if (message.getCode().equals(GAME_DELETE_SUCCESS)) {
+            toast("Game delete successful");
+        } else if (message.getCode().equals(GAME_DELETE_FAIL)) {
+            toast("Game delete failure");
         }
     }
 
@@ -580,6 +588,13 @@ public class GameActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onExit() {
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("action", GAME_EXIT);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        LoginActivity.getClient().send(obj.toString());
         onBackPressed();
         onBackPressed();
     }
