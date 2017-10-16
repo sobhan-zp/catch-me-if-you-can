@@ -65,6 +65,9 @@
             android:name=".UI.ChatActivity"
             android:label="Chat"></activity>
         <activity
+            android:name=".UI.SettingsActivity"
+            android:label="Settings"></activity>
+        <activity
             android:name=".UI.MapsActivity"
             android:label="Maps"></activity>
         <activity

@@ -56,7 +56,6 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
         buttonLogout = (Button) findViewById(R.id.buttonLogout);
         buttonSettings = (Button) findViewById(R.id.buttonSettings);
 
-
         TextView textViewUsername = (TextView) findViewById(R.id.Username);
         Intent intent = getIntent();
         Bundle bd = intent.getExtras();
@@ -125,7 +124,7 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
         });
     }
 
-    // Disables back button -- you nee dto click logout to exit
+    // Disables back button -- you need to click logout to exit
     @Override
     public void onBackPressed() {
         logoutWarning();
