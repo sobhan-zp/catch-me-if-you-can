@@ -1,6 +1,5 @@
 package com.comp30022.tarth.catchmeifyoucan.UI;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
@@ -11,9 +10,9 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.comp30022.tarth.catchmeifyoucan.Account.Communication;
-import com.comp30022.tarth.catchmeifyoucan.Account.Message;
-import com.comp30022.tarth.catchmeifyoucan.Account.WebSocketClient;
+import com.comp30022.tarth.catchmeifyoucan.Server.Communication;
+import com.comp30022.tarth.catchmeifyoucan.Server.Message;
+import com.comp30022.tarth.catchmeifyoucan.Server.WebSocketClient;
 import com.comp30022.tarth.catchmeifyoucan.R;
 
 import org.json.JSONObject;
@@ -30,8 +29,6 @@ public class RegisterActivity extends AppCompatActivity implements Communication
     private static final Integer REGISTER_SUCCESS = 300;      // Register success
     private static final Integer REGISTER_FAIL = 301;         // Register failure
 
-    private WebSocketClient mClient;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,9 +41,8 @@ public class RegisterActivity extends AppCompatActivity implements Communication
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
-        mClient = new WebSocketClient();
-        mClient.connect();
-        mClient.setmCurrentActivity(this);
+        WebSocketClient.getClient().connect();
+        WebSocketClient.getClient().setActivity(this);
 
         Button buttonCreate = (Button) findViewById(R.id.buttonCreate);
         buttonCreate.setOnClickListener(new View.OnClickListener() {
@@ -59,6 +55,7 @@ public class RegisterActivity extends AppCompatActivity implements Communication
 
     @Override
     public void onBackPressed() {
+        WebSocketClient.getClient().disconnect();
         finish();
     }
 
@@ -100,7 +97,7 @@ public class RegisterActivity extends AppCompatActivity implements Communication
         } catch(Exception e) {
             e.printStackTrace();
         }
-        mClient.send(obj.toString());
+        WebSocketClient.getClient().send(obj.toString());
     }
 
     private void verify(Message message) {
@@ -143,6 +140,7 @@ public class RegisterActivity extends AppCompatActivity implements Communication
 
     // Navigates to Main Activity
     private void backToMain() {
+        WebSocketClient.getClient().disconnect();
         finish();
     }
 

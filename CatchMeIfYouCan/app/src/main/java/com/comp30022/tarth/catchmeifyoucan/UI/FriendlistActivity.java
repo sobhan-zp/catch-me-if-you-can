@@ -10,16 +10,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.comp30022.tarth.catchmeifyoucan.Account.Communication;
-import com.comp30022.tarth.catchmeifyoucan.Account.Message;
-import com.comp30022.tarth.catchmeifyoucan.Account.Result;
-import com.comp30022.tarth.catchmeifyoucan.Account.User;
+import com.comp30022.tarth.catchmeifyoucan.Server.Communication;
+import com.comp30022.tarth.catchmeifyoucan.Server.Message;
+import com.comp30022.tarth.catchmeifyoucan.Server.Result;
 import com.comp30022.tarth.catchmeifyoucan.R;
+import com.comp30022.tarth.catchmeifyoucan.Server.WebSocketClient;
 
 import org.json.JSONObject;
 
@@ -45,7 +43,7 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_friendlist);
-        LoginActivity.getClient().setmCurrentActivity(this);
+        WebSocketClient.getClient().setActivity(this);
 
         // Enable Internet permissions
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
@@ -109,33 +107,8 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
         } catch(Exception e) {
             e.printStackTrace();
         }
-        LoginActivity.getClient().send(obj.toString());
+        WebSocketClient.getClient().send(obj.toString());
     }
-
-    /*
-    // Checks if a friend is online
-    private void checkFriend() {
-        JSONObject obj = new JSONObject();
-        try {
-            obj.put("action", FRIEND_CHECK);
-            obj.put("username", "1");
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
-        LoginActivity.getClient().send(obj.toString());
-    }
-    // Searches for the details of an existing user
-    private void searchFriend() {
-        JSONObject obj = new JSONObject();
-        try {
-            obj.put("action", FRIEND_SEARCH);
-            obj.put("username", "TEST");
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
-        LoginActivity.getClient().send(obj.toString());
-    }
-    */
 
     // Verifies responses from the server
     private void verify(Message message) {
@@ -180,7 +153,7 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1) {
             if (resultCode == Activity.RESULT_OK) {
-                LoginActivity.getClient().setmCurrentActivity(this);
+                WebSocketClient.getClient().setActivity(this);
             }
         }
         getFriend();

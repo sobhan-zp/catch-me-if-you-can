@@ -1,4 +1,4 @@
-package com.comp30022.tarth.catchmeifyoucan.Account;
+package com.comp30022.tarth.catchmeifyoucan.Server;
 
 import android.util.Log;
 

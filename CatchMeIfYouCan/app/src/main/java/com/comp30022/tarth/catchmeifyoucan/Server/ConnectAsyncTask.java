@@ -1,9 +1,7 @@
-package com.comp30022.tarth.catchmeifyoucan.Account;
+package com.comp30022.tarth.catchmeifyoucan.Server;
 
 import android.os.AsyncTask;
 import android.util.Log;
-
-import com.comp30022.tarth.catchmeifyoucan.Account.TCPClient;
 
 /*
  * AsyncTask for connecting to the server and receiving responses

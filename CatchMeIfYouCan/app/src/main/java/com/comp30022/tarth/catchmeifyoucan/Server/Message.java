@@ -1,7 +1,5 @@
-package com.comp30022.tarth.catchmeifyoucan.Account;
+package com.comp30022.tarth.catchmeifyoucan.Server;
 
-import com.comp30022.tarth.catchmeifyoucan.Game.Game;
-import com.comp30022.tarth.catchmeifyoucan.Game.Participant;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 

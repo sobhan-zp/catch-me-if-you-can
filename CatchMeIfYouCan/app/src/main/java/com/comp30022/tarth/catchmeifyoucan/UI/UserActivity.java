@@ -9,11 +9,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.comp30022.tarth.catchmeifyoucan.Account.Communication;
-import com.comp30022.tarth.catchmeifyoucan.Account.Message;
-import com.comp30022.tarth.catchmeifyoucan.Account.Result;
-import com.comp30022.tarth.catchmeifyoucan.Account.User;
+import com.comp30022.tarth.catchmeifyoucan.Server.Communication;
+import com.comp30022.tarth.catchmeifyoucan.Server.Message;
+import com.comp30022.tarth.catchmeifyoucan.Server.Result;
+import com.comp30022.tarth.catchmeifyoucan.Server.User;
 import com.comp30022.tarth.catchmeifyoucan.R;
+import com.comp30022.tarth.catchmeifyoucan.Server.WebSocketClient;
 
 import org.json.JSONObject;
 
@@ -43,7 +44,7 @@ public class UserActivity extends AppCompatActivity implements Communication {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user);
         // Set server to send responses back to this class
-        LoginActivity.getClient().setmCurrentActivity(this);
+        WebSocketClient.getClient().setActivity(this);
 
         //buttonGet = (Button) findViewById(R.id.buttonGet);
         buttonChat = (Button) findViewById(R.id.buttonChat);
@@ -112,7 +113,7 @@ public class UserActivity extends AppCompatActivity implements Communication {
             e.printStackTrace();
         }
         // send to server
-        LoginActivity.getClient().send(obj.toString());
+        WebSocketClient.getClient().send(obj.toString());
     }
 
     /* Sends server a JSON request to check if user is online*/
@@ -126,7 +127,7 @@ public class UserActivity extends AppCompatActivity implements Communication {
         } catch(Exception e) {
             e.printStackTrace();
         }
-        LoginActivity.getClient().send(obj.toString());
+        WebSocketClient.getClient().send(obj.toString());
     }
 
     // Handles server response logic

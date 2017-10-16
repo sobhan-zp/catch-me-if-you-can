@@ -11,9 +11,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.comp30022.tarth.catchmeifyoucan.Account.Communication;
-import com.comp30022.tarth.catchmeifyoucan.Account.Message;
+import com.comp30022.tarth.catchmeifyoucan.Server.Communication;
+import com.comp30022.tarth.catchmeifyoucan.Server.Message;
 import com.comp30022.tarth.catchmeifyoucan.R;
+import com.comp30022.tarth.catchmeifyoucan.Server.WebSocketClient;
 
 import org.json.JSONObject;
 
@@ -44,7 +45,7 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
-        LoginActivity.getClient().setmCurrentActivity(this);
+        WebSocketClient.getClient().setActivity(this);
 
         // constructors
         buttonChat = (Button) findViewById(R.id.buttonChat);
@@ -80,7 +81,7 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
                 } catch(Exception e) {
                     e.printStackTrace();
                 }
-                LoginActivity.getClient().send(obj.toString());
+                WebSocketClient.getClient().send(obj.toString());
             }
         });
 
@@ -93,7 +94,7 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
                 } catch(Exception e) {
                     e.printStackTrace();
                 }
-                LoginActivity.getClient().send(obj.toString());
+                WebSocketClient.getClient().send(obj.toString());
             }
         });
         buttonFriendlist.setOnClickListener(new Button.OnClickListener() {
@@ -146,7 +147,7 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
 
     // Disconnects from server and returns to main menu
     public void logout() {
-        LoginActivity.getClient().disconnect();
+        WebSocketClient.getClient().disconnect();
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }

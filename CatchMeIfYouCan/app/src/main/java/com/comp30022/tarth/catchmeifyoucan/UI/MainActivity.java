@@ -8,6 +8,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import com.comp30022.tarth.catchmeifyoucan.Server.Communication;
+import com.comp30022.tarth.catchmeifyoucan.Server.Message;
+import com.comp30022.tarth.catchmeifyoucan.Server.WebSocketClient;
 import com.comp30022.tarth.catchmeifyoucan.R;
 
 public class MainActivity extends AppCompatActivity {
@@ -82,8 +85,5 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void exit(View view) {
-        System.exit(0);
-    }
 }
 

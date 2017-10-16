@@ -8,7 +8,6 @@ import android.text.Layout;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.AlignmentSpan;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,9 +16,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.comp30022.tarth.catchmeifyoucan.Account.Communication;
-import com.comp30022.tarth.catchmeifyoucan.Account.Message;
-import com.comp30022.tarth.catchmeifyoucan.Account.WebSocketClient;
+import com.comp30022.tarth.catchmeifyoucan.Server.Communication;
+import com.comp30022.tarth.catchmeifyoucan.Server.Message;
+import com.comp30022.tarth.catchmeifyoucan.Server.WebSocketClient;
 import com.comp30022.tarth.catchmeifyoucan.R;
 
 import org.json.JSONObject;
@@ -38,11 +37,7 @@ public class LoginActivity extends AppCompatActivity implements Communication {
     private static final Integer LOGIN_EXIST_CODE = 202;
 
     private Button buttonLogin;
-//    private Button buttonBack;
-    TextView textViewRegister;
-
-
-    public static WebSocketClient mClient;
+    private TextView textViewRegister;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,9 +52,9 @@ public class LoginActivity extends AppCompatActivity implements Communication {
         StrictMode.setThreadPolicy(policy);
 
         // Initialises the WebSocket client
-        mClient = new WebSocketClient();
-        mClient.connect();
-        mClient.setmCurrentActivity(this);
+
+        WebSocketClient.getClient().connect();
+        WebSocketClient.getClient().setActivity(this);
 
         buttonLogin = (Button) findViewById(R.id.buttonLogin);
 //      buttonBack = (Button) findViewById(R.id.buttonBack);
@@ -89,7 +84,7 @@ public class LoginActivity extends AppCompatActivity implements Communication {
 
     @Override
     public void onBackPressed() {
-        mClient.disconnect();
+        WebSocketClient.getClient().disconnect();
         finish();
     }
 
@@ -131,7 +126,7 @@ public class LoginActivity extends AppCompatActivity implements Communication {
         } catch(Exception e) {
             e.printStackTrace();
         }
-        mClient.send(obj.toString());
+        WebSocketClient.getClient().send(obj.toString());
     }
 
     private void verify(Message message) {
@@ -192,12 +187,6 @@ public class LoginActivity extends AppCompatActivity implements Communication {
         startActivity(intent);
     }
 
- /*   // Navigates to previous activity
-    public void back() {
-        mClient.disconnect();
-        finish();
-    }*/
-
     // Displays a toast message
     private void toast(String text) {
         Spannable centeredText = new SpannableString(text);
@@ -209,8 +198,5 @@ public class LoginActivity extends AppCompatActivity implements Communication {
         //Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
-    public static WebSocketClient getClient() {
-        return mClient;
-    }
 }
 

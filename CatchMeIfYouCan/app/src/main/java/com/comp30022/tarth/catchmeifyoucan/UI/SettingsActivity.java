@@ -11,9 +11,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.comp30022.tarth.catchmeifyoucan.Account.Communication;
-import com.comp30022.tarth.catchmeifyoucan.Account.Message;
+import com.comp30022.tarth.catchmeifyoucan.Server.Communication;
+import com.comp30022.tarth.catchmeifyoucan.Server.Message;
 import com.comp30022.tarth.catchmeifyoucan.R;
+import com.comp30022.tarth.catchmeifyoucan.Server.WebSocketClient;
 
 import org.json.JSONObject;
 
@@ -46,7 +47,7 @@ public class SettingsActivity extends AppCompatActivity implements Communication
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
-        LoginActivity.getClient().setmCurrentActivity(this);
+        WebSocketClient.getClient().setActivity(this);
 
         //buttonGet = (Button) findViewById(R.id.buttonGet);
         buttonUpdate = (Button) findViewById(R.id.buttonUpdate);
@@ -105,7 +106,7 @@ public class SettingsActivity extends AppCompatActivity implements Communication
         } catch(Exception e) {
             e.printStackTrace();
         }
-        LoginActivity.getClient().send(obj.toString());
+        WebSocketClient.getClient().send(obj.toString());
     }
 
     @Override
@@ -123,7 +124,7 @@ public class SettingsActivity extends AppCompatActivity implements Communication
         } catch(Exception e) {
             e.printStackTrace();
         }
-        LoginActivity.getClient().send(obj.toString());
+        WebSocketClient.getClient().send(obj.toString());
     }
 
     /* Sends request to see if user is online */
@@ -137,7 +138,7 @@ public class SettingsActivity extends AppCompatActivity implements Communication
         } catch(Exception e) {
             e.printStackTrace();
         }
-        LoginActivity.getClient().send(obj.toString());
+        WebSocketClient.getClient().send(obj.toString());
     }
 
     /* Handles the response logic from a message sent by the server*/
