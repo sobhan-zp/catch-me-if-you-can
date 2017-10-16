@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -35,6 +37,9 @@ public class RegisterActivity extends AppCompatActivity implements Communication
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
+        // Add back button
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         // Enable Internet permissions
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
@@ -55,6 +60,23 @@ public class RegisterActivity extends AppCompatActivity implements Communication
     @Override
     public void onBackPressed() {
         finish();
+    }
+
+    // Set back button on action bar
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    // Get menu
+    public boolean onCreateOptionsMenu(Menu menu) {
+        return true;
     }
 
     // Extracts user-entered information into a JSON formatted string to be sent
