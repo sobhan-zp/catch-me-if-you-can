@@ -37,6 +37,9 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
     private static final Integer GAME_EXIT = 706;
     private static final Integer GAME_GET = 709;
     private static final Integer GAME_DELETE = 712;
+    private static final Integer GAME_GET_CURRENT = 718;
+    private static final Integer GAME_GET_CURRENT_SUCCESS = 719;
+    private static final Integer GAME_GET_CURRENT_FAIL = 720;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,7 +88,13 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
         buttonJoin.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openGamelist();
+                JSONObject obj = new JSONObject();
+                try {
+                    obj.put("action", GAME_GET_CURRENT);
+                } catch(Exception e) {
+                    e.printStackTrace();
+                }
+                LoginActivity.getClient().send(obj.toString());
             }
         });
         buttonFriendlist.setOnClickListener(new Button.OnClickListener() {
@@ -169,7 +178,12 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
     }
 
     private void verify(Message message) {
-        if (message.getCode().equals(GAME_CREATE_SUCCESS)) {
+        if (message.getCode().equals(GAME_GET_CURRENT_SUCCESS)) {
+            toast("Get current game successful");
+            openGame(message);
+        } else if (message.getCode().equals(GAME_GET_CURRENT_FAIL)) {
+            toast("Get current game failure");
+        } else if (message.getCode().equals(GAME_CREATE_SUCCESS)) {
             toast("Game creation successful");
             openGame(message);
         } else if (message.getCode().equals(GAME_CREATE_FAIL)) {
