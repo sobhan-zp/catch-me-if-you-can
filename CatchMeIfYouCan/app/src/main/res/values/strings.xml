@@ -15,12 +15,9 @@
         completions."
     </string>
 
-<<<<<<< HEAD
     <string name="title_activity_game">GameActivity</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
 
-=======
->>>>>>> 6f306814f3ccb17fbf03cc48a3fa640e9d22664b
 </resources>
