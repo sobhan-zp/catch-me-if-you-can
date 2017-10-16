@@ -183,22 +183,21 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
 
     private void verify(Message message) {
         if (message.getCode().equals(GAME_GET_CURRENT_SUCCESS)) {
-            toast("Get current game successful");
-            openGame(message);
+            if (message.getResult().length == 0) {
+                toast("No active games");
+                openGamelist();
+            } else {
+                toast("Rejoined existing game");
+                openGame(message);
+            }
         } else if (message.getCode().equals(GAME_GET_CURRENT_FAIL)) {
             toast("Get current game failure");
+            openGamelist();
         } else if (message.getCode().equals(GAME_CREATE_SUCCESS)) {
             toast("Game creation successful");
             openGame(message);
         } else if (message.getCode().equals(GAME_CREATE_FAIL)) {
             toast("Game creation failed");
-            JSONObject obj = new JSONObject();
-            try {
-                obj.put("action", GAME_EXIT);
-            } catch(Exception e) {
-                e.printStackTrace();
-            }
-            LoginActivity.getClient().send(obj.toString());
         } else if (message.getCode().equals(GAME_ADD_SUCCESS)) {
             toast("You have been added to the game");
             openGame(message);
