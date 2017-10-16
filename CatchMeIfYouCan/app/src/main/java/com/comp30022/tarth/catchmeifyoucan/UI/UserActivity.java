@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.comp30022.tarth.catchmeifyoucan.Account.Communication;
 import com.comp30022.tarth.catchmeifyoucan.Account.Message;
+import com.comp30022.tarth.catchmeifyoucan.Account.Result;
 import com.comp30022.tarth.catchmeifyoucan.Account.User;
 import com.comp30022.tarth.catchmeifyoucan.R;
 
@@ -135,7 +136,7 @@ public class UserActivity extends AppCompatActivity implements Communication {
 
         if (message.getCode().equals(FRIEND_SEARCH_SUCCESS)) {
             // Strip result from JSON
-            profile = message.getResult()[0];
+            Result profile = message.getResult()[0];
 
             /*System.out.println("recvname->" + profile.getName());
             System.out.println("recvusername->" + profile.getUsername());
@@ -146,7 +147,7 @@ public class UserActivity extends AppCompatActivity implements Communication {
             // Assign updated fields to UI
             textViewName.setText(profile.getName());
             textViewUsername.setText("@" + profile.getUsername());
-            textViewLocation.setText(profile.getLocation());
+            textViewLocation.setText(profile.getX() + "," + profile.getY());
             textViewStatus.setText(profile.getStatus());
 
             getOnline();

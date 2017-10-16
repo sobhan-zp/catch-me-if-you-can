@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.comp30022.tarth.catchmeifyoucan.Account.Communication;
 import com.comp30022.tarth.catchmeifyoucan.Account.Message;
+import com.comp30022.tarth.catchmeifyoucan.Account.Result;
 import com.comp30022.tarth.catchmeifyoucan.Account.User;
 import com.comp30022.tarth.catchmeifyoucan.R;
 
@@ -141,11 +142,11 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
         if (message.getCode().equals(FRIEND_GET_SUCCESS)) {
             toast("Friend get success");
 
-            // Repopulates friendlist
-            User[] users = message.getResult();
+            // Repopulates list
+            Result[] results = message.getResult();
             array.clear();
-            for (User user : users) {
-                array.add(user.getUsername());
+            for (Result result : results) {
+                array.add(result.getUsername());
             }
             adapter.notifyDataSetChanged();
 

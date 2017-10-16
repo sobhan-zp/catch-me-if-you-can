@@ -15,32 +15,46 @@ import com.comp30022.tarth.catchmeifyoucan.Account.Communication;
 import com.comp30022.tarth.catchmeifyoucan.Account.Message;
 import com.comp30022.tarth.catchmeifyoucan.R;
 
+import org.json.JSONObject;
+
 public class DashboardActivity extends AppCompatActivity implements Communication {
 
     private Button buttonChat;
     private Button buttonLogout;
     private Button buttonFriendlist;
     private Button buttonSettings;
-    private Button buttonJoinGame;
-    private Button buttonGame;
+    private Button buttonJoin;
+    private Button buttonCreate;
     private ImageView imageViewTest;
     private String getName;
 
+    private static final Integer GAME_CREATE = 700;
+    private static final Integer GAME_CREATE_SUCCESS = 701;
+    private static final Integer GAME_CREATE_FAIL = 702;
+    private static final Integer GAME_ADD_SUCCESS = 704;
+    private static final Integer GAME_ADD_FAIL = 705;
+    private static final Integer GAME_EXIT = 706;
+    private static final Integer GAME_GET = 709;
+    private static final Integer GAME_DELETE = 712;
+    private static final Integer GAME_GET_CURRENT = 718;
+    private static final Integer GAME_GET_CURRENT_SUCCESS = 719;
+    private static final Integer GAME_GET_CURRENT_FAIL = 720;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
+        LoginActivity.getClient().setmCurrentActivity(this);
 
         // constructors
         buttonChat = (Button) findViewById(R.id.buttonChat);
-        buttonJoinGame = (Button) findViewById(R.id.buttonJoinGame);
+        buttonCreate = (Button) findViewById(R.id.buttonCreate);
+        buttonJoin = (Button) findViewById(R.id.buttonJoin);
         buttonFriendlist = (Button) findViewById(R.id.buttonFriendlist);
         imageViewTest = (ImageView) findViewById(R.id.imageViewTest);
         buttonFriendlist = (Button) findViewById(R.id.buttonFriendlist);
         buttonLogout = (Button) findViewById(R.id.buttonLogout);
         buttonSettings = (Button) findViewById(R.id.buttonSettings);
-
 
         TextView textViewUsername = (TextView) findViewById(R.id.Username);
         Intent intent = getIntent();
@@ -56,16 +70,36 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
                 openChat();
             }
         });
-        buttonJoinGame.setOnClickListener(new Button.OnClickListener() {
+
+        buttonCreate.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openMaps();
+                JSONObject obj = new JSONObject();
+                try {
+                    obj.put("action", GAME_CREATE);
+                } catch(Exception e) {
+                    e.printStackTrace();
+                }
+                LoginActivity.getClient().send(obj.toString());
+            }
+        });
+
+        buttonJoin.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                JSONObject obj = new JSONObject();
+                try {
+                    obj.put("action", GAME_GET_CURRENT);
+                } catch(Exception e) {
+                    e.printStackTrace();
+                }
+                LoginActivity.getClient().send(obj.toString());
             }
         });
         buttonFriendlist.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                friends();
+                openFriendlist();
             }
         });
         buttonSettings.setOnClickListener(new Button.OnClickListener() {
@@ -90,7 +124,7 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
         });
     }
 
-    // Disables back button -- you nee dto click logout to exit
+    // Disables back button -- you need to click logout to exit
     @Override
     public void onBackPressed() {
         logoutWarning();
@@ -132,14 +166,39 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
         startActivity(intent);
     }
 
-    // Navigates to Friendslist Activity
-    private void friends() {
-        Intent intent = new Intent(this, FriendlistActivity.class);
-        startActivity(intent);
-    }
-
     @Override
     public void response(final Message message) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                verify(message);
+            }
+        });
+    }
+
+    private void verify(Message message) {
+        if (message.getCode().equals(GAME_GET_CURRENT_SUCCESS)) {
+            if (message.getResult().length == 0) {
+                toast("No active games");
+                openGamelist();
+            } else {
+                toast("Rejoined existing game");
+                openGame(message);
+            }
+        } else if (message.getCode().equals(GAME_GET_CURRENT_FAIL)) {
+            toast("Get current game failure");
+            openGamelist();
+        } else if (message.getCode().equals(GAME_CREATE_SUCCESS)) {
+            toast("Game creation successful");
+            openGame(message);
+        } else if (message.getCode().equals(GAME_CREATE_FAIL)) {
+            toast("Game creation failed");
+        } else if (message.getCode().equals(GAME_ADD_SUCCESS)) {
+            toast("You have been added to the game");
+            openGame(message);
+        } else {
+            toast("Error: Unknown response received");
+        }
     }
 
     // Displays a toast message
@@ -156,6 +215,31 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
     // Navigates to Maps activity
     private void openMaps() {
         Intent intent = new Intent(this, MapsActivity.class);
+        startActivity(intent);
+    }
+
+    // Navigates to User Activity
+    private void openUser() {
+        Intent intent = new Intent(this, UserActivity.class);
+        startActivity(intent);
+    }
+
+    // Navigates to Game Activity
+    private void openGame(Message message) {
+        Intent intent = new Intent(this, GameActivity.class);
+        intent.putExtra("game_id", message.getGame_id());
+        startActivity(intent);
+    }
+
+    // Navigates to Gamelist Activity
+    private void openGamelist() {
+        Intent intent = new Intent(this, GamelistActivity.class);
+        startActivity(intent);
+    }
+
+    // Navigates to Friendlist Activity
+    private void openFriendlist() {
+        Intent intent = new Intent(this, FriendlistActivity.class);
         startActivity(intent);
     }
 

@@ -13,8 +13,8 @@ import okio.ByteString;
 
 public class WebSocketClient extends OkHttpClient {
 
-    private static final String SERVER_IP = "35.197.172.195"; // CentOS 6 Server
-    //public static final String SERVER_IP = "45.77.49.3";    // CentOS 7 Server
+    //private static final String SERVER_IP = "35.197.172.195"; // CentOS 6 Server
+    private static final String SERVER_IP = "45.77.49.3";    // CentOS 7 Server
     private static final int NORMAL_CLOSURE_STATUS = 1000;
 
     private Communication mCurrentActivity;
