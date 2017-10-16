@@ -28,7 +28,6 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
     private ImageView imageViewTest;
     private String getName;
 
-
     private static final Integer GAME_CREATE = 700;
     private static final Integer GAME_CREATE_SUCCESS = 701;
     private static final Integer GAME_CREATE_FAIL = 702;
@@ -72,6 +71,7 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
                 openChat();
             }
         });
+
         buttonCreate.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -100,7 +100,7 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
         buttonFriendlist.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                friends();
+                openFriendlist();
             }
         });
         buttonSettings.setOnClickListener(new Button.OnClickListener() {
@@ -235,6 +235,12 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
     // Navigates to Gamelist Activity
     private void openGamelist() {
         Intent intent = new Intent(this, GamelistActivity.class);
+        startActivity(intent);
+    }
+
+    // Navigates to Friendlist Activity
+    private void openFriendlist() {
+        Intent intent = new Intent(this, FriendlistActivity.class);
         startActivity(intent);
     }
 
