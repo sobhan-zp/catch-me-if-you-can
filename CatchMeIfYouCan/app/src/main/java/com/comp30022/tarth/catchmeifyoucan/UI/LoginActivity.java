@@ -31,11 +31,6 @@ import java.util.Enumeration;
 
 public class LoginActivity extends AppCompatActivity implements Communication {
 
-    private static final Integer ACTION_LOGIN = 101;              // Login action
-    private static final Integer LOGIN_SUCCESS_CODE = 200;
-    private static final Integer LOGIN_USER_NON_EXIST_CODE = 201;
-    private static final Integer LOGIN_EXIST_CODE = 202;
-
     private Button buttonLogin;
     private TextView textViewRegister;
 
@@ -119,7 +114,7 @@ public class LoginActivity extends AppCompatActivity implements Communication {
 
         JSONObject obj = new JSONObject();
         try {
-            obj.put("action", ACTION_LOGIN);
+            obj.put("action", getResources().getInteger(R.integer.LOGIN_ACTION));
             obj.put("client_ip", client_ip);
             obj.put("username", username.getText());
             obj.put("password", password.getText());
@@ -130,12 +125,12 @@ public class LoginActivity extends AppCompatActivity implements Communication {
     }
 
     private void verify(Message message) {
-        if (message.getCode().equals(LOGIN_SUCCESS_CODE)) {
+        if (message.getCode().equals(getResources().getInteger(R.integer.LOGIN_SUCCESS_CODE))) {
             toast("Login Success!");
             openDashboard();
-        } else if (message.getCode().equals(LOGIN_EXIST_CODE)) {
+        } else if (message.getCode().equals(getResources().getInteger(R.integer.LOGIN_EXIST_CODE))) {
             toast("Login Failed: User is Logged in on Another Device");
-        } else if (message.getCode().equals(LOGIN_USER_NON_EXIST_CODE)) {
+        } else if (message.getCode().equals(getResources().getInteger(R.integer.LOGIN_USER_NON_EXIST_CODE))) {
             toast("Login Failed: Username or Password is Incorrect");
         } else {
             toast("Error: Unknown Response Received");

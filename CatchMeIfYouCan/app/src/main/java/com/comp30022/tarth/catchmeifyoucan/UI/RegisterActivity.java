@@ -25,10 +25,6 @@ import java.util.Enumeration;
 
 public class RegisterActivity extends AppCompatActivity implements Communication {
 
-    private static final Integer ACTION_REGISTER = 100;       // Register action
-    private static final Integer REGISTER_SUCCESS = 300;      // Register success
-    private static final Integer REGISTER_FAIL = 301;         // Register failure
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,7 +83,7 @@ public class RegisterActivity extends AppCompatActivity implements Communication
 
         JSONObject obj = new JSONObject();
         try {
-            obj.put("action", ACTION_REGISTER);
+            obj.put("action", getResources().getInteger(R.integer.REGISTER_ACTION));
             obj.put("client_ip", client_ip);
             obj.put("username", username.getText());
             obj.put("password", password.getText());
@@ -101,10 +97,10 @@ public class RegisterActivity extends AppCompatActivity implements Communication
     }
 
     private void verify(Message message) {
-        if (message.getCode().equals(REGISTER_SUCCESS)) {
+        if (message.getCode().equals(getResources().getInteger(R.integer.REGISTER_SUCCESS))) {
             toast("Register success");
             backToMain();
-        } else if (message.getCode().equals(REGISTER_FAIL)) {
+        } else if (message.getCode().equals(getResources().getInteger(R.integer.REGISTER_FAIL))) {
             toast("Register failed, please try again.");
         } else {
             toast("Error: Unknown response received");

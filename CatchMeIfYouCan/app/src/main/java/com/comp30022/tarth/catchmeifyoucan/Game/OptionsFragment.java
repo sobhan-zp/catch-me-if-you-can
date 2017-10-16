@@ -23,10 +23,6 @@ import java.util.List;
 
 public class OptionsFragment extends Fragment {
 
-    private static final Integer GAME_GET_USER = 723;
-    private static final Integer GAME_GET_USER_SUCCESS = 724;
-    private static final Integer GAME_GET_USER_FAIL = 725;
-
     private Activity parent;
 
     private ArrayAdapter<String> adapter;
@@ -49,7 +45,7 @@ public class OptionsFragment extends Fragment {
         // Obtains list of users
         JSONObject obj = new JSONObject();
         try {
-            obj.put("action", GAME_GET_USER);
+            obj.put("action", getResources().getInteger(R.integer.GAME_GET_USER));
         } catch(Exception e) {
             e.printStackTrace();
         }

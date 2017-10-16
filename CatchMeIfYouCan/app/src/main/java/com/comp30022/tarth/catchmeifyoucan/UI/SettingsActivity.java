@@ -21,16 +21,6 @@ import org.json.JSONObject;
 /* Opens a detailed view of a user and letting them make changes */
 public class SettingsActivity extends AppCompatActivity implements Communication{
 
-    private static final Integer PROFILE_ACTION_SUCCESS = 203;       // Profile get success
-    private static final Integer PROFILE_ACTION = 102;       // Profile request
-    private static final Integer FRIEND_CHECK = 509;       // Check if friend is online request
-    private static final Integer FRIEND_CHECK_FAIL = 510; // Online check fail
-    private static final Integer FRIEND_CHECK_SUCCESS = 511; // Online check success
-    private static final Integer PROFILE_UPDATE = 103; // Profile Update request
-    private static final Integer PROFILE_UPDATE_SUCCESS = 104; // Profile Update success
-    private static final Integer PROFILE_UPDATE_FAIL = 105; // Profile Update failure
-
-
     EditText EditTextName;
     EditText EditTextLocation;
     EditText EditTextStatus;
@@ -96,7 +86,7 @@ public class SettingsActivity extends AppCompatActivity implements Communication
         TextView newEmail = (TextView) findViewById(R.id.Email);
 
         try {
-            obj.put("action", PROFILE_UPDATE);
+            obj.put("action", getResources().getInteger(R.integer.PROFILE_UPDATE));
             obj.put("name", name.getText());
             obj.put("email", newEmail.getText());
             obj.put("location", location.getText());
@@ -119,7 +109,7 @@ public class SettingsActivity extends AppCompatActivity implements Communication
         JSONObject obj = new JSONObject();
 
         try {
-            obj.put("action", PROFILE_ACTION);
+            obj.put("action", getResources().getInteger(R.integer.PROFILE_ACTION));
             //System.out.println("SentInfo->" + obj.toString(4));
         } catch(Exception e) {
             e.printStackTrace();
@@ -133,7 +123,7 @@ public class SettingsActivity extends AppCompatActivity implements Communication
 
         try {
             obj.put("username", user);
-            obj.put("action", FRIEND_CHECK);
+            obj.put("action", getResources().getInteger(R.integer.FRIEND_CHECK));
             //System.out.println("SentOnline->" + obj.toString(4));
         } catch(Exception e) {
             e.printStackTrace();
@@ -152,7 +142,7 @@ public class SettingsActivity extends AppCompatActivity implements Communication
         if (message.getAction() != null) {
 
             // Update fields with latest information before user is allowed to change
-            if (message.getAction().equals(PROFILE_ACTION_SUCCESS)) {
+            if (message.getAction().equals(getResources().getInteger(R.integer.PROFILE_GET))) {
 
                 textViewUsername.setText("@" + message.getUsername());
                 getOnline(message.getUsername());
@@ -176,20 +166,20 @@ public class SettingsActivity extends AppCompatActivity implements Communication
 
         } else if (message.getCode() != null) {
             // Update UI to show Online
-            if (message.getCode().equals(FRIEND_CHECK_SUCCESS)) {
+            if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_CHECK_SUCCESS))) {
                 textViewOnline.setTextColor(Color.parseColor("#16B72E"));
                 textViewOnline.setText("ONLINE");
                 textViewOnline.setTypeface(null, Typeface.BOLD_ITALIC);
             // Update UI to show Offline
-            } else if (message.getCode().equals(FRIEND_CHECK_FAIL)) {
+            } else if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_CHECK_FAIL))) {
                 textViewOnline.setText("OFFLINE");
                 textViewOnline.setTextColor(Color.parseColor("#B72616"));
                 textViewOnline.setTypeface(null, Typeface.BOLD_ITALIC);
             // manages response to profile update request
-            } else if (message.getCode().equals(PROFILE_UPDATE_SUCCESS)) {
+            } else if (message.getCode().equals(getResources().getInteger(R.integer.PROFILE_UPDATE_SUCCESS))) {
                 getInfo();
                 toast("Profile Update Successful");
-            } else if (message.getCode().equals(PROFILE_UPDATE_FAIL)) {
+            } else if (message.getCode().equals(getResources().getInteger(R.integer.PROFILE_UPDATE_FAIL))) {
                 //getInfo();
                 toast("Profile Update Failure. Try again later.");
             }

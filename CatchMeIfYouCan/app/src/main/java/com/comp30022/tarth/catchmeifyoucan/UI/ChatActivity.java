@@ -24,19 +24,6 @@ import java.util.List;
 
 public class ChatActivity extends AppCompatActivity implements Communication {
 
-    private static final Integer MESSAGE_SEND = 600;
-    private static final Integer MESSAGE_RECEIVE = 601;
-    private static final Integer MESSAGE_SEND_SUCCESS_ONLINE = 602;
-    private static final Integer MESSAGE_SEND_SUCCESS_OFFLINE = 603;
-    private static final Integer MESSAGE_SEND_FAIL = 604;
-    private static final Integer MESSAGE_OFFLINE_GET = 605;
-    private static final Integer MESSAGE_COMMAND_SEND = 606;
-    private static final Integer MESSAGE_COMMAND_SUCCESS = 607;
-    private static final Integer MESSAGE_COMMAND_FAIL = 608;
-    private static final Integer MESSAGE_COMMAND_RECEIVE = 609;
-    private static final Integer MESSAGE_READ = 1;
-    private static final Integer MESSAGE_UNREAD = 0;
-
     private ArrayAdapter<String> adapter;
     private List<String> array;
 
@@ -104,10 +91,10 @@ public class ChatActivity extends AppCompatActivity implements Communication {
     private void verify(Message message) {
         System.out.println("MESSAGE : " + message.getMessage());
         if (message.getAction() != null) {
-            if (message.getAction().equals(MESSAGE_RECEIVE)) {
+            if (message.getAction().equals(getResources().getInteger(R.integer.MESSAGE_RECEIVE))) {
                 System.out.println("Message received");
                 displayMessage(message);
-            } else if (message.getAction().equals(MESSAGE_OFFLINE_GET)) {
+            } else if (message.getAction().equals(getResources().getInteger(R.integer.MESSAGE_OFFLINE_GET))) {
                 System.out.println("Message received");
                 displayMessage(message);
             } else {
@@ -115,9 +102,9 @@ public class ChatActivity extends AppCompatActivity implements Communication {
             }
         }
         if (message.getCode() != null) {
-             if (message.getCode().equals(MESSAGE_SEND_SUCCESS_ONLINE)) {
+             if (message.getCode().equals(getResources().getInteger(R.integer.MESSAGE_SEND_SUCCESS_ONLINE))) {
                  System.out.println("Message sent, user online");
-             } else if (message.getCode().equals(MESSAGE_SEND_SUCCESS_OFFLINE)) {
+             } else if (message.getCode().equals(getResources().getInteger(R.integer.MESSAGE_SEND_SUCCESS_OFFLINE))) {
                  System.out.println("Message sent, user offline");
              }
         }
@@ -126,7 +113,7 @@ public class ChatActivity extends AppCompatActivity implements Communication {
     private void getOfflineMessages() {
         JSONObject obj = new JSONObject();
         try {
-            obj.put("action", MESSAGE_OFFLINE_GET);
+            obj.put("action", getResources().getInteger(R.integer.MESSAGE_OFFLINE_GET));
         } catch(Exception e) {
             e.printStackTrace();
         }
@@ -161,7 +148,7 @@ public class ChatActivity extends AppCompatActivity implements Communication {
         ChatMessage msg = new ChatMessage(input.getText().toString(), friend);
         JSONObject obj = new JSONObject();
         try {
-            obj.put("action", MESSAGE_SEND);
+            obj.put("action", getResources().getInteger(R.integer.MESSAGE_SEND));
             obj.put("username", msg.getUser());
             obj.put("message", msg.getText());
         } catch(Exception e) {

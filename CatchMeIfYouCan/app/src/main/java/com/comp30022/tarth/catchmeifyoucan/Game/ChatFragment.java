@@ -22,14 +22,6 @@ import java.util.List;
 
 public class ChatFragment extends Fragment {
 
-    private static final Integer GAME_NOTIFICATION_SEND = 721;
-    private static final Integer GAME_NOTIFICATION_RECEIVE = 722;
-
-    private static final Integer MESSAGE_COMMAND_SEND = 606;
-    private static final Integer MESSAGE_COMMAND_SUCCESS = 607;
-    private static final Integer MESSAGE_COMMAND_FAIL = 608;
-    private static final Integer MESSAGE_COMMAND_RECEIVE = 609;
-
     private Activity parent;
 
     private ArrayAdapter<String> adapter;
@@ -90,7 +82,7 @@ public class ChatFragment extends Fragment {
             //obj.put("action", MESSAGE_COMMAND_SEND);
             //obj.put("message", "test");
             // TESTING
-            obj.put("action", 613);
+            obj.put("action", getResources().getInteger(R.integer.LOCATION_GET));
         } catch(Exception e) {
             e.printStackTrace();
         }

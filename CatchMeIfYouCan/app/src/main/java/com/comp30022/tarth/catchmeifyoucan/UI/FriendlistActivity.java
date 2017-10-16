@@ -26,16 +26,6 @@ import java.util.List;
 
 public class FriendlistActivity extends AppCompatActivity implements Communication {
 
-    private static final Integer FRIEND_GET = 500;            // Friend get request
-    private static final Integer FRIEND_GET_FAIL = 501;       // Friend get failure
-    private static final Integer FRIEND_GET_SUCCESS = 502;    // Friend get success
-    private static final Integer FRIEND_SEARCH = 503;         // Friend search request
-    private static final Integer FRIEND_SEARCH_FAIL = 504;    // Friend search failure
-    private static final Integer FRIEND_SEARCH_SUCCESS = 505; // Friend search success
-    private static final Integer FRIEND_CHECK = 509;          // Friend check request
-    private static final Integer FRIEND_CHECK_FAIL = 510;     // Friend check failure
-    private static final Integer FRIEND_CHECK_SUCCESS = 511;  // Friend check success
-
     private ArrayAdapter<String> adapter;
     private List<String> array;
 
@@ -103,7 +93,7 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
     private void getFriend() {
         JSONObject obj = new JSONObject();
         try {
-            obj.put("action", FRIEND_GET);
+            obj.put("action", getResources().getInteger(R.integer.FRIEND_GET));
         } catch(Exception e) {
             e.printStackTrace();
         }
@@ -112,7 +102,7 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
 
     // Verifies responses from the server
     private void verify(Message message) {
-        if (message.getCode().equals(FRIEND_GET_SUCCESS)) {
+        if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_GET_SUCCESS))) {
             toast("Friend get success");
 
             // Repopulates list
@@ -123,11 +113,11 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
             }
             adapter.notifyDataSetChanged();
 
-        } else if (message.getCode().equals(FRIEND_GET_FAIL)) {
+        } else if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_GET_FAIL))) {
             toast("Friend get failure");
-        } else if (message.getCode().equals(FRIEND_SEARCH_SUCCESS)) {
+        } else if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_SEARCH_SUCCESS))) {
             System.out.println("Friend search success - here");
-        } else if (message.getCode().equals(FRIEND_SEARCH_FAIL)) {
+        } else if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_SEARCH_FAIL))) {
             System.out.println("Friend search failure");
         } else {
             toast("Error: Unknown response received");

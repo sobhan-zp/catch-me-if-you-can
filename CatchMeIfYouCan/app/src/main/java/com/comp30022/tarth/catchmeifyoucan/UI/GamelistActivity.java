@@ -24,18 +24,6 @@ import java.util.List;
 
 public class GamelistActivity extends AppCompatActivity implements Communication {
 
-    private static final Integer GAME_ADD = 703;
-    private static final Integer GAME_ADD_SUCCESS = 704;
-    private static final Integer GAME_ADD_FAIL = 705;
-
-    private static final Integer GAME_GET = 709;
-    private static final Integer GAME_GET_SUCCESS = 710;
-    private static final Integer GAME_GET_FAIL = 711;
-
-    private static final Integer GAME_GET_CURRENT = 718;
-    private static final Integer GAME_GET_CURRENT_SUCCESS = 719;
-    private static final Integer GAME_GET_CURRENT_FAIL = 720;
-
     private ArrayAdapter<String> adapter;
     private List<String> array;
 
@@ -99,12 +87,12 @@ public class GamelistActivity extends AppCompatActivity implements Communication
 
     // Verifies responses from the server
     private void verify(Message message) {
-        if (message.getCode().equals(GAME_GET_CURRENT_SUCCESS)) {
+        if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_CURRENT_SUCCESS))) {
             toast("Game resume get success");
             joinGame(message.getResult()[0].getGame_id());
-        } else if (message.getCode().equals(GAME_GET_CURRENT_FAIL)) {
+        } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_CURRENT_FAIL))) {
             toast("Game resume get failure");
-        } else if (message.getCode().equals(GAME_GET_SUCCESS)) {
+        } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_SUCCESS))) {
             toast("Game get success");
 
             // Repopulates list
@@ -117,12 +105,12 @@ public class GamelistActivity extends AppCompatActivity implements Communication
             }
             adapter.notifyDataSetChanged();
 
-        } else if (message.getCode().equals(GAME_GET_FAIL)) {
+        } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_FAIL))) {
             toast("Game get failure");
-        } else if (message.getCode().equals(GAME_ADD_SUCCESS)) {
+        } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_ADD_SUCCESS))) {
             toast("Successfully joined game");
             openGame();
-        } else if (message.getCode().equals(GAME_ADD_FAIL)) {
+        } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_ADD_FAIL))) {
             toast("Failed to join game");
         } else {
             toast("Error: Unknown response received");
@@ -133,7 +121,7 @@ public class GamelistActivity extends AppCompatActivity implements Communication
     private void getGames() {
         JSONObject obj = new JSONObject();
         try {
-            obj.put("action", GAME_GET);
+            obj.put("action", getResources().getInteger(R.integer.GAME_GET));
         } catch(Exception e) {
             e.printStackTrace();
         }
@@ -145,7 +133,7 @@ public class GamelistActivity extends AppCompatActivity implements Communication
         //{"action":703, "id":1}
         JSONObject obj = new JSONObject();
         try {
-            obj.put("action", GAME_ADD);
+            obj.put("action", getResources().getInteger(R.integer.GAME_ADD));
             obj.put("id", game_id);
         } catch(Exception e) {
             e.printStackTrace();

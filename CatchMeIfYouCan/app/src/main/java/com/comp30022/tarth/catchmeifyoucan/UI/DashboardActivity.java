@@ -29,18 +29,6 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
     private ImageView imageViewTest;
     private String getName;
 
-    private static final Integer GAME_CREATE = 700;
-    private static final Integer GAME_CREATE_SUCCESS = 701;
-    private static final Integer GAME_CREATE_FAIL = 702;
-    private static final Integer GAME_ADD_SUCCESS = 704;
-    private static final Integer GAME_ADD_FAIL = 705;
-    private static final Integer GAME_EXIT = 706;
-    private static final Integer GAME_GET = 709;
-    private static final Integer GAME_DELETE = 712;
-    private static final Integer GAME_GET_CURRENT = 718;
-    private static final Integer GAME_GET_CURRENT_SUCCESS = 719;
-    private static final Integer GAME_GET_CURRENT_FAIL = 720;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,7 +65,7 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
             public void onClick(View v) {
                 JSONObject obj = new JSONObject();
                 try {
-                    obj.put("action", GAME_CREATE);
+                    obj.put("action", getResources().getInteger(R.integer.GAME_CREATE));
                 } catch(Exception e) {
                     e.printStackTrace();
                 }
@@ -90,7 +78,7 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
             public void onClick(View v) {
                 JSONObject obj = new JSONObject();
                 try {
-                    obj.put("action", GAME_GET_CURRENT);
+                    obj.put("action", getResources().getInteger(R.integer.GAME_GET_CURRENT));
                 } catch(Exception e) {
                     e.printStackTrace();
                 }
@@ -178,7 +166,7 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
     }
 
     private void verify(Message message) {
-        if (message.getCode().equals(GAME_GET_CURRENT_SUCCESS)) {
+        if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_CURRENT_SUCCESS))) {
             if (message.getResult().length == 0) {
                 toast("No active games");
                 openGamelist();
@@ -186,15 +174,15 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
                 toast("Rejoined existing game");
                 openGame(message);
             }
-        } else if (message.getCode().equals(GAME_GET_CURRENT_FAIL)) {
+        } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_CURRENT_FAIL))) {
             toast("Get current game failure");
             openGamelist();
-        } else if (message.getCode().equals(GAME_CREATE_SUCCESS)) {
+        } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_CREATE_SUCCESS))) {
             toast("Game creation successful");
             openGame(message);
-        } else if (message.getCode().equals(GAME_CREATE_FAIL)) {
+        } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_CREATE_FAIL))) {
             toast("Game creation failed");
-        } else if (message.getCode().equals(GAME_ADD_SUCCESS)) {
+        } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_ADD_SUCCESS))) {
             toast("You have been added to the game");
             openGame(message);
         } else {

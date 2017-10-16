@@ -55,36 +55,6 @@ public class GameActivity extends FragmentActivity implements OnMapReadyCallback
         GoogleMap.OnMapClickListener, Communication, OptionsFragment.FragmentCommunication,
         ChatFragment.FragmentCommunication {
 
-    private static final Integer GAME_CREATE = 700;
-    private static final Integer GAME_ADD = 703;
-    private static final Integer GAME_EXIT = 706;
-    private static final Integer GAME_GET = 709;
-    private static final Integer GAME_DELETE = 712;
-    private static final Integer GAME_USER_REMOVE = 715;
-    private static final Integer GAME_GET_CURRENT = 718;
-    private static final Integer GAME_NOTIFICATION_SEND = 721;
-    private static final Integer GAME_NOTIFICATION_RECEIVE = 722;
-    private static final Integer GAME_GET_USER = 723;
-    private static final Integer GAME_OWNER = 1;
-    private static final Integer GAME_PLAYER = 0;
-
-    private static final Integer GAME_CREATE_SUCCESS = 701;
-    private static final Integer GAME_CREATE_FAIL = 702;
-    private static final Integer GAME_ADD_SUCCESS = 704;
-    private static final Integer GAME_ADD_FAIL = 705;
-    private static final Integer GAME_EXIT_SUCCESS = 707;
-    private static final Integer GAME_EXIT_FAIL = 708;
-    private static final Integer GAME_GET_SUCCESS = 710;
-    private static final Integer GAME_GET_FAIL = 711;
-    private static final Integer GAME_DELETE_SUCCESS = 713;
-    private static final Integer GAME_DELETE_FAIL = 714;
-    private static final Integer GAME_USER_REMOVE_SUCCESS = 716;
-    private static final Integer GAME_USER_REMOVE_FAIL = 717;
-    private static final Integer GAME_GET_CURRENT_SUCCESS = 719;
-    private static final Integer GAME_GET_CURRENT_FAIL = 720;
-    private static final Integer GAME_GET_USER_SUCCESS = 724;
-    private static final Integer GAME_GET_USER_FAIL = 725;
-
     private final static int CHAT_ITEM_ID = 0;
     private final static int MAP_ITEM_ID = 1;
     private final static int OPTIONS_ITEM_ID = 1;
@@ -548,10 +518,10 @@ public class GameActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void verify(Message message) {
         System.out.println("CODE" + message.getCode());
-        if (message.getCode().equals(GAME_GET_USER_SUCCESS)) {
+        if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_USER_SUCCESS))) {
             toast("Game get users successful");
             ((OptionsFragment) optionsFragment).onResponse(message);
-        } else if (message.getCode().equals(GAME_GET_USER_FAIL)) {
+        } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_USER_FAIL))) {
             toast("Game get users failure");
         } else if (message.getCode().equals(614)) {
             // TESTING TESTING
@@ -559,13 +529,13 @@ public class GameActivity extends FragmentActivity implements OnMapReadyCallback
             ((ChatFragment) chatFragment).onResponse(message);
         } else if (message.getCode().equals(615)) {
             toast("Location get failure");
-        } else if (message.getCode().equals(GAME_EXIT_SUCCESS)) {
+        } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_EXIT_SUCCESS))) {
             toast("Game exit successful");
-        } else if (message.getCode().equals(GAME_EXIT_FAIL)) {
+        } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_EXIT_FAIL))) {
             toast("Game exit failure");
-        } else if (message.getCode().equals(GAME_DELETE_SUCCESS)) {
+        } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_DELETE_SUCCESS))) {
             toast("Game delete successful");
-        } else if (message.getCode().equals(GAME_DELETE_FAIL)) {
+        } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_DELETE_FAIL))) {
             toast("Game delete failure");
         }
     }
@@ -589,7 +559,7 @@ public class GameActivity extends FragmentActivity implements OnMapReadyCallback
     public void onExit() {
         JSONObject obj = new JSONObject();
         try {
-            obj.put("action", GAME_EXIT);
+            obj.put("action", getResources().getInteger(R.integer.GAME_EXIT));
         } catch(Exception e) {
             e.printStackTrace();
         }

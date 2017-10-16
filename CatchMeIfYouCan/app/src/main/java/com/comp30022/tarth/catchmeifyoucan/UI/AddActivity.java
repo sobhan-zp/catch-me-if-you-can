@@ -18,10 +18,6 @@ import org.json.JSONObject;
 
 public class AddActivity extends AppCompatActivity implements Communication {
 
-    private static final Integer FRIEND_ADD = 506;            // Friend add request
-    private static final Integer FRIEND_ADD_FAIL = 507;       // Friend add failure
-    private static final Integer FRIEND_ADD_SUCCESS = 508;    // Friend add success
-
     private Button buttonAdd;
     private EditText editTextAdd;
 
@@ -47,7 +43,7 @@ public class AddActivity extends AppCompatActivity implements Communication {
     private void addFriend(String username) {
         JSONObject obj = new JSONObject();
         try {
-            obj.put("action", FRIEND_ADD);
+            obj.put("action", getResources().getInteger(R.integer.FRIEND_ADD));
             obj.put("username", username);
         } catch(Exception e) {
             e.printStackTrace();
@@ -76,10 +72,10 @@ public class AddActivity extends AppCompatActivity implements Communication {
 
     // Verifies responses from the server
     private void verify(Message message) {
-        if (message.getCode().equals(FRIEND_ADD_SUCCESS)) {
+        if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_ADD_SUCCESS))) {
             toast("Friend add success");
             onBackPressed();
-        } else if (message.getCode().equals(FRIEND_ADD_FAIL)) {
+        } else if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_ADD_FAIL))) {
             toast("Friend add failure");
         }
     }

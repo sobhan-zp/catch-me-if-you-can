@@ -21,14 +21,6 @@ import org.json.JSONObject;
 /* Opens a detailed view of a user by querying the server */
 public class UserActivity extends AppCompatActivity implements Communication {
 
-
-    // Server protocol codes
-    private static final Integer FRIEND_SEARCH = 503;       // Profile request
-    private static final Integer FRIEND_SEARCH_SUCCESS = 505;       // Profile get success
-    private static final Integer FRIEND_CHECK = 509;       // Check if friend is online request
-    private static final Integer FRIEND_CHECK_FAIL = 510; // Online check fail
-    private static final Integer FRIEND_CHECK_SUCCESS = 511; // Online check success
-
     TextView textViewName;
     TextView textViewUsername;
     TextView textViewLocation;
@@ -36,7 +28,6 @@ public class UserActivity extends AppCompatActivity implements Communication {
     TextView textViewOnline;
     //private Button buttonGet;
     private Button buttonChat;
-    User profile;
     String getUsername;
 
     @Override
@@ -107,7 +98,7 @@ public class UserActivity extends AppCompatActivity implements Communication {
 
         try {
             obj.put("username", uname);
-            obj.put("action", FRIEND_SEARCH);
+            obj.put("action", getResources().getInteger(R.integer.FRIEND_SEARCH));
             //System.out.println("SentInfo->" + obj.toString(4));
         } catch(Exception e) {
             e.printStackTrace();
@@ -122,7 +113,7 @@ public class UserActivity extends AppCompatActivity implements Communication {
 
         try {
             obj.put("username", getUsername);
-            obj.put("action", FRIEND_CHECK);
+            obj.put("action", getResources().getInteger(R.integer.FRIEND_CHECK));
             //System.out.println("SentOnline->" + obj.toString(4));
         } catch(Exception e) {
             e.printStackTrace();
@@ -135,7 +126,7 @@ public class UserActivity extends AppCompatActivity implements Communication {
         //System.out.println("Message received");
         System.out.println("getCode->" + message.getCode());
 
-        if (message.getCode().equals(FRIEND_SEARCH_SUCCESS)) {
+        if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_SEARCH_SUCCESS))) {
             // Strip result from JSON
             Result profile = message.getResult()[0];
 
@@ -157,13 +148,13 @@ public class UserActivity extends AppCompatActivity implements Communication {
         }
 
         // If online
-        if (message.getCode().equals(FRIEND_CHECK_SUCCESS)) {
+        if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_CHECK_SUCCESS))) {
             textViewOnline.setTextColor(Color.parseColor("#16B72E"));
             textViewOnline.setText("ONLINE");
             textViewOnline.setTypeface(null, Typeface.BOLD_ITALIC);
 
         // If offline
-        } else if (message.getCode().equals(FRIEND_CHECK_FAIL)) {
+        } else if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_CHECK_FAIL))) {
             textViewOnline.setText("OFFLINE");
             textViewOnline.setTextColor(Color.parseColor("#B72616"));
             textViewOnline.setTypeface(null, Typeface.BOLD_ITALIC);
