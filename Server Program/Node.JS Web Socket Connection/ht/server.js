@@ -10,7 +10,7 @@ var friend = require("./friend");
 var game = require("./game");
 
 // Remove max listeners
-//process.setMaxListeners(0);
+process.setMaxListeners(0);
 
 // Variables
 var WebSocketServer = WebSocket.Server,
@@ -116,6 +116,16 @@ wss.on('connection', function(ws) {
                             msg.to_sock(client_ws, JSON.stringify(result));
                         });
                         break;
+                    case GAME_ADD_WAYPOINT:
+                        game.new_waypoint(user_status.info, data.location.x, data.location.y, function(result){
+                            msg.to_sock(client_ws, JSON.stringify(result));
+                        });
+                        break;
+                    case GAME_GET_WAYPOINT:
+                        game.get_waypoint(user_status.info, function(result){
+                            msg.to_sock(client_ws, JSON.stringify(result));
+                        });
+                        break;
                     case GAME_GET_USER:
                         game.user(user_status.info, function(result){
                             msg.to_sock(client_ws, JSON.stringify(result));
@@ -147,9 +157,6 @@ wss.on('connection', function(ws) {
                             msg.to_sock(client_ws, JSON.stringify(result));
                         });
                         break;
-                    //case GAME_DELETE:
-                        //delete_game(user_status.info, data.id);
-                        //break;
                     default:
                         invalid_msg(user_status.info.ws);
                 }
@@ -165,6 +172,7 @@ wss.on('connection', function(ws) {
         for (var i = 0; i < clients.length; i++) {
             if (clients[i].id == client_uuid) {
                 clients.splice(i, 1);
+                ws.close();
             }
         }
     };

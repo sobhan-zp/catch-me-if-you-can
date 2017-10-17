@@ -92,6 +92,6 @@ exports.register = function(username, password, email, name, sock, fn){
         var feedback = {
             "code": result.code
         }
-        return fn(result);
+        return fn(feedback);
     });
 }

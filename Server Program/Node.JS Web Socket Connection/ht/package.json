@@ -1,7 +1,7 @@
 {
-  "name": "Catch Me If You Can",
+  "name": "Catch_Me_If_You_Can",
   "version": "0.0.1",
-  "description": "House Tarth Team IT Project",
+  "description": "House_Tarth_Team_IT_Project",
   "main": "server.js",
   "scripts": {
     "test": "mocha"

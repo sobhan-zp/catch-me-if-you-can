@@ -48,6 +48,28 @@ exports.exit = function(userinfo){
     });
 }
 
+exports.new_waypoint = function(userinfo, x, y, fn){
+    var g_id = "SELECT game_id FROM account_in_game WHERE account_id = " + userinfo.db_id + " and is_owner = " + GAME_OWNER;
+    db.execute(g_id, 1, 0, function(result){
+        if (result.result.length>0){
+            var sql = "INSERT INTO waypoint (x, y, game_id) VALUES (" + x + ", " + y + ", " + result.result[0].game_id + ")";
+            db.execute(sql, GAME_ADD_WAYPOINT_SUCCESS, GAME_ADD_WAYPOINT_FAIL, function(result){
+                var feedback = {
+                    "code": result.code
+                };
+                return fn(feedback);
+            });
+        }
+    });
+}
+
+exports.get_waypoint = function(userinfo, fn){
+    var sql = "SELECT x, y FROM waypoint WHERE game_id = (SELECT game_id FROM account_in_game WHERE account_id = " + userinfo.db_id + ")";
+    db.execute(sql, GAME_GET_WAYPOINT_SUCCESS, GAME_GET_WAYPOINT_FAIL, function(result){
+        return fn(result);
+    });
+}
+
 function new_game(userinfo, name, fn){
     var sql = "INSERT INTO game (name) VALUES ('" + name + "')";
     var feedback;
@@ -104,6 +126,7 @@ function exit_game(userinfo, fn){
         if (result){
             for (var i=0; i<result.length; i++){
                 delete_game(userinfo, result[i].game_id);
+                remove_all_waypoint_of_game(result[i].game_id);
             }
             feedback = {
                 "code": GAME_EXIT_SUCCESS
@@ -154,6 +177,11 @@ function delete_game(userinfo, game_id){
 function remove_all_user_from_game(userinfo, game_id){
     var sql = "DELETE FROM account_in_game WHERE game_id = " + game_id + " and is_owner = " + GAME_PLAYER;
     db.execute(sql, GAME_USER_REMOVE_SUCCESS, GAME_USER_REMOVE_FAIL, function(result){});
+}
+
+function remove_all_waypoint_of_game(game_id){
+    var sql = "DELETE FROM waypoint WHERE game_id = " + game_id;
+    db.execute(sql, 1, 0, function(result){});
 }
 
 function remove_user_from_game(userinfo, game_id, userid){

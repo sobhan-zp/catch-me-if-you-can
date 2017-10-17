@@ -118,12 +118,13 @@ describe('Simulate Client Message Send Test', function() {
                 ws.send('{"username":"!@#","password":"","name":"haha","email":"t@t.com","action":100}');
                 ws.send('{"username":"","password":"!@#fasd","name":"haha","email":"","action":100}');
                 ws.send('{"username":"","password":"","name":"","email":"","action":100}');
+                ws.send('{"name":"","email":"","action":100}');
             });
             ws.on('message', function incoming(data) {
                 var fm = JSON.parse(JSON.parse(data));
                 expect(fm).to.have.a.property('code', REGISTER_FAIL);
                 count = count + 1;
-                if (count>=4){
+                if (count>=5){
                     done();
                 }
             });
