@@ -25,15 +25,45 @@
         <item>A palm</item>
     </string-array>
     <string-array name ="wrong_answers">
+        <!--Riddle 1-->
         <item>Gum</item>
+        <item>A pencil</item>
+        <item>String</item>
+        <!--Riddle 2-->
         <item>A car</item>
+        <item>A computer</item>
+        <item>A chair</item>
+        <!--Riddle 3-->
         <item>A bird</item>
+        <item>Smoke</item>
+        <item>Your age</item>
+        <!--Riddle 4-->
         <item>A tree</item>
+        <item>A mountain</item>
+        <item>Yoda</item>
+        <!--Riddle 5-->
         <item>An iguana</item>
+        <item>A person</item>
+        <item>A barista</item>
+        <!--Riddle 6-->
         <item>A gorilla</item>
+        <item>A chair</item>
+        <item>Leonardo Dicaprio</item>
+        <!--Riddle 7-->
         <item>A ball</item>
+        <item>A match</item>
+        <item>A phone</item>
+        <!--Riddle 8-->
         <item>A tyrannosaurus rex</item>
+        <item>A Toyota</item>
+        <item>A tent</item>
+        <!--Riddle 9-->
         <item>A flower</item>
+        <item>A SJW</item>
+        <item>A cop</item>
+        <!--Riddle 10-->
         <item>A golden wattle</item>
+        <item>A pine</item>
+        <item>A eucalyptus</item>
     </string-array>
 </resources>

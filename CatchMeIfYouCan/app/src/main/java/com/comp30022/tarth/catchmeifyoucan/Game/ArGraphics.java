@@ -5,21 +5,17 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.ShapeDrawable;
-import android.graphics.drawable.shapes.OvalShape;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
+import android.util.Log;
 import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.graphics.Canvas;
 import android.view.View;
 import android.location.Location;
-import android.hardware.SensorManager;
-import java.math.*;
-
 
 import com.comp30022.tarth.catchmeifyoucan.UI.ArActivity;
 import com.google.android.gms.maps.model.Marker;
+
+import static java.lang.Math.abs;
+import static java.lang.Math.toRadians;
 
 
 /**
@@ -32,19 +28,29 @@ public class ArGraphics extends View{
     private int width;
     private int height;
 
+    //Shape variables
+    private float shapeX;
+    private float shapeY;
+    private float velocityX;
+    private float velocityY;
+    private float shapeRad;
+    private static int NUM_UPDATES = (int)(ArActivity.LOCATION_UPDATE_RATE/ArActivity.GRAPHIC_UPDATE_RATE);
+    private int timesMoved = 0;
+
     //Shape Constructors
     private Paint paint;
     private ShapeDrawable shape;
 
     //Graphic positioning constructors
-    double xViewingAngle = 0.6859;
-    double yViewingAngle = 0.9919;
+    double xViewingAngle = 0.70;
+    double yViewingAngle = 0.99;
 
     //Location tests
-    private Location mCurrentLocation = new Location("");
+    private Location mCurrentLocation = new Location("Melbourne");
+    private Location mCurrLocationMarker = new Location ("NearMelbourne");
 
-    private Location mCurrLocationMarker = new Location ("");
-
+    //Phone orientation information
+    private float[] preOrientationAngles = new float[3];
     private float[] mOrientationAngles = new float[3];
 
 
@@ -54,19 +60,44 @@ public class ArGraphics extends View{
 
     public ArGraphics(Context context, ArActivity arActivity){
         super(context);
-        //surfaceHolder = getHolder();
-        //surfaceHolder.addCallback(this);
+
+        //Example Locations
+        mCurrentLocation.setLatitude(-37.8136);
+        mCurrentLocation.setLongitude(144.9631);
+
+        mCurrLocationMarker.setLatitude(-37.81365);
+        mCurrLocationMarker.setLongitude(144.9631);
 
         //Set paint style
         paint = new Paint();
         paint.setStyle(Paint.Style.FILL);
         paint.setColor(Color.RED);
-
+        paint.setAlpha(200);
     }
 
     @Override
     protected void onDraw(Canvas canvas){
-        canvas.drawCircle(calculateGraphicXPos(),calculateGraphicYPos(),0.1F*width, paint);
+
+        this.shapeX = calculateGraphicXPos(preOrientationAngles);
+        this.shapeY = calculateGraphicYPos(preOrientationAngles);
+        this.shapeRad = calculateGraphicSize();
+
+        canvas.drawCircle(this.shapeX+velocityX*timesMoved, this.shapeY+velocityY*timesMoved, this.shapeRad, paint);
+        if(timesMoved<NUM_UPDATES){
+            timesMoved++;
+        }
+    }
+
+    public boolean checkInCircle(float x, float y){
+        boolean inCircle = false;
+        if(x >= (this.shapeX - this.shapeRad) && x <= (this.shapeX + this.shapeRad)){
+            if(y >= (this.shapeY - this.shapeRad) && y <= (this.shapeY + this.shapeRad)){
+                inCircle = true;
+                //Log.d("debug", "inCircle " );
+            }
+        }
+        //else { Log.d("debug", "notInCircle ");}
+        return inCircle;
     }
 
     @Override
@@ -75,38 +106,45 @@ public class ArGraphics extends View{
         height = h;
     }
 
-    private int calculateGraphicXPos(){
-        int x;
-        x = width/2 - (int) (mOrientationAngles[0]/xViewingAngle * width);
+    private float calculateGraphicXPos(float[] orientationAngles){
+        float x;
+        float bearingAngle = (float)toRadians(mCurrentLocation.bearingTo(mCurrLocationMarker));
+        Log.d("debug", "bearingAngle1 :" + Float.toString(bearingAngle));
+        if(bearingAngle>Math.PI){
+            bearingAngle = -1* (float)((2*Math.PI) - bearingAngle);
+        }
+
+        Log.d("debug", "bearingAngle2 :" + Float.toString(bearingAngle));
+        x = width/2 - (float)((orientationAngles[0] + bearingAngle)/xViewingAngle * width);
+        Log.d("debug", "x :" + Float.toString(x));
         return x;
     }
 
-    private int calculateGraphicYPos(){
-        int y;
-        y = height/2 - (int) ((mOrientationAngles[1])/yViewingAngle * height);
+    private float calculateGraphicYPos(float[] orientationAngles){
+        float y;
+        y = height/2 - (int) ((orientationAngles[1])/yViewingAngle * height);
         return y;
     }
 
     private float calculateGraphicSize(){
         float s;
-        s = (0.05F*width)/(mCurrentLocation.distanceTo(mCurrLocationMarker));
+        s = (0.5F*width)/(mCurrentLocation.distanceTo(mCurrLocationMarker));
+        //Log.d("debug", "distance :" + Float.toString(mCurrentLocation.distanceTo(mCurrLocationMarker)));
         return s;
     }
 
     public void setOrientationAngles(float[] orientationAngles){
-        mOrientationAngles = orientationAngles;
+        Log.d("debug", "setAngles");
+        timesMoved = 0;
+        preOrientationAngles = mOrientationAngles.clone();
+        mOrientationAngles = orientationAngles.clone();
+        velocityX = (calculateGraphicXPos(mOrientationAngles)
+                - calculateGraphicXPos(preOrientationAngles))/NUM_UPDATES;
+        velocityY = (calculateGraphicYPos(mOrientationAngles)
+                - calculateGraphicYPos(preOrientationAngles))/NUM_UPDATES;
     }
 
-    public void surfaceCreated(SurfaceHolder holder) {
-
-    }
-
-    public void surfaceDestroyed(SurfaceHolder holder) {
-        // empty. Take care of releasing the Camera preview in your activity.
-    }
-
-
-    public void surfaceChanged(SurfaceHolder holder, int format, int w, int h){
-
+    public void setMarkerLocation(Location location){
+        this.mCurrLocationMarker.set(location);
     }
 }
