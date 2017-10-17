@@ -147,7 +147,8 @@ public class UserActivity extends AppCompatActivity implements Communication {
             // Assign updated fields to UI
             textViewName.setText(profile.getName());
             textViewUsername.setText("@" + profile.getUsername());
-            textViewLocation.setText(profile.getX() + "," + profile.getY());
+            textViewLocation.setText(profile.getLocation());
+            //textViewLocation.setText(profile.getX() + "," + profile.getY());
             textViewStatus.setText(profile.getStatus());
 
             getOnline();

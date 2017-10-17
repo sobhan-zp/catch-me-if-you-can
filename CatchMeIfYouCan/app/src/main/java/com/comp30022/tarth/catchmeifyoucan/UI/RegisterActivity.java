@@ -4,6 +4,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Layout;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.AlignmentSpan;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,6 +36,8 @@ public class RegisterActivity extends AppCompatActivity implements Communication
 
     private WebSocketClient mClient;
 
+    TextView textViewSignedup;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,11 +54,19 @@ public class RegisterActivity extends AppCompatActivity implements Communication
         mClient.connect();
         mClient.setmCurrentActivity(this);
 
-        Button buttonCreate = (Button) findViewById(R.id.buttonCreate);
+        Button buttonCreate = (Button) findViewById(R.id.buttonRegister);
         buttonCreate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
             register();
+            }
+        });
+
+        textViewSignedup = (TextView) findViewById(R.id.signedup);
+        textViewSignedup.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                signedup();
             }
         });
     }
@@ -79,13 +93,19 @@ public class RegisterActivity extends AppCompatActivity implements Communication
         return true;
     }
 
+    // Redirect to login activity
+    private void signedup() {
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+    }
+
     // Extracts user-entered information into a JSON formatted string to be sent
     private void register() {
         TextView username = (TextView) findViewById(R.id.editTextUsername);
         TextView password = (TextView) findViewById(R.id.editTextPassword);
         TextView name = (TextView) findViewById(R.id.editTextName);
         TextView email = (TextView) findViewById(R.id.editTextEmail);
-        TextView dob = (TextView) findViewById(R.id.editTextDOB);
+        //TextView dob = (TextView) findViewById(R.id.editTextDOB);
         String client_ip = getHostIP();
 
         JSONObject obj = new JSONObject();
@@ -96,7 +116,7 @@ public class RegisterActivity extends AppCompatActivity implements Communication
             obj.put("password", password.getText());
             obj.put("name", name.getText());
             obj.put("email", email.getText());
-            obj.put("date_of_birth", dob.getText());
+            obj.put("date_of_birth", "0");
         } catch(Exception e) {
             e.printStackTrace();
         }
@@ -106,7 +126,6 @@ public class RegisterActivity extends AppCompatActivity implements Communication
     private void verify(Message message) {
         if (message.getCode().equals(REGISTER_SUCCESS)) {
             toast("Register success");
-            backToMain();
         } else if (message.getCode().equals(REGISTER_FAIL)) {
             toast("Register failed, please try again.");
         } else {
@@ -141,14 +160,16 @@ public class RegisterActivity extends AppCompatActivity implements Communication
         return hostIp;
     }
 
-    // Navigates to Main Activity
-    private void backToMain() {
-        finish();
-    }
 
     // Displays a toast message
-    private void toast(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    private void toast(String text) {
+        Spannable centeredText = new SpannableString(text);
+        centeredText.setSpan(new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER),
+                0, text.length() - 1,
+                Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+
+        Toast.makeText(this, centeredText, Toast.LENGTH_LONG).show();
+        //Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
     @Override

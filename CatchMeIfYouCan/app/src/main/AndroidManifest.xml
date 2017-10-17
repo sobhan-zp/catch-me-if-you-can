@@ -54,7 +54,7 @@
             android:label="Dashboard"></activity>
         <activity
             android:name=".UI.FriendlistActivity"
-            android:label="Friendlist"></activity>
+            android:label="Friends"></activity>
         <activity
             android:name=".UI.AddActivity"
             android:label="Add"></activity>
