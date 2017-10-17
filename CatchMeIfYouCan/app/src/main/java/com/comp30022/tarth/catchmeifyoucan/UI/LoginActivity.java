@@ -144,7 +144,7 @@ public class LoginActivity extends AppCompatActivity implements Communication {
     }
 
     @Override
-    public void response(final Message message) {
+    public void onResponse(final Message message) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {

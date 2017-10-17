@@ -93,7 +93,7 @@ public class GamelistActivity extends AppCompatActivity implements Communication
 
     // Called by the WebSocket upon receiving a message
     @Override
-    public void response(final Message message) {
+    public void onResponse(final Message message) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {

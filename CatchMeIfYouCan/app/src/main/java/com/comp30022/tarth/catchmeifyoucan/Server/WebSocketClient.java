@@ -23,8 +23,8 @@ public class WebSocketClient extends OkHttpClient {
         return instance;
     }
 
-    //private static final String SERVER_IP = "ws://35.197.172.195"; // CentOS 6 Server
-    public static final String SERVER_IP = "ws://45.77.49.3";        // CentOS 7 Server
+    public static final String SERVER2_IP = "ws://35.197.172.195";  // CentOS 6 Server
+    public static final String SERVER_IP = "ws://45.77.49.3";       // CentOS 7 Server
 
     private static final int NORMAL_CLOSURE_STATUS = 1000;
 
@@ -53,7 +53,7 @@ public class WebSocketClient extends OkHttpClient {
                 Gson gson = new GsonBuilder().create();
                 try {
                     Message message = gson.fromJson(filteredText, Message.class);
-                    activity.response(message);
+                    activity.onResponse(message);
                 } catch (JsonSyntaxException e) {
                     e.printStackTrace();
                 }

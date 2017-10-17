@@ -4,6 +4,7 @@
     <!-- Server Settings -->
     <integer name="DEFAULT_USER_LEVEL">0</integer>
     <integer name="SERVER_PORT">0</integer>
+    <integer name="NORMAL_CLOSURE_STATUS">1000</integer>
 
     <!-- Default Status -->
     <integer name="MESSAGE_READ">1</integer>

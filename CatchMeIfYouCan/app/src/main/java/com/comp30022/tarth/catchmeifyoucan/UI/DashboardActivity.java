@@ -37,9 +37,6 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
         setContentView(R.layout.activity_dashboard);
         WebSocketClient.getClient().setActivity(this);
 
-        // Add back button
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
         // constructors
         buttonChat = (Button) findViewById(R.id.buttonChat);
         buttonCreate = (Button) findViewById(R.id.buttonCreate);
@@ -118,17 +115,6 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
         });
     }
 
-    // Set back button on action bar
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                onBackPressed();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
     // Disables back button -- you need to click logout to exit
     @Override
     public void onBackPressed() {
@@ -173,7 +159,7 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
     }
 
     @Override
-    public void response(final Message message) {
+    public void onResponse(final Message message) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -183,19 +169,19 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
                         openGamelist();
                     } else {
                         toast("Rejoined existing game");
-                        openGame(message);
+                        openMaps(message);
                     }
                 } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_CURRENT_FAIL))) {
                     toast("Get current game failure");
                     openGamelist();
                 } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_CREATE_SUCCESS))) {
                     toast("Game creation successful");
-                    openGame(message);
+                    openMaps(message);
                 } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_CREATE_FAIL))) {
                     toast("Game creation failed");
                 } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_ADD_SUCCESS))) {
                     toast("You have been added to the game");
-                    openGame(message);
+                    openMaps(message);
                 } else {
                     toast("Error: Unknown response received");
                 }
@@ -215,8 +201,9 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
     }
 
     // Navigates to Maps activity
-    private void openMaps() {
+    private void openMaps(Message message) {
         Intent intent = new Intent(this, MapsActivity.class);
+        intent.putExtra("game_id", message.getGame_id());
         startActivityForResult(intent, 1);
     }
 

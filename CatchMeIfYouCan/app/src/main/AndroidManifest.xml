@@ -69,7 +69,8 @@
             android:label="Settings"></activity>
         <activity
             android:name=".UI.MapsActivity"
-            android:label="Maps"></activity>
+            android:label="Maps"
+            android:exported="true"></activity>
         <activity
             android:name=".UI.GameActivity"
             android:label="Game"></activity>
@@ -82,7 +83,6 @@
 
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
-             (See the file "res/values/google_maps_api.xml").
              Note that the API key is linked to the encryption key used to sign the APK.
              You need a different API key for each encryption key, including the release key that is used to
              sign the APK for publishing.

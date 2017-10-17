@@ -13,7 +13,6 @@ import android.widget.ListView;
 
 import com.comp30022.tarth.catchmeifyoucan.Server.Communication;
 import com.comp30022.tarth.catchmeifyoucan.Server.Message;
-import com.comp30022.tarth.catchmeifyoucan.Chat.ChatMessage;
 import com.comp30022.tarth.catchmeifyoucan.R;
 import com.comp30022.tarth.catchmeifyoucan.Server.WebSocketClient;
 
@@ -43,10 +42,10 @@ public class ChatActivity extends AppCompatActivity implements Communication {
         // Add back button
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        // get receiver info
+        // Get receiver info
         setFriend();
 
-        // set date format
+        // Set date format
         dateFormat = new SimpleDateFormat("HH:mm:ss, dd/MM/yy");
 
         Button fab = (Button) findViewById(R.id.fab);
@@ -66,7 +65,7 @@ public class ChatActivity extends AppCompatActivity implements Communication {
         );
         listViewMessages.setAdapter(adapter);
 
-        //getOfflineMessages();
+        getOfflineMessages();
     }
 
     // Set back button on action bar
@@ -88,7 +87,7 @@ public class ChatActivity extends AppCompatActivity implements Communication {
     }
 
     @Override
-    public void response(final Message message) {
+    public void onResponse(final Message message) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -134,21 +133,10 @@ public class ChatActivity extends AppCompatActivity implements Communication {
     }
 
     private void displayMessage(Message message) {
-
-        //TextView textViewItem = (TextView) findViewById(R.id.item);
-        //TextView textViewText = (TextView) findViewById(R.id.textViewText);
-        //TextView textViewUser = (TextView) findViewById(R.id.textViewUser);
-        //TextView textViewTime = (TextView) findViewById(R.id.textViewTime);
-
-        //textViewItem.setText(message.getMessage());
-        //textViewText.setText(message.getMessage());
-        //textViewUser.setText(message.getFrom());
-        //textViewTime.setText(DateFormat.format("dd-MM-yyyy (HH:mm:ss)", message.getTime()));
-
         String time  = dateFormat.format(new Date());
 
         array.add(
-                message.getFrom() + ": " +  message.getMessage() + "\n" + time //+ message.getTime()
+                message.getFrom() + ": " +  message.getMessage() + "\n" + time
         );
         adapter.notifyDataSetChanged();
 
@@ -156,14 +144,11 @@ public class ChatActivity extends AppCompatActivity implements Communication {
 
     private void sendMessage() {
         EditText input = (EditText) findViewById(R.id.input);
-
-        // Read input and push a new instance of ChatMessage to the database
-        ChatMessage msg = new ChatMessage(input.getText().toString(), friend);
         JSONObject obj = new JSONObject();
         try {
             obj.put("action", getResources().getInteger(R.integer.MESSAGE_SEND));
-            obj.put("username", msg.getUser());
-            obj.put("message", msg.getText());
+            obj.put("username", input.getText().toString());
+            obj.put("message", friend);
         } catch(Exception e) {
             e.printStackTrace();
         }
@@ -172,7 +157,7 @@ public class ChatActivity extends AppCompatActivity implements Communication {
         String time  = dateFormat.format(new Date());
 
         array.add(
-                name + ": " +  msg.getText() + "\n"  + time// + "0"
+                name + ": " +  input.getText().toString() + "\n"  + time// + "0"
         );
         adapter.notifyDataSetChanged();
 

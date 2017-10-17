@@ -14,7 +14,6 @@ import android.widget.TextView;
 import com.comp30022.tarth.catchmeifyoucan.Server.Communication;
 import com.comp30022.tarth.catchmeifyoucan.Server.Message;
 import com.comp30022.tarth.catchmeifyoucan.Server.Result;
-import com.comp30022.tarth.catchmeifyoucan.Server.User;
 import com.comp30022.tarth.catchmeifyoucan.R;
 import com.comp30022.tarth.catchmeifyoucan.Server.WebSocketClient;
 
@@ -37,9 +36,6 @@ public class UserActivity extends AppCompatActivity implements Communication {
         setContentView(R.layout.activity_user);
         // Set server to send responses back to this class
         WebSocketClient.getClient().setActivity(this);
-
-        // Add back button
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         buttonChat = (Button) findViewById(R.id.buttonChat);
 
@@ -72,17 +68,6 @@ public class UserActivity extends AppCompatActivity implements Communication {
                 openChat(getUsername);
             }
         });
-    }
-
-    // Set back button on action bar
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                onBackPressed();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -131,7 +116,7 @@ public class UserActivity extends AppCompatActivity implements Communication {
 
         /* Grabs response from server */
     @Override
-    public void response(final Message message) {
+    public void onResponse(final Message message) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
