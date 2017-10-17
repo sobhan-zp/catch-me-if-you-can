@@ -16,6 +16,7 @@
             style="@style/TextAppearance.AppCompat.Title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="4dp"
             android:text="@string/login_title"
             />
 
@@ -26,6 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:layout_marginTop="5dp"
+            android:layout_marginLeft="4dp"
             android:text="@string/register_subtitle" />
 
         <android.support.design.widget.TextInputLayout
@@ -106,7 +108,7 @@
         <View
             android:layout_width="fill_parent"
             android:layout_height="1dip"
-            android:background="#b7b7b7"
+            android:background="@color/colorDividerColor"
             android:layout_below="@+id/login_password"
             android:layout_marginTop="20dp"
             />

@@ -13,4 +13,5 @@
     <color name="colorTextIcons">#FFFFFF</color>
     <color name="colorExit">#D32F2F</color>
     <color name="colorTertiaryText">#E2E2E2</color>
+    <color name="colorLightBackground">#EFEFEF</color>
 </resources>

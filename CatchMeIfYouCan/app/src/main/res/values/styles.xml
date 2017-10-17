@@ -23,6 +23,11 @@
         <item name="colorControlHighlight">#fff</item>
     </style>
 
+    <style name="ExitButton" parent="Theme.AppCompat">
+        <item name="android:buttonStyle">@style/Widget.AppCompat.Button.Borderless.Colored</item>
+        <item name="colorControlHighlight">@color/colorAccent</item>
+        <item name="colorAccent">@color/colorExit</item>
+    </style>
 
     <style name="PrimaryFlatButton" parent="Theme.AppCompat.Light">
         <item name="android:buttonStyle">@style/Widget.AppCompat.Button.Borderless.Colored</item>
@@ -38,5 +43,19 @@
         <!-- Used for the background -->
         <item name="android:background">@color/colorPrimary</item>
     </style>
+
+    <style name="SizeSpecificCollapsingToolbarLayout">
+        <item name="layout_scrollFlags">scroll|exitUntilCollapsed</item>
+        <item name="contentScrim">?attr/colorPrimary</item>
+    </style>
+
+    <style name="Widget.CardContent" parent="android:Widget">
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingRight">16dp</item>
+        <item name="android:paddingTop">24dp</item>
+        <item name="android:paddingBottom">24dp</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
 
 </resources>

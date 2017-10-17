@@ -5,98 +5,102 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:layout_marginTop="25dip"
-
     >
+
 
     <ImageView
         android:id="@+id/ProfilePicture"
         android:layout_width="160dp"
         android:layout_height="160dp"
         android:layout_centerHorizontal="true"
+        android:layout_marginBottom="20dp"
         app:srcCompat="@mipmap/temp_placeholder" />
 
-    <TextView
-        android:id="@+id/Name"
-        android:layout_centerHorizontal="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
+    <android.support.v7.widget.CardView
+        android:layout_marginLeft="@dimen/card_margin"
+        android:layout_width="match_parent"
         android:layout_below="@+id/ProfilePicture"
-        android:layout_marginTop="30dp"
-        android:textSize="21dp"
-        android:textStyle="bold"
-        android:text="Name Unknown" />
+        android:layout_marginTop="@dimen/card_margin"
+        android:layout_marginBottom="@dimen/card_margin"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/card_margin">
 
-    <TextView
-        android:id="@+id/Username"
-        android:layout_centerHorizontal="true"
+        <LinearLayout
+            android:layout_width="match_parent"
+            style="@style/Widget.CardContent"
+            android:layout_height="wrap_content">
+
+
+            <TextView
+                android:id="@+id/Name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textSize="21sp"
+                android:textStyle="bold"
+                android:text="Name Unknown" />
+
+            <TextView
+                android:id="@+id/Username"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_marginTop="8dp"
+                android:textSize="15sp"
+                android:textStyle="italic"
+                android:text="username unknown" />
+
+            <TextView
+                android:id="@+id/Online"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_marginTop="20dp"
+                android:textSize="15sp"
+                android:text="Online Status Unknown" />
+
+            <TextView
+                android:id="@+id/Location"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_marginTop="8dp"
+                android:textSize="15sp"
+                android:text="Location Unknown" />
+
+            <TextView
+                android:id="@+id/StatusTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:textSize="17sp"
+                android:textStyle="bold"
+                android:text="Status" />
+
+
+            <TextView
+                android:id="@+id/Status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_marginTop="8dp"
+                android:textSize="15sp"
+                android:text="This user hasnt set a status." />
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/floatingChat"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="30dp"
+        android:layout_marginBottom="30dp"
+        app:layout_anchorGravity="top|right|end"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_discuss"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:layout_below="@+id/Name"
-        android:layout_marginTop="8dp"
-        android:textSize="15dp"
-        android:textStyle="italic"
-        android:text="username unknown" />
-
-    <TextView
-        android:id="@+id/Location"
-        android:layout_centerHorizontal="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:layout_below="@+id/Username"
-        android:layout_marginTop="8dp"
-        android:textSize="15dp"
-        android:text="Location Unknown" />
-
-    <TextView
-        android:id="@+id/Online"
-        android:layout_centerHorizontal="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:layout_below="@+id/Location"
-        android:layout_marginTop="8dp"
-        android:textSize="15dp"
-        android:text="Online Status Unknown" />
-
-    <TextView
-        android:id="@+id/Status"
-        android:layout_centerHorizontal="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:layout_below="@+id/Online"
-        android:layout_marginTop="8dp"
-        android:textSize="15dp"
-        android:layout_marginLeft="40dp"
-        android:layout_marginRight="40dp"
-        android:text="This user hasnt set a status. Message him to change it in his settings!" />
-
-
-<!--
-    <Button
-        android:id="@+id/buttonGet"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:onClick="createOnClick"
-        android:text="GET"
-        android:layout_below="@+id/Status"
-        android:layout_centerHorizontal="true"
-        />
--->
-
-    <Button
-        android:id="@+id/buttonChat"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:onClick="createOnClick"
-        android:text="Send message"
-        android:layout_below="@+id/Status"
-        android:layout_marginTop="80dp"
-        android:layout_centerHorizontal="true"
-        />
+        android:clickable="true"/>
 
 </RelativeLayout>

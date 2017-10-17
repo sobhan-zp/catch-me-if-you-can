@@ -140,7 +140,7 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
     // Verifies responses from the server
     private void verify(Message message) {
         if (message.getCode().equals(FRIEND_GET_SUCCESS)) {
-            toast("Friend get success");
+            System.out.println("Friend GET Success");
 
             // Repopulates list
             Result[] results = message.getResult();

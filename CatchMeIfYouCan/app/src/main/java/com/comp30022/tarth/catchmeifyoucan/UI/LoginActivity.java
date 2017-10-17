@@ -32,13 +32,12 @@ import java.util.Enumeration;
 
 public class LoginActivity extends AppCompatActivity implements Communication {
 
-    private static final Integer ACTION_LOGIN = 101;              // Login action
+    private static final Integer ACTION_LOGIN = 101;
     private static final Integer LOGIN_SUCCESS_CODE = 200;
     private static final Integer LOGIN_USER_NON_EXIST_CODE = 201;
     private static final Integer LOGIN_EXIST_CODE = 202;
 
     private Button buttonLogin;
-//    private Button buttonBack;
     TextView textViewRegister;
 
 
@@ -62,7 +61,6 @@ public class LoginActivity extends AppCompatActivity implements Communication {
         mClient.setmCurrentActivity(this);
 
         buttonLogin = (Button) findViewById(R.id.buttonLogin);
-//      buttonBack = (Button) findViewById(R.id.buttonBack);
         textViewRegister = (TextView) findViewById(R.id.registered);
 
         buttonLogin.setOnClickListener(new Button.OnClickListener() {
@@ -77,13 +75,6 @@ public class LoginActivity extends AppCompatActivity implements Communication {
                 register();
             }
         });
-
-        /*buttonBack.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                back();
-            }
-        });*/
 
     }
 
@@ -192,12 +183,6 @@ public class LoginActivity extends AppCompatActivity implements Communication {
         startActivity(intent);
     }
 
- /*   // Navigates to previous activity
-    public void back() {
-        mClient.disconnect();
-        finish();
-    }*/
-
     // Displays a toast message
     private void toast(String text) {
         Spannable centeredText = new SpannableString(text);
@@ -206,7 +191,6 @@ public class LoginActivity extends AppCompatActivity implements Communication {
                 Spannable.SPAN_INCLUSIVE_INCLUSIVE);
 
         Toast.makeText(this, centeredText, Toast.LENGTH_LONG).show();
-        //Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
     public static WebSocketClient getClient() {

@@ -25,4 +25,10 @@
     <string name="signedup_title">Already signed up? Click here to login.</string>
     <string name="main_title">Let\'s Start!</string>
     <string name="main_subtitle">Login or sign up for an account to play</string>
+    <string name="exit_dialog_pos">Leave</string>
+    <string name="exit_dialog_neg">Cancel</string>
+    <string name="exit_dashboard_message">Are you sure you want to logout? You can rejoin the game if you log back in.</string>
+    <string name="exit_dashboard_title">Logging out...</string>
+    <string name="exit_app_title">Exiting App...</string>
+    <string name="exit_app_message">Are you sure you want to exit?</string>
 </resources>

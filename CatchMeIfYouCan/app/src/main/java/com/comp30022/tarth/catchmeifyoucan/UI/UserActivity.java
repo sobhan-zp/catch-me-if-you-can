@@ -1,5 +1,6 @@
 package com.comp30022.tarth.catchmeifyoucan.UI;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -7,6 +8,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.comp30022.tarth.catchmeifyoucan.Account.Communication;
@@ -18,7 +21,7 @@ import com.comp30022.tarth.catchmeifyoucan.R;
 import org.json.JSONObject;
 
 /* Opens a detailed view of a user by querying the server */
-public class UserActivity extends AppCompatActivity implements Communication {
+public class UserActivity extends Activity implements Communication {
 
 
     // Server protocol codes
@@ -34,7 +37,11 @@ public class UserActivity extends AppCompatActivity implements Communication {
     TextView textViewStatus;
     TextView textViewOnline;
     //private Button buttonGet;
-    private Button buttonChat;
+    //private Button buttonChat;
+    private ImageButton fabChat;
+
+    //    ImageView backdropImg;
+    ImageView profilePicture;
     User profile;
     String getUsername;
 
@@ -46,13 +53,20 @@ public class UserActivity extends AppCompatActivity implements Communication {
         LoginActivity.getClient().setmCurrentActivity(this);
 
         //buttonGet = (Button) findViewById(R.id.buttonGet);
-        buttonChat = (Button) findViewById(R.id.buttonChat);
+        //buttonChat = (Button) findViewById(R.id.buttonChat);
+        fabChat = (ImageButton) findViewById(R.id.floatingChat);
 
         textViewLocation = (TextView) findViewById(R.id.Location);
         textViewStatus = (TextView) findViewById(R.id.Status);
         textViewUsername = (TextView) findViewById(R.id.Username);
         textViewName = (TextView) findViewById(R.id.Name);
         textViewOnline = (TextView) findViewById(R.id.Online);
+
+        profilePicture = (ImageView) findViewById(R.id.ProfilePicture);
+        profilePicture.setImageResource(R.mipmap.temp_placeholder);
+
+       /* backdropImg = (ImageView) findViewById(R.id.backdrop);
+        backdropImg.setImageResource(R.drawable.p1);*/
 
         // Get username from dashboard
         Intent intent = getIntent();
@@ -63,9 +77,9 @@ public class UserActivity extends AppCompatActivity implements Communication {
 
             // Check if the Send Message Button should appear
             // Shouldn't appear if user is looking at his own profile
-            if ((Boolean) bd.get("dashboard") == true) {
+            /*if ((Boolean) bd.get("dashboard") == true) {
                 buttonChat.setVisibility(View.GONE);
-            }
+            }*/
             //System.out.println("getUsername" + getUsername);
         }
 
@@ -79,7 +93,14 @@ public class UserActivity extends AppCompatActivity implements Communication {
             }
         });*/
 
-        buttonChat.setOnClickListener(new Button.OnClickListener() {
+        /*buttonChat.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openChat(getUsername);
+            }
+        });*/
+
+        fabChat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 openChat(getUsername);
@@ -147,7 +168,7 @@ public class UserActivity extends AppCompatActivity implements Communication {
             // Assign updated fields to UI
             textViewName.setText(profile.getName());
             textViewUsername.setText("@" + profile.getUsername());
-            textViewLocation.setText(profile.getLocation());
+            textViewLocation.setText("Location: " + profile.getLocation());
             //textViewLocation.setText(profile.getX() + "," + profile.getY());
             textViewStatus.setText(profile.getStatus());
 

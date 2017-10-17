@@ -58,14 +58,14 @@ public class MainActivity extends Activity {
     // Reveals pop up asking if user really wants to exit
     public void logoutWarning() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.MyAlertDialogStyle);
-        builder.setTitle("Exiting Account...");
-        builder.setMessage("Are you sure you want to exit?");
-        builder.setPositiveButton("Get Me Out of Here!", new DialogInterface.OnClickListener() {
+        builder.setTitle(getResources().getString(R.string.exit_app_title));
+        builder.setMessage(getResources().getString(R.string.exit_app_message));
+        builder.setPositiveButton(getResources().getString(R.string.exit_dialog_pos), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 logout();
             }
         });
-        builder.setNegativeButton("Cancel", null);
+        builder.setNegativeButton(getResources().getString(R.string.exit_dialog_neg), null);
         builder.show();
     }
 

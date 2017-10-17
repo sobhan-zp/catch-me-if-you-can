@@ -125,9 +125,10 @@ public class RegisterActivity extends AppCompatActivity implements Communication
 
     private void verify(Message message) {
         if (message.getCode().equals(REGISTER_SUCCESS)) {
-            toast("Register success");
+            toast("Register Success!");
+            finish();
         } else if (message.getCode().equals(REGISTER_FAIL)) {
-            toast("Register failed, please try again.");
+            toast("Register Failed: Please Try Again.");
         } else {
             toast("Error: Unknown response received");
         }
@@ -169,7 +170,6 @@ public class RegisterActivity extends AppCompatActivity implements Communication
                 Spannable.SPAN_INCLUSIVE_INCLUSIVE);
 
         Toast.makeText(this, centeredText, Toast.LENGTH_LONG).show();
-        //Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
     @Override
