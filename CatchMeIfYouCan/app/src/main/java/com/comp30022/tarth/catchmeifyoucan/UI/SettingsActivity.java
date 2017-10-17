@@ -162,14 +162,16 @@ public class SettingsActivity extends AppCompatActivity implements Communication
                 EditTextEmail.setText(message.getEmail());
 
 
-                if (message.getLocation() == "") {
+             /*   if (message.getLocation() == "") {
+                    System.out.println("*********************LOCATION EMPTY");
                     EditTextLocation.setText("Enter Location Here");
                 }
 
                 if (message.getStatus() == "") {
+                    System.out.println("*********************STATUS EMPTY");
                     EditTextStatus.setText("Enter Custom Status Here");
                 }
-
+*/
                 // System.out.println("Profile get success");
             }
 
@@ -187,10 +189,10 @@ public class SettingsActivity extends AppCompatActivity implements Communication
             // manages response to profile update request
             } else if (message.getCode().equals(PROFILE_UPDATE_SUCCESS)) {
                 getInfo();
-                toast("Profile Update Successful");
+                toast("Profile Update Success");
             } else if (message.getCode().equals(PROFILE_UPDATE_FAIL)) {
                 //getInfo();
-                toast("Profile Update Failure. Try again later.");
+                toast("Profile Update Failure: Try Again Later");
             }
         } else {
             System.out.println("User Error: Unknown response received");
