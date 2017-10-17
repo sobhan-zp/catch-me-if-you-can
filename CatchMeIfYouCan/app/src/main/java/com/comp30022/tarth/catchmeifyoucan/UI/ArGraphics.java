@@ -13,6 +13,7 @@ import android.location.Location;
 
 import com.google.android.gms.maps.model.Marker;
 
+import static java.lang.Math.abs;
 import static java.lang.Math.toRadians;
 
 
@@ -40,8 +41,8 @@ public class ArGraphics extends View{
     private ShapeDrawable shape;
 
     //Graphic positioning constructors
-    double xViewingAngle = 0.6859;
-    double yViewingAngle = 0.9919;
+    double xViewingAngle = 0.70;
+    double yViewingAngle = 0.99;
 
     //Location tests
     private Location mCurrentLocation = new Location("Melbourne");
@@ -63,7 +64,7 @@ public class ArGraphics extends View{
         mCurrentLocation.setLatitude(-37.8136);
         mCurrentLocation.setLongitude(144.9631);
 
-        mCurrLocationMarker.setLatitude(-37.81355);
+        mCurrLocationMarker.setLatitude(-37.81365);
         mCurrLocationMarker.setLongitude(144.9631);
 
         //Set paint style
@@ -94,8 +95,15 @@ public class ArGraphics extends View{
 
     private float calculateGraphicXPos(float[] orientationAngles){
         float x;
-        x = width/2 - (int) ((orientationAngles[0]-
-                toRadians(mCurrentLocation.bearingTo(mCurrLocationMarker)))/xViewingAngle * width);
+        float bearingAngle = (float)toRadians(mCurrentLocation.bearingTo(mCurrLocationMarker));
+        Log.d("debug", "bearingAngle1 :" + Float.toString(bearingAngle));
+        if(bearingAngle>Math.PI){
+            bearingAngle = -1* (float)((2*Math.PI) - bearingAngle);
+        }
+
+        Log.d("debug", "bearingAngle2 :" + Float.toString(bearingAngle));
+        x = width/2 - (float)((orientationAngles[0] + bearingAngle)/xViewingAngle * width);
+        Log.d("debug", "x :" + Float.toString(x));
         return x;
     }
 

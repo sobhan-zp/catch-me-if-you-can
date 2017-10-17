@@ -13,6 +13,7 @@ import android.hardware.SensorManager;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.res.TypedArrayUtils;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -30,6 +31,7 @@ import android.app.ActionBar.LayoutParams;
 
 import com.comp30022.tarth.catchmeifyoucan.R;
 
+import java.util.Arrays;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -71,7 +73,7 @@ public class ArActivity extends Activity implements SensorEventListener, View.On
     private AlertDialog.Builder riddleDialog;
     private AlertDialog.Builder successDialog;
     private AlertDialog.Builder failDialog;
-
+    private boolean correctAns = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,7 +120,7 @@ public class ArActivity extends Activity implements SensorEventListener, View.On
         }
 
 
-        buttonMaps = (Button) findViewById(R.id.buttonChat);
+        buttonMaps = (Button) findViewById(R.id.buttonMap);
 
         Intent intent = getIntent();
         Bundle bd = intent.getExtras();
@@ -211,13 +213,14 @@ public class ArActivity extends Activity implements SensorEventListener, View.On
     // the device's accelerometer and magnetometer.
     public void updateOrientationAngles() {
         // Update rotation matrix, which is needed to update orientation angles.
+        float[] newRotationMatrix = mRotationMatrix.clone();
         sensorManager.getRotationMatrix(mRotationMatrix, null,
                 mAccelerometerReading, mMagnetometerReading);
         sensorManager.remapCoordinateSystem(mRotationMatrix, SensorManager.AXIS_X,
-                SensorManager.AXIS_Z, mRotationMatrix);
+                SensorManager.AXIS_Z, newRotationMatrix);
         // "mRotationMatrix" now has up-to-date information.
 
-        sensorManager.getOrientation(mRotationMatrix, mOrientationAngles);
+        sensorManager.getOrientation(newRotationMatrix, mOrientationAngles);
     }
 
     @Override
@@ -259,7 +262,7 @@ public class ArActivity extends Activity implements SensorEventListener, View.On
                     @Override
                     public void run(){
                         arGraphics.invalidate();
-                        Log.d("debug", "invalidate");
+                        //Log.d("debug", "invalidate");
                     }
                 });
             }
@@ -269,7 +272,7 @@ public class ArActivity extends Activity implements SensorEventListener, View.On
             @Override
             public void run(){
                 arGraphics.setOrientationAngles(mOrientationAngles);
-                Log.d("debug", "set angles");
+                //Log.d("debug", "set angles");
             }
         }, 0, LOCATION_UPDATE_RATE, TimeUnit.MILLISECONDS);
     }
@@ -290,51 +293,55 @@ public class ArActivity extends Activity implements SensorEventListener, View.On
                     return false; //Nothing happens
                 }
                 else {
+                    correctAns = false;
                     lastTime = System.currentTimeMillis();
                     int i = (int) (Math.random() * (riddlesArray.length));
-                    riddleDialog.setMessage(riddlesArray[i]);
-                    boolean order;
-                    if (Math.random() < 0.5) {
-                        order = true;
-                    } else {
-                        order = false;
-                    }
-                    if (order) {
-                        riddleDialog.setPositiveButton(correctAnswers[i], new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
+                    final int ansPos = (int)(Math.random() * 4);
+                    String[] answers = arrayCombine(correctAnswers[i], Arrays.copyOfRange(wrongAnswers, i*3, i*3 + 3), ansPos);
+                    riddleDialog.setTitle(riddlesArray[i]).setSingleChoiceItems(answers, -1,
+                            new DialogInterface.OnClickListener(){
+                                @Override
+                                public void onClick(DialogInterface dialog, int which){
+                                    if(which == ansPos){
+                                        correctAns = true;
+                                    }
+                                    else{
+                                        correctAns = false;
+                                    }
+                                }
+                    })
+                    .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            if(correctAns) {
                                 successDialog.setMessage("Correct! Move to the next waypoint!");
                                 successDialog.show();
                                 //arGraphics.setMarkerLocation(somelocation);
                             }
-                        });
-                        riddleDialog.setNegativeButton(wrongAnswers[i], new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                failDialog.setMessage("Wrong! Try again!");
+                            else{
+                                failDialog.setMessage("Wrong! Try again.");
                                 riddleDialog.show();
                                 failDialog.show();
                             }
-                        });
-                    } else {
-                        riddleDialog.setPositiveButton(wrongAnswers[i], new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                failDialog.setMessage("Wrong! Try again!");
-                                riddleDialog.show();
-                                failDialog.show();
-                            }
-                        });
-                        riddleDialog.setNegativeButton(correctAnswers[i], new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                successDialog.setMessage("Correct! Move to the next waypoint!");
-                                successDialog.show();
-                                //arGraphics.setMarkerLocation(somelocation);
-                            }
-                        });
-                    }
+                        }
+                    });
                     riddleDialog.show();
                 }
             }
         }
         return true;
+    }
+
+    public String[] arrayCombine(String a, String[] b, int ansPos){
+        String[] result = new String[1 + b.length];
+        result[ansPos] = a;
+        int i = 0;
+        for(int j = 0; j < 1 + b.length; j++){
+            if(result[j] == null){
+                result[j] = b[i];
+                i++;
+            }
+        }
+        return result;
     }
 
     // Navigates to Maps activity
