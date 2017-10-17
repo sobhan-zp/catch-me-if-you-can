@@ -1,5 +1,6 @@
 package com.comp30022.tarth.catchmeifyoucan.UI;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -26,7 +27,6 @@ public class UserActivity extends AppCompatActivity implements Communication {
     TextView textViewLocation;
     TextView textViewStatus;
     TextView textViewOnline;
-    //private Button buttonGet;
     private Button buttonChat;
     String getUsername;
 
@@ -58,18 +58,10 @@ public class UserActivity extends AppCompatActivity implements Communication {
             if ((Boolean) bd.get("dashboard") == true) {
                 buttonChat.setVisibility(View.GONE);
             }
-            //System.out.println("getUsername" + getUsername);
         }
 
         // Fetch details
         getInfo(getUsername);
-
-        /*buttonGet.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getInfo(getUsername);
-            }
-        });*/
 
         buttonChat.setOnClickListener(new Button.OnClickListener() {
             @Override
@@ -81,6 +73,8 @@ public class UserActivity extends AppCompatActivity implements Communication {
 
     @Override
     public void onBackPressed() {
+        Intent returnIntent = new Intent();
+        setResult(Activity.RESULT_OK, returnIntent);
         finish();
     }
 
@@ -88,7 +82,7 @@ public class UserActivity extends AppCompatActivity implements Communication {
     private void openChat(String friend) {
         Intent intent = new Intent(this, ChatActivity.class);
         intent.putExtra("friend", friend);
-        startActivity(intent);
+        startActivityForResult(intent, 1);
     }
 
     /* Sends server a JSON request for the information of a user, takes in unique username as string*/
@@ -121,58 +115,52 @@ public class UserActivity extends AppCompatActivity implements Communication {
         WebSocketClient.getClient().send(obj.toString());
     }
 
-    // Handles server response logic
-    private void verify(Message message) {
-        //System.out.println("Message received");
-        System.out.println("getCode->" + message.getCode());
-
-        if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_SEARCH_SUCCESS))) {
-            // Strip result from JSON
-            Result profile = message.getResult()[0];
-
-            /*System.out.println("recvname->" + profile.getName());
-            System.out.println("recvusername->" + profile.getUsername());
-            System.out.println("recvemail->" + profile.getEmail());
-            System.out.println("recvstatus->" + profile.getStatus());
-            System.out.println("recvlocation->" + profile.getLocation());*/
-
-            // Assign updated fields to UI
-            textViewName.setText(profile.getName());
-            textViewUsername.setText("@" + profile.getUsername());
-            textViewLocation.setText(profile.getX() + "," + profile.getY());
-            textViewStatus.setText(profile.getStatus());
-
-            getOnline();
-
-            //System.out.println("Profile get success");
-        }
-
-        // If online
-        if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_CHECK_SUCCESS))) {
-            textViewOnline.setTextColor(Color.parseColor("#16B72E"));
-            textViewOnline.setText("ONLINE");
-            textViewOnline.setTypeface(null, Typeface.BOLD_ITALIC);
-
-        // If offline
-        } else if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_CHECK_FAIL))) {
-            textViewOnline.setText("OFFLINE");
-            textViewOnline.setTextColor(Color.parseColor("#B72616"));
-            textViewOnline.setTypeface(null, Typeface.BOLD_ITALIC);
-        } else {
-            System.out.println("User Error: Unknown response received");
-        }
-
-    }
-
         /* Grabs response from server */
     @Override
     public void response(final Message message) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                verify(message);
+                if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_SEARCH_SUCCESS))) {
+                    // Strip result from JSON
+                    Result profile = message.getResult()[0];
+
+                    // Assign updated fields to UI
+                    textViewName.setText(profile.getName());
+                    textViewUsername.setText("@" + profile.getUsername());
+                    textViewLocation.setText(profile.getX() + "," + profile.getY());
+                    textViewStatus.setText(profile.getStatus());
+
+                    getOnline();
+                }
+
+                // If online
+                if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_CHECK_SUCCESS))) {
+                    textViewOnline.setTextColor(Color.parseColor("#16B72E"));
+                    textViewOnline.setText("ONLINE");
+                    textViewOnline.setTypeface(null, Typeface.BOLD_ITALIC);
+
+                    // If offline
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_CHECK_FAIL))) {
+                    textViewOnline.setText("OFFLINE");
+                    textViewOnline.setTextColor(Color.parseColor("#B72616"));
+                    textViewOnline.setTypeface(null, Typeface.BOLD_ITALIC);
+                } else {
+                    System.out.println("User Error: Unknown response received");
+                }
             }
         });
     }
+
+    // Resets the current activity connected to the WebSocket upon terminating child activities
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1) {
+            if (resultCode == Activity.RESULT_OK) {
+                WebSocketClient.getClient().setActivity(this);
+            }
+        }
+    }
+
 }
 

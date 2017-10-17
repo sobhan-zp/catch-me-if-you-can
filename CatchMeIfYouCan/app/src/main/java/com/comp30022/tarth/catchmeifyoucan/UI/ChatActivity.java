@@ -1,5 +1,6 @@
 package com.comp30022.tarth.catchmeifyoucan.UI;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -66,6 +67,8 @@ public class ChatActivity extends AppCompatActivity implements Communication {
 
     @Override
     public void onBackPressed() {
+        Intent returnIntent = new Intent();
+        setResult(Activity.RESULT_OK, returnIntent);
         finish();
     }
 
@@ -74,7 +77,24 @@ public class ChatActivity extends AppCompatActivity implements Communication {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                verify(message);
+                if (message.getAction() != null) {
+                    if (message.getAction().equals(getResources().getInteger(R.integer.MESSAGE_RECEIVE))) {
+                        System.out.println("Message received");
+                        displayMessage(message);
+                    } else if (message.getAction().equals(getResources().getInteger(R.integer.MESSAGE_OFFLINE_GET))) {
+                        System.out.println("Message received");
+                        displayMessage(message);
+                    } else {
+                        System.out.println("Chat Error: Unknown response received");
+                    }
+                }
+                if (message.getCode() != null) {
+                    if (message.getCode().equals(getResources().getInteger(R.integer.MESSAGE_SEND_SUCCESS_ONLINE))) {
+                        System.out.println("Message sent, user online");
+                    } else if (message.getCode().equals(getResources().getInteger(R.integer.MESSAGE_SEND_SUCCESS_OFFLINE))) {
+                        System.out.println("Message sent, user offline");
+                    }
+                }
             }
         });
     }
@@ -85,28 +105,6 @@ public class ChatActivity extends AppCompatActivity implements Communication {
         Bundle bd = intent.getExtras();
         if(bd != null) {
             friend = (String) bd.get("friend");
-        }
-    }
-
-    private void verify(Message message) {
-        System.out.println("MESSAGE : " + message.getMessage());
-        if (message.getAction() != null) {
-            if (message.getAction().equals(getResources().getInteger(R.integer.MESSAGE_RECEIVE))) {
-                System.out.println("Message received");
-                displayMessage(message);
-            } else if (message.getAction().equals(getResources().getInteger(R.integer.MESSAGE_OFFLINE_GET))) {
-                System.out.println("Message received");
-                displayMessage(message);
-            } else {
-                System.out.println("Chat Error: Unknown response received");
-            }
-        }
-        if (message.getCode() != null) {
-             if (message.getCode().equals(getResources().getInteger(R.integer.MESSAGE_SEND_SUCCESS_ONLINE))) {
-                 System.out.println("Message sent, user online");
-             } else if (message.getCode().equals(getResources().getInteger(R.integer.MESSAGE_SEND_SUCCESS_OFFLINE))) {
-                 System.out.println("Message sent, user offline");
-             }
         }
     }
 
@@ -167,8 +165,15 @@ public class ChatActivity extends AppCompatActivity implements Communication {
         input.setText("");
     }
 
-    private void back() {
-        finish();
+    // Resets the current activity connected to the WebSocket upon terminating child activities
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1) {
+            if (resultCode == Activity.RESULT_OK) {
+                WebSocketClient.getClient().setActivity(this);
+            }
+        }
     }
+
 }
 

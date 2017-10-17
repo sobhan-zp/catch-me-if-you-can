@@ -1,6 +1,7 @@
 package com.comp30022.tarth.catchmeifyoucan.UI;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
@@ -131,7 +132,9 @@ public class GameActivity extends FragmentActivity implements OnMapReadyCallback
             navigation.getMenu().getItem(MAP_ITEM_ID).setChecked(true);
             switchFragment(homeItem);
         } else {
-            super.onBackPressed();
+            Intent returnIntent = new Intent();
+            setResult(Activity.RESULT_OK, returnIntent);
+            finish();
         }
     }
 
@@ -516,30 +519,6 @@ public class GameActivity extends FragmentActivity implements OnMapReadyCallback
         //curr_latitude, curr_longitude
     }
 
-    private void verify(Message message) {
-        System.out.println("CODE" + message.getCode());
-        if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_USER_SUCCESS))) {
-            toast("Game get users successful");
-            ((OptionsFragment) optionsFragment).onResponse(message);
-        } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_USER_FAIL))) {
-            toast("Game get users failure");
-        } else if (message.getCode().equals(614)) {
-            // TESTING TESTING
-            toast("Location get successful");
-            ((ChatFragment) chatFragment).onResponse(message);
-        } else if (message.getCode().equals(615)) {
-            toast("Location get failure");
-        } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_EXIT_SUCCESS))) {
-            toast("Game exit successful");
-        } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_EXIT_FAIL))) {
-            toast("Game exit failure");
-        } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_DELETE_SUCCESS))) {
-            toast("Game delete successful");
-        } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_DELETE_FAIL))) {
-            toast("Game delete failure");
-        }
-    }
-
     @Override
     public void onSend(JSONObject obj) {
         WebSocketClient.getClient().send(obj.toString());
@@ -550,7 +529,27 @@ public class GameActivity extends FragmentActivity implements OnMapReadyCallback
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                verify(message);
+                System.out.println("CODE" + message.getCode());
+                if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_USER_SUCCESS))) {
+                    toast("Game get users successful");
+                    ((OptionsFragment) optionsFragment).onResponse(message);
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_USER_FAIL))) {
+                    toast("Game get users failure");
+                } else if (message.getCode().equals(614)) {
+                    // TESTING TESTING
+                    toast("Location get successful");
+                    ((ChatFragment) chatFragment).onResponse(message);
+                } else if (message.getCode().equals(615)) {
+                    toast("Location get failure");
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_EXIT_SUCCESS))) {
+                    toast("Game exit successful");
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_EXIT_FAIL))) {
+                    toast("Game exit failure");
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_DELETE_SUCCESS))) {
+                    toast("Game delete successful");
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_DELETE_FAIL))) {
+                    toast("Game delete failure");
+                }
             }
         });
     }
@@ -566,6 +565,16 @@ public class GameActivity extends FragmentActivity implements OnMapReadyCallback
         WebSocketClient.getClient().send(obj.toString());
         onBackPressed();
         onBackPressed();
+    }
+
+    // Resets the current activity connected to the WebSocket upon terminating child activities
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1) {
+            if (resultCode == Activity.RESULT_OK) {
+                WebSocketClient.getClient().setActivity(this);
+            }
+        }
     }
 
 }

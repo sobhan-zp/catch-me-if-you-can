@@ -1,6 +1,7 @@
 package com.comp30022.tarth.catchmeifyoucan.UI;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -179,6 +180,8 @@ public class ArActivity extends AppCompatActivity implements SensorEventListener
 
     @Override
     public void onBackPressed() {
+        Intent returnIntent = new Intent();
+        setResult(Activity.RESULT_OK, returnIntent);
         finish();
     }
 

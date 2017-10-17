@@ -1,5 +1,6 @@
 package com.comp30022.tarth.catchmeifyoucan.UI;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -47,12 +48,10 @@ public class LoginActivity extends AppCompatActivity implements Communication {
         StrictMode.setThreadPolicy(policy);
 
         // Initialises the WebSocket client
-
         WebSocketClient.getClient().connect();
         WebSocketClient.getClient().setActivity(this);
 
         buttonLogin = (Button) findViewById(R.id.buttonLogin);
-//      buttonBack = (Button) findViewById(R.id.buttonBack);
         textViewRegister = (TextView) findViewById(R.id.registered);
 
         buttonLogin.setOnClickListener(new Button.OnClickListener() {
@@ -67,19 +66,13 @@ public class LoginActivity extends AppCompatActivity implements Communication {
                 register();
             }
         });
-
-        /*buttonBack.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                back();
-            }
-        });*/
-
     }
 
     @Override
     public void onBackPressed() {
         WebSocketClient.getClient().disconnect();
+        Intent returnIntent = new Intent();
+        setResult(Activity.RESULT_OK, returnIntent);
         finish();
     }
 
@@ -91,7 +84,6 @@ public class LoginActivity extends AppCompatActivity implements Communication {
                 finish();
                 return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -103,7 +95,7 @@ public class LoginActivity extends AppCompatActivity implements Communication {
     // Redirect to register activity
     private void register() {
         Intent intent = new Intent(this, RegisterActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent, 1);
     }
 
     // Extracts user-entered information into a JSON formatted string to be sent
@@ -122,19 +114,6 @@ public class LoginActivity extends AppCompatActivity implements Communication {
             e.printStackTrace();
         }
         WebSocketClient.getClient().send(obj.toString());
-    }
-
-    private void verify(Message message) {
-        if (message.getCode().equals(getResources().getInteger(R.integer.LOGIN_SUCCESS_CODE))) {
-            toast("Login Success!");
-            openDashboard();
-        } else if (message.getCode().equals(getResources().getInteger(R.integer.LOGIN_EXIST_CODE))) {
-            toast("Login Failed: User is Logged in on Another Device");
-        } else if (message.getCode().equals(getResources().getInteger(R.integer.LOGIN_USER_NON_EXIST_CODE))) {
-            toast("Login Failed: Username or Password is Incorrect");
-        } else {
-            toast("Error: Unknown Response Received");
-        }
     }
 
     // Obtains the IP Address of the host
@@ -169,7 +148,16 @@ public class LoginActivity extends AppCompatActivity implements Communication {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                verify(message);
+                if (message.getCode().equals(getResources().getInteger(R.integer.LOGIN_SUCCESS_CODE))) {
+                    toast("Login Success!");
+                    openDashboard();
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.LOGIN_EXIST_CODE))) {
+                    toast("Login Failed: User is Logged in on Another Device");
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.LOGIN_USER_NON_EXIST_CODE))) {
+                    toast("Login Failed: Username or Password is Incorrect");
+                } else {
+                    toast("Error: Unknown Response Received");
+                }
             }
         });
     }
@@ -179,7 +167,7 @@ public class LoginActivity extends AppCompatActivity implements Communication {
         EditText etName1 = (EditText) findViewById(R.id.editTextUsername);
         Intent intent = new Intent(LoginActivity.this, DashboardActivity.class);
         intent.putExtra("username", etName1.getText().toString());
-        startActivity(intent);
+        startActivityForResult(intent, 1);
     }
 
     // Displays a toast message
@@ -191,6 +179,18 @@ public class LoginActivity extends AppCompatActivity implements Communication {
 
         Toast.makeText(this, centeredText, Toast.LENGTH_LONG).show();
         //Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    // Resets the current activity connected to the WebSocket upon terminating child activities
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1) {
+            if (resultCode == Activity.RESULT_OK) {
+                WebSocketClient.getClient().setActivity(this);
+                ((TextView) findViewById(R.id.editTextUsername)).setText("");
+                ((TextView) findViewById(R.id.editTextPassword)).setText("");
+            }
+        }
     }
 
 }

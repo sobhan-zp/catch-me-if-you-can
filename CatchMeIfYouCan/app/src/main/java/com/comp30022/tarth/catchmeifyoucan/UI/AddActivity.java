@@ -65,18 +65,23 @@ public class AddActivity extends AppCompatActivity implements Communication {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                verify(message);
+                if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_ADD_SUCCESS))) {
+                    toast("Friend add success");
+                    onBackPressed();
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_ADD_FAIL))) {
+                    toast("Friend add failure");
+                }
             }
         });
     }
 
-    // Verifies responses from the server
-    private void verify(Message message) {
-        if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_ADD_SUCCESS))) {
-            toast("Friend add success");
-            onBackPressed();
-        } else if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_ADD_FAIL))) {
-            toast("Friend add failure");
+    // Resets the current activity connected to the WebSocket upon terminating child activities
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1) {
+            if (resultCode == Activity.RESULT_OK) {
+                WebSocketClient.getClient().setActivity(this);
+            }
         }
     }
 

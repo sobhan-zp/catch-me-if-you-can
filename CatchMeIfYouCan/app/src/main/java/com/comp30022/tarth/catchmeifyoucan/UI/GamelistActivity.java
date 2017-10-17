@@ -60,6 +60,8 @@ public class GamelistActivity extends AppCompatActivity implements Communication
 
     @Override
     public void onBackPressed() {
+        Intent returnIntent = new Intent();
+        setResult(Activity.RESULT_OK, returnIntent);
         finish();
     }
 
@@ -80,41 +82,36 @@ public class GamelistActivity extends AppCompatActivity implements Communication
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                verify(message);
+                if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_CURRENT_SUCCESS))) {
+                    toast("Game resume get success");
+                    joinGame(message.getResult()[0].getGame_id());
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_CURRENT_FAIL))) {
+                    toast("Game resume get failure");
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_SUCCESS))) {
+                    toast("Game get success");
+
+                    // Repopulates list
+                    Result[] results = message.getResult();
+                    array.clear();
+                    for (Result result : results) {
+                        array.add(
+                                Integer.toString(result.getId())
+                        );
+                    }
+                    adapter.notifyDataSetChanged();
+
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_FAIL))) {
+                    toast("Game get failure");
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_ADD_SUCCESS))) {
+                    toast("Successfully joined game");
+                    openGame();
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_ADD_FAIL))) {
+                    toast("Failed to join game");
+                } else {
+                    toast("Error: Unknown response received");
+                }
             }
         });
-    }
-
-    // Verifies responses from the server
-    private void verify(Message message) {
-        if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_CURRENT_SUCCESS))) {
-            toast("Game resume get success");
-            joinGame(message.getResult()[0].getGame_id());
-        } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_CURRENT_FAIL))) {
-            toast("Game resume get failure");
-        } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_SUCCESS))) {
-            toast("Game get success");
-
-            // Repopulates list
-            Result[] results = message.getResult();
-            array.clear();
-            for (Result result : results) {
-                array.add(
-                        Integer.toString(result.getId())
-                );
-            }
-            adapter.notifyDataSetChanged();
-
-        } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_FAIL))) {
-            toast("Game get failure");
-        } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_ADD_SUCCESS))) {
-            toast("Successfully joined game");
-            openGame();
-        } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_ADD_FAIL))) {
-            toast("Failed to join game");
-        } else {
-            toast("Error: Unknown response received");
-        }
     }
 
     // Obtains a list of all games from the server
@@ -145,7 +142,7 @@ public class GamelistActivity extends AppCompatActivity implements Communication
     // Navigates to Game Activity
     private void openGame() {
         Intent intent = new Intent(this, GameActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent, 1);
     }
 
     // Displays a toast message

@@ -1,5 +1,6 @@
 package com.comp30022.tarth.catchmeifyoucan.UI;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -136,14 +137,15 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
     // Disconnects from server and returns to main menu
     public void logout() {
         WebSocketClient.getClient().disconnect();
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
+        Intent returnIntent = new Intent();
+        setResult(Activity.RESULT_OK, returnIntent);
+        finish();
     }
 
     // Navigates to Settings
     public void settings() {
         Intent intent = new Intent(this, SettingsActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent, 1);
     }
 
     // Navigates to User Activity
@@ -152,7 +154,7 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
         intent.putExtra("username", username);
         // tell userActivity that you're coming from the dashboard so it doesn't load send message button
         intent.putExtra("dashboard", true);
-        startActivity(intent);
+        startActivityForResult(intent, 1);
     }
 
     @Override
@@ -160,34 +162,30 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                verify(message);
+                if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_CURRENT_SUCCESS))) {
+                    if (message.getResult().length == 0) {
+                        toast("No active games");
+                        openGamelist();
+                    } else {
+                        toast("Rejoined existing game");
+                        openGame(message);
+                    }
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_CURRENT_FAIL))) {
+                    toast("Get current game failure");
+                    openGamelist();
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_CREATE_SUCCESS))) {
+                    toast("Game creation successful");
+                    openGame(message);
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_CREATE_FAIL))) {
+                    toast("Game creation failed");
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_ADD_SUCCESS))) {
+                    toast("You have been added to the game");
+                    openGame(message);
+                } else {
+                    toast("Error: Unknown response received");
+                }
             }
         });
-    }
-
-    private void verify(Message message) {
-        if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_CURRENT_SUCCESS))) {
-            if (message.getResult().length == 0) {
-                toast("No active games");
-                openGamelist();
-            } else {
-                toast("Rejoined existing game");
-                openGame(message);
-            }
-        } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_CURRENT_FAIL))) {
-            toast("Get current game failure");
-            openGamelist();
-        } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_CREATE_SUCCESS))) {
-            toast("Game creation successful");
-            openGame(message);
-        } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_CREATE_FAIL))) {
-            toast("Game creation failed");
-        } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_ADD_SUCCESS))) {
-            toast("You have been added to the game");
-            openGame(message);
-        } else {
-            toast("Error: Unknown response received");
-        }
     }
 
     // Displays a toast message
@@ -198,38 +196,48 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
     // Navigates to Chat activity
     private void openChat() {
         Intent intent = new Intent(this, ChatActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent, 1);
     }
 
     // Navigates to Maps activity
     private void openMaps() {
         Intent intent = new Intent(this, MapsActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent, 1);
     }
 
     // Navigates to User Activity
     private void openUser() {
         Intent intent = new Intent(this, UserActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent, 1);
     }
 
     // Navigates to Game Activity
     private void openGame(Message message) {
         Intent intent = new Intent(this, GameActivity.class);
         intent.putExtra("game_id", message.getGame_id());
-        startActivity(intent);
+        startActivityForResult(intent, 1);
     }
 
     // Navigates to Gamelist Activity
     private void openGamelist() {
         Intent intent = new Intent(this, GamelistActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent, 1);
     }
 
     // Navigates to Friendlist Activity
     private void openFriendlist() {
         Intent intent = new Intent(this, FriendlistActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent, 1);
+    }
+
+    // Resets the current activity connected to the WebSocket upon terminating child activities
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1) {
+            if (resultCode == Activity.RESULT_OK) {
+                WebSocketClient.getClient().setActivity(this);
+            }
+        }
     }
 
 }

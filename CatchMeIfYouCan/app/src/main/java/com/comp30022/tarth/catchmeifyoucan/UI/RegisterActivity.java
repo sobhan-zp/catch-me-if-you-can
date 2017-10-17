@@ -1,5 +1,7 @@
 package com.comp30022.tarth.catchmeifyoucan.UI;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
@@ -52,6 +54,8 @@ public class RegisterActivity extends AppCompatActivity implements Communication
     @Override
     public void onBackPressed() {
         WebSocketClient.getClient().disconnect();
+        Intent returnIntent = new Intent();
+        setResult(Activity.RESULT_OK, returnIntent);
         finish();
     }
 
@@ -96,17 +100,6 @@ public class RegisterActivity extends AppCompatActivity implements Communication
         WebSocketClient.getClient().send(obj.toString());
     }
 
-    private void verify(Message message) {
-        if (message.getCode().equals(getResources().getInteger(R.integer.REGISTER_SUCCESS))) {
-            toast("Register success");
-            backToMain();
-        } else if (message.getCode().equals(getResources().getInteger(R.integer.REGISTER_FAIL))) {
-            toast("Register failed, please try again.");
-        } else {
-            toast("Error: Unknown response received");
-        }
-    }
-
     // Obtains the IP Address of the host
     private String getHostIP() {
         String hostIp = null;
@@ -134,12 +127,6 @@ public class RegisterActivity extends AppCompatActivity implements Communication
         return hostIp;
     }
 
-    // Navigates to Main Activity
-    private void backToMain() {
-        WebSocketClient.getClient().disconnect();
-        finish();
-    }
-
     // Displays a toast message
     private void toast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
@@ -150,9 +137,27 @@ public class RegisterActivity extends AppCompatActivity implements Communication
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                verify(message);
+                if (message.getCode().equals(getResources().getInteger(R.integer.REGISTER_SUCCESS))) {
+                    toast("Register success");
+                    onBackPressed();
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.REGISTER_FAIL))) {
+                    toast("Register failed, please try again.");
+                } else {
+                    toast("Error: Unknown response received");
+                }
             }
         });
     }
+
+    // Resets the current activity connected to the WebSocket upon terminating child activities
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1) {
+            if (resultCode == Activity.RESULT_OK) {
+                WebSocketClient.getClient().setActivity(this);
+            }
+        }
+    }
+
 }
 
