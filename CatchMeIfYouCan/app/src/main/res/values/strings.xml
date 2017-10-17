@@ -23,4 +23,6 @@
     <string name="register_subtitle">Your username and password are case-sensitive. They can be any alphanumeric characters.</string>
     <string name="registered_title">Not Registered? Click here to sign-up.</string>
     <string name="signedup_title">Already signed up? Click here to login.</string>
+    <string name="main_title">Let\'s Start!</string>
+    <string name="main_subtitle">Login or sign up for an account to play</string>
 </resources>
