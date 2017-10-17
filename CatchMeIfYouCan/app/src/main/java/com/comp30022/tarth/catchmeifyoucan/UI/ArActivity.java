@@ -223,9 +223,4 @@ public class ArActivity extends AppCompatActivity implements SensorEventListener
         return c; // returns null if camera is unavailable
     }
 
-    // Navigates to Maps activity
-    // private void openMaps() {
-    //     Intent intent = new Intent(this, MapsActivity.class);
-    //     startActivity(intent);
-    // }
 }

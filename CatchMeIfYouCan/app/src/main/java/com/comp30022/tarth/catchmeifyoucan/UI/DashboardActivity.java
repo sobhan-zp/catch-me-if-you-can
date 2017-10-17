@@ -164,24 +164,33 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
             @Override
             public void run() {
                 if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_CURRENT_SUCCESS))) {
-                    if (message.getResult().length == 0) {
+                    if (message.getResult() != null && message.getResult().length == 0) {
                         toast("No active games");
                         openGamelist();
                     } else {
                         toast("Rejoined existing game");
-                        openMaps(message);
+                        if (message.getIs_owner().equals(1)) {
+                            System.out.println("GAME NAME: " + message.getName());
+                            openMaps(message);
+                        } else {
+                            System.out.println("GAME NAME: " + message.getName());
+                            openSearcher(message);
+                        }
                     }
                 } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_CURRENT_FAIL))) {
                     toast("Get current game failure");
                     openGamelist();
                 } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_CREATE_SUCCESS))) {
                     toast("Game creation successful");
-                    openMaps(message);
                 } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_CREATE_FAIL))) {
                     toast("Game creation failed");
                 } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_ADD_SUCCESS))) {
                     toast("You have been added to the game");
-                    openMaps(message);
+                    if (message.getIs_owner().equals(1)) {
+                        openMaps(message);
+                    } else {
+                        openSearcher(message);
+                    }
                 } else {
                     toast("Error: Unknown response received");
                 }
@@ -200,9 +209,9 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
         startActivityForResult(intent, 1);
     }
 
-    // Navigates to Maps activity
+    // Navigates to Target activity
     private void openMaps(Message message) {
-        Intent intent = new Intent(this, MapsActivity.class);
+        Intent intent = new Intent(this, TargetActivity.class);
         intent.putExtra("game_id", message.getGame_id());
         startActivityForResult(intent, 1);
     }
@@ -216,6 +225,13 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
     // Navigates to Game Activity
     private void openGame(Message message) {
         Intent intent = new Intent(this, GameActivity.class);
+        intent.putExtra("game_id", message.getGame_id());
+        startActivityForResult(intent, 1);
+    }
+
+    // Navigates to Searcher activity
+    private void openSearcher(Message message) {
+        Intent intent = new Intent(this, SearcherActivity.class);
         intent.putExtra("game_id", message.getGame_id());
         startActivityForResult(intent, 1);
     }

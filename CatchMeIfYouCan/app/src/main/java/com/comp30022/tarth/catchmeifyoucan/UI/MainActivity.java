@@ -4,15 +4,10 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 
-import com.comp30022.tarth.catchmeifyoucan.Server.Communication;
-import com.comp30022.tarth.catchmeifyoucan.Server.Message;
-import com.comp30022.tarth.catchmeifyoucan.Server.WebSocketClient;
 import com.comp30022.tarth.catchmeifyoucan.R;
 
 public class MainActivity extends Activity {

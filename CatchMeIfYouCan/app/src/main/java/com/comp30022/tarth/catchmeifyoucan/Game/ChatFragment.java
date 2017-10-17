@@ -68,6 +68,7 @@ public class ChatFragment extends Fragment {
         //array.add(Integer.toString(message.getCode()));
 
         // TESTING
+
         Result[] results = message.getResult();
         for (Result result : results) {
             array.add(Double.toString(result.getX()) + ", " + Double.toString(result.getY()));

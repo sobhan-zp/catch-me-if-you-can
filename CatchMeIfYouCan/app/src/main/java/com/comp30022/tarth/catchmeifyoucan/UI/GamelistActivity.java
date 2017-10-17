@@ -119,7 +119,11 @@ public class GamelistActivity extends AppCompatActivity implements Communication
                     toast("Game get failure");
                 } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_ADD_SUCCESS))) {
                     toast("Successfully joined game");
-                    openGame();
+                    if (message.getIs_owner().equals(1)) {
+                        openMaps(message);
+                    } else {
+                        openSearcher(message);
+                    }
                 } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_ADD_FAIL))) {
                     toast("Failed to join game");
                 } else {
@@ -157,6 +161,18 @@ public class GamelistActivity extends AppCompatActivity implements Communication
     // Navigates to Game Activity
     private void openGame() {
         Intent intent = new Intent(this, GameActivity.class);
+        startActivityForResult(intent, 1);
+    }
+
+    // Navigates to Target Activity
+    private void openMaps(Message message) {
+        Intent intent = new Intent(this, TargetActivity.class);
+        startActivityForResult(intent, 1);
+    }
+
+    // Navigates to Searcher Activity
+    private void openSearcher(Message message) {
+        Intent intent = new Intent(this, SearcherActivity.class);
         startActivityForResult(intent, 1);
     }
 

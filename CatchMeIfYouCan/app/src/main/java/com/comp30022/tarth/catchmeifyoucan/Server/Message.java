@@ -11,6 +11,7 @@ public class Message {
     private Integer code;
     private Integer game_id;
     private Integer id;
+    private Integer is_owner;
     private Integer lv;
 
     private String email;
@@ -38,6 +39,10 @@ public class Message {
 
     public Integer getId() {
         return id;
+    }
+
+    public Integer getIs_owner() {
+        return is_owner;
     }
 
     public Integer getLv() {
@@ -94,21 +99,21 @@ public class Message {
     public String toString() {
         return(
                 "{"
-                + ((action != null) ? ", action: " + Integer.toString(action) : "")
-                + ((code != null) ? ", code: " + Integer.toString(code) : "")
-                + ((game_id != null) ? ", game_id: " + Integer.toString(game_id) : "")
-                + ((id != null) ? ", id: " + Integer.toString(id) : "")
-                + ((lv != null) ? ", lv: " + Integer.toString(lv) : "")
-                + ((email != null) ? ", email: " + email : "")
-                + ((from != null) ? ", from: " + from : "")
-                + ((location != null) ? ", location: " + location : "")
-                + ((message != null) ? ", message: " + message : "")
-                + ((name != null) ? ", name: " + name : "")
-                + ((status != null) ? ", status: " + status : "")
-                + ((type != null) ? ", type: " + type : "")
-                + ((username != null) ? ", username: " + username : "")
-                + ((result != null) ? ", result: " + resultToString() : "")
-                + "}"
+                        + ((action != null) ? ", action: " + Integer.toString(action) : "")
+                        + ((code != null) ? ", code: " + Integer.toString(code) : "")
+                        + ((game_id != null) ? ", game_id: " + Integer.toString(game_id) : "")
+                        + ((id != null) ? ", id: " + Integer.toString(id) : "")
+                        + ((lv != null) ? ", lv: " + Integer.toString(lv) : "")
+                        + ((email != null) ? ", email: " + email : "")
+                        + ((from != null) ? ", from: " + from : "")
+                        + ((location != null) ? ", location: " + location : "")
+                        + ((message != null) ? ", message: " + message : "")
+                        + ((name != null) ? ", name: " + name : "")
+                        + ((status != null) ? ", status: " + status : "")
+                        + ((type != null) ? ", type: " + type : "")
+                        + ((username != null) ? ", username: " + username : "")
+                        + ((result != null) ? ", result: " + resultToString() : "")
+                        + "}"
         );
     }
 

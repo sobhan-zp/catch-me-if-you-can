@@ -14,7 +14,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,6 +24,7 @@ import com.comp30022.tarth.catchmeifyoucan.Game.OptionsFragment;
 import com.comp30022.tarth.catchmeifyoucan.R;
 import com.comp30022.tarth.catchmeifyoucan.Server.Communication;
 import com.comp30022.tarth.catchmeifyoucan.Server.Message;
+import com.comp30022.tarth.catchmeifyoucan.Server.Result;
 import com.comp30022.tarth.catchmeifyoucan.Server.WebSocketClient;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -46,7 +46,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
+public class SearcherActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
         LocationListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnMarkerDragListener,
         GoogleMap.OnMapClickListener, Communication, OptionsFragment.FragmentCommunication,
@@ -71,7 +71,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private boolean nearWp = false;
 
     private List<Marker> othersMarker = new ArrayList<Marker>();
-    public List<Double> othersLocation = new ArrayList<Double>();
 
     private final static int CHAT_ITEM_ID = 0;
     private final static int MAP_ITEM_ID = 1;
@@ -85,7 +84,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_maps);
+        setContentView(R.layout.activity_searcher);
         WebSocketClient.getClient().setActivity(this);
 
         // Add back button
@@ -100,7 +99,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         //Check location permission
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkLocationPermission();
         }
 
@@ -128,14 +127,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         switch (item.getItemId()) {
             case R.id.navigationChat:
-                transaction.replace(R.id.fragment_container, chatFragment);
+                transaction.hide(mapFragment);
+                transaction.add(R.id.fragment_container, chatFragment);
+                transaction.addToBackStack("map");
+                //transaction.replace(R.id.fragment_container, chatFragment);
                 if (this.getActionBar() != null) {
                     this.getActionBar().setTitle("Game Chat");
                 }
                 break;
             case R.id.navigationMap:
-                transaction.replace(R.id.fragment_container, mapFragment);
+                if (chatFragment.isAdded()) {
+                    transaction.remove(chatFragment);
+                }
+                if (optionsFragment.isAdded()) {
+                    transaction.remove(optionsFragment);
+                }
+                if (!mapFragment.isAdded()) {
+                    transaction.replace(R.id.fragment_container, mapFragment);
+                } else {
+                    transaction.show(mapFragment);
+                }
                 mapFragment.getMapAsync(this);
+
                 /*
                 if (mapFragment.isAdded()) {
                     // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -148,7 +161,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
                 break;
             case R.id.navigationOptions:
-                transaction.replace(R.id.fragment_container, optionsFragment);
+                transaction.hide(mapFragment);
+                transaction.add(R.id.fragment_container, optionsFragment);
+                transaction.addToBackStack("map");
+                //transaction.replace(R.id.fragment_container, optionsFragment);
                 if (this.getActionBar() != null) {
                     this.getActionBar().setTitle("Game Options");
                 }
@@ -228,7 +244,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
 
         //Initialize Google Play Services
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(this,
                     Manifest.permission.ACCESS_FINE_LOCATION)
                     == PackageManager.PERMISSION_GRANTED) {
@@ -258,6 +274,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onLocationChanged(Location location) {
+        JSONObject obj = new JSONObject();
+        try {
+            //obj.put("action", MESSAGE_COMMAND_SEND);
+            //obj.put("message", "test");
+            // TESTING
+            obj.put("action", getResources().getInteger(R.integer.LOCATION_GET));
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        onSend(obj);
 //        if (mCurrLocationMarker != null) {
 //            mCurrLocationMarker.remove();
 //        }
@@ -288,6 +314,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             toast("Your Current Location");
         }
+
+
+        //move map camera
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(12));
 
         if(mCurrLocationMarker != null){
             String currLocation = curr_latitude+","+curr_longitude;
@@ -371,68 +402,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onClick(View v) {
         Object dataTransfer[] = new Object[3];
 
-        switch(v.getId()) {
-            case R.id.B_search: {
-//                EditText tf_location = (EditText) findViewById(R.id.TF_location);
-//                String location = tf_location.getText().toString();
-//                List<Address> addressList = null;
-//                MarkerOptions markerOptions = new MarkerOptions();
-//                Log.d("location = ", location);
-//
-//                if (!location.equals("")) {
-//                    Geocoder geocoder = new Geocoder(this);
-//                    try {
-//                        addressList = geocoder.getFromLocationName(location, 5);
-//
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
-//
-//                    if (addressList != null) {
-//                        for (int i = 0; i < addressList.size(); i++) {
-//                            Address myAddress = addressList.get(i);
-//                            LatLng latLng = new LatLng(myAddress.getLatitude(), myAddress.getLongitude());
-//                            markerOptions.position(latLng);
-//                            mMap.addMarker(markerOptions);
-//                            mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
-//                        }
-//                    }
-//                }
-                othersLocation.add(-37.814);
-                othersLocation.add(144.96332);
-                othersLocation.add(-37.6);
-                othersLocation.add(144.98);
-                updateOthers();
+        if(v.getId() == R.id.B_ar) {
+            if(nearWp){
+                nearWp = false;
+                Intent intent = new Intent(this, DashboardActivity.class);
+                startActivity(intent);
             }
-            break;
-
-            case R.id.B_addWaypoints:
-                addWaypoints = true;
-                break;
-
-            case R.id.B_finishAddWP:
-                addWaypoints = false;
-                break;
-
-            case R.id.B_route:
-                if(lastDirectionsData != null){
-                    lastDirectionsData.clearPolyline();
-                }
-                String url = getDirectionsUrl();
-                MapDirectionsData directionsData = new MapDirectionsData();
-                dataTransfer[0] = mMap;
-                dataTransfer[1] = url;
-                dataTransfer[2] = new LatLng(end_latitude, end_longitude);
-                directionsData.execute(dataTransfer);
-                lastDirectionsData = directionsData;
-                break;
-
-            case R.id.B_ar:
-                if(nearWp){
-                    nearWp = false;
-                    Intent intent = new Intent(this, DashboardActivity.class);
-                    startActivity(intent);
-                }
         }
     }
 
@@ -453,12 +428,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     protected void onResume() {
         super.onResume();
-        checkGooglePlayServices();
+        //checkGooglePlayServices();
     }
     @Override
     protected void onPause() {
         super.onPause();
-        stopLocationUpdates();
+        //stopLocationUpdates();
     }
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
@@ -526,13 +501,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
-    public void updateOthers(){
+    public void updateOthers(List<Double> othersLocation){
         for(int j=othersMarker.size()-1; j>=0; j--){
             othersMarker.get(j).remove();
         }
         int count = othersLocation.size()-1;
         for(int i=0; i<count; i+=2){
             LatLng latLng = new LatLng(othersLocation.get(i), othersLocation.get(i+1));
+            System.out.println("LOCATION : " + Double.toString(othersLocation.get(i)) + ", " +  Double.toString(othersLocation.get(i + 1)) );
             MarkerOptions markerOptions = new MarkerOptions();
             markerOptions.position(latLng);
             markerOptions.title("people");
@@ -556,7 +532,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 } else if (message.getCode().equals(614)) {
                     // TESTING TESTING
                     toast("Location get successful");
-                    ((ChatFragment) chatFragment).onResponse(message);
+                    //((ChatFragment) chatFragment).onResponse(message);
+                    // TESTING
+                    List<Double> locations = new ArrayList<Double>();
+                    Result[] results = message.getResult();
+                    for (Result result : results) {
+                        //array.add(Double.toString(result.getX()) + ", " + Double.toString(result.getY()));
+                        locations.add(result.getX());
+                        locations.add(result.getY());
+                    }
+                    updateOthers(locations);
+                    //adapter.notifyDataSetChanged();
                 } else if (message.getCode().equals(615)) {
                     toast("Location get failure");
                 } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_EXIT_SUCCESS))) {

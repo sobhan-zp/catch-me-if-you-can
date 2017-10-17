@@ -3,15 +3,6 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!--
-    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/map"
-        android:name="com.google.android.gms.maps.SupportMapFragment"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        tools:context="com.comp30022.tarth.catchmeifyoucan.UI.MapsActivity" />
-    -->
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
@@ -27,24 +18,6 @@
         android:layout_alignParentBottom="true"
         android:background="?android:attr/windowBackground"
         app:menu="@menu/navigation" />
-
-    <EditText
-        android:id="@+id/TF_location"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:ems="10"
-        android:inputType="textPersonName" />
-
-    <Button
-        android:id="@+id/B_search"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/TF_location"
-        android:layout_alignParentEnd="true"
-        android:onClick="onClick"
-        android:text="Search" />
 
     <Button
         android:id="@+id/B_route"
@@ -74,15 +47,4 @@
         android:layout_alignBottom="@+id/B_addWaypoints"
         android:layout_toEndOf="@+id/B_addWaypoints" />
 
-    <Button
-        android:id="@+id/B_ar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/map"
-        android:layout_alignParentEnd="true"
-        android:layout_below="@+id/TF_location"
-        android:layout_toEndOf="@+id/B_route"
-        android:onClick="onClick"
-        android:text="AR" />
 </RelativeLayout>
-
