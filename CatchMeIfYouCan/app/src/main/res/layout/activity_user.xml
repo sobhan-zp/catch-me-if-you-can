@@ -25,7 +25,7 @@
         android:layout_marginTop="30dp"
         android:textSize="21dp"
         android:textStyle="bold"
-        android:text="FirstName LastName" />
+        android:text="Name Unknown" />
 
     <TextView
         android:id="@+id/Username"
@@ -37,7 +37,7 @@
         android:layout_marginTop="8dp"
         android:textSize="15dp"
         android:textStyle="italic"
-        android:text="/@username" />
+        android:text="username unknown" />
 
     <TextView
         android:id="@+id/Location"
@@ -48,10 +48,10 @@
         android:layout_below="@+id/Username"
         android:layout_marginTop="8dp"
         android:textSize="15dp"
-        android:text="Location" />
+        android:text="Location Unknown" />
 
     <TextView
-        android:id="@+id/Status"
+        android:id="@+id/Online"
         android:layout_centerHorizontal="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -59,8 +59,44 @@
         android:layout_below="@+id/Location"
         android:layout_marginTop="8dp"
         android:textSize="15dp"
+        android:text="Online Status Unknown" />
+
+    <TextView
+        android:id="@+id/Status"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_below="@+id/Online"
+        android:layout_marginTop="8dp"
+        android:textSize="15dp"
         android:layout_marginLeft="40dp"
         android:layout_marginRight="40dp"
-        android:text="STATUS: Lorem ipsum dolor sit amet, consectetur adipiscin" />
+        android:text="This user hasnt set a status. Message him to change it in his settings!" />
+
+
+<!--
+    <Button
+        android:id="@+id/buttonGet"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:onClick="createOnClick"
+        android:text="GET"
+        android:layout_below="@+id/Status"
+        android:layout_centerHorizontal="true"
+        />
+-->
+
+    <Button
+        android:id="@+id/buttonChat"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:onClick="createOnClick"
+        android:text="Send message"
+        android:layout_below="@+id/Status"
+        android:layout_marginTop="80dp"
+        android:layout_centerHorizontal="true"
+        />
 
 </RelativeLayout>
