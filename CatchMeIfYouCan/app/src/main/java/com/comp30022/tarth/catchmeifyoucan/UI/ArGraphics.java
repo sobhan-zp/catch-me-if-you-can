@@ -29,7 +29,11 @@ public class ArGraphics extends View{
     //Shape variables
     private float shapeX;
     private float shapeY;
+    private float velocityX;
+    private float velocityY;
     private float shapeRad;
+    private static int NUM_UPDATES = (int)(ArActivity.LOCATION_UPDATE_RATE/ArActivity.GRAPHIC_UPDATE_RATE);
+    private int timesMoved = 0;
 
     //Shape Constructors
     private Paint paint;
@@ -71,10 +75,15 @@ public class ArGraphics extends View{
 
     @Override
     protected void onDraw(Canvas canvas){
-        calculateGraphicXPos();
-        calculateGraphicYPos();
-        calculateGraphicSize();
-        canvas.drawCircle(this.shapeX, this.shapeY, this.shapeRad, paint);
+
+        this.shapeX = calculateGraphicXPos(preOrientationAngles);
+        this.shapeY = calculateGraphicYPos(preOrientationAngles);
+        this.shapeRad = calculateGraphicSize();
+
+        canvas.drawCircle(this.shapeX+velocityX*timesMoved, this.shapeY+velocityY*timesMoved, this.shapeRad, paint);
+        if(timesMoved<NUM_UPDATES){
+            timesMoved++;
+        }
     }
 
     @Override
@@ -83,18 +92,16 @@ public class ArGraphics extends View{
         height = h;
     }
 
-    private float calculateGraphicXPos(){
+    private float calculateGraphicXPos(float[] orientationAngles){
         float x;
-        x = width/2 - (int) ((mOrientationAngles[0]-
+        x = width/2 - (int) ((orientationAngles[0]-
                 toRadians(mCurrentLocation.bearingTo(mCurrLocationMarker)))/xViewingAngle * width);
-        this.shapeX = x;
         return x;
     }
 
-    private float calculateGraphicYPos(){
+    private float calculateGraphicYPos(float[] orientationAngles){
         float y;
-        y = height/2 - (int) ((mOrientationAngles[1])/yViewingAngle * height);
-        this.shapeY = y;
+        y = height/2 - (int) ((orientationAngles[1])/yViewingAngle * height);
         return y;
     }
 
@@ -102,13 +109,22 @@ public class ArGraphics extends View{
         float s;
         s = (0.5F*width)/(mCurrentLocation.distanceTo(mCurrLocationMarker));
         //Log.d("debug", "distance :" + Float.toString(mCurrentLocation.distanceTo(mCurrLocationMarker)));
-        this.shapeRad = s;
         return s;
     }
 
     public void setOrientationAngles(float[] orientationAngles){
-        preOrientationAngles = mOrientationAngles;
-        mOrientationAngles = orientationAngles;
+        Log.d("debug", "setAngles");
+        timesMoved = 0;
+        preOrientationAngles = mOrientationAngles.clone();
+        mOrientationAngles = orientationAngles.clone();
+        velocityX = (calculateGraphicXPos(mOrientationAngles)
+                - calculateGraphicXPos(preOrientationAngles))/NUM_UPDATES;
+        velocityY = (calculateGraphicYPos(mOrientationAngles)
+                - calculateGraphicYPos(preOrientationAngles))/NUM_UPDATES;
+    }
+
+    public void setMarkerLocation(Location location){
+        this.mCurrLocationMarker.set(location);
     }
 
     public boolean checkInCircle(float x, float y){
@@ -121,18 +137,5 @@ public class ArGraphics extends View{
         }
         //else { Log.d("debug", "notInCircle ");}
         return inCircle;
-    }
-
-    public void surfaceCreated(SurfaceHolder holder) {
-
-    }
-
-    public void surfaceDestroyed(SurfaceHolder holder) {
-        // empty. Take care of releasing the Camera preview in your activity.
-    }
-
-
-    public void surfaceChanged(SurfaceHolder holder, int format, int w, int h){
-
     }
 }

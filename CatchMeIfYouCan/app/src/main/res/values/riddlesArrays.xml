@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="riddles_array">
+        <item>What is in my pocket?</item>
+        <item>What has a foot but no legs?</item>
+        <item>What comes down but never goes up?</item>
+        <item>I’m tall when I’m young and I’m short when I’m old. What am I?</item>
+        <item>If I drink, I die. If i eat, I am fine. What am I?</item>
+        <item>What has hands but can not clap?</item>
+        <item>What can you catch but not throw?</item>
+        <item>What starts with the letter “t”, is filled with “t” and ends in “t”?</item>
+        <item>What is so delicate that saying its name breaks it?</item>
+        <item>What kind of tree can you carry in your hand?</item>
+    </string-array>
+    <string-array name ="correct_answers">
+        <item>The One Ring</item>
+        <item>A snail</item>
+        <item>Rain</item>
+        <item>A candle</item>
+        <item>A fire</item>
+        <item>A clock</item>
+        <item>A cold</item>
+        <item>A teapot</item>
+        <item>Silence</item>
+        <item>A palm</item>
+    </string-array>
+    <string-array name ="wrong_answers">
+        <item>Gum</item>
+        <item>A car</item>
+        <item>A bird</item>
+        <item>A tree</item>
+        <item>An iguana</item>
+        <item>A gorilla</item>
+        <item>A ball</item>
+        <item>A tyrannosaurus rex</item>
+        <item>A flower</item>
+        <item>A golden wattle</item>
+    </string-array>
+</resources>

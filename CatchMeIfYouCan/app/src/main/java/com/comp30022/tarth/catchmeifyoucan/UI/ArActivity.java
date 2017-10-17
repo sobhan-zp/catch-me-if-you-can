@@ -1,23 +1,17 @@
 package com.comp30022.tarth.catchmeifyoucan.UI;
 
 import android.Manifest;
-import android.app.ActionBar;
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.drawable.Drawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Build;
-import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -41,14 +35,18 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("deprecation")
-public class ArActivity extends AppCompatActivity implements SensorEventListener, View.OnTouchListener {
+public class ArActivity extends Activity implements SensorEventListener, View.OnTouchListener {
     private Camera camera;
     private ArCamera cameraView;
     private ArGraphics arGraphics;
 
     //UI Update timing handler
     private ScheduledExecutorService graphicUpdateHandler;
-    private long graphicUpdateRate = 100;
+    public static long GRAPHIC_UPDATE_RATE = 50;
+    private ScheduledExecutorService locationUpdateHandler;
+    public static long LOCATION_UPDATE_RATE = 250;
+
+    //Ensure touches aren't registered multiple times
     private long lastTime = -1;
     private long touchPause = 1000;
 
@@ -69,12 +67,16 @@ public class ArActivity extends AppCompatActivity implements SensorEventListener
     private String[] correctAnswers;
     private String[] wrongAnswers;
 
+    //Dialog Constructors
     private AlertDialog.Builder riddleDialog;
-    private DialogFragment dialogFragment;
+    private AlertDialog.Builder successDialog;
+    private AlertDialog.Builder failDialog;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_ar);
 
         //Stop screen from dimming
@@ -104,13 +106,11 @@ public class ArActivity extends AppCompatActivity implements SensorEventListener
             accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
             magneticField = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
 
-            //Set update timing
-            graphicUpdateHandler = Executors.newScheduledThreadPool(5);
-            startRepeatingTask();
 
             //Initialize Dialog box and Riddle Arrays
             riddleDialog = new AlertDialog.Builder(this);
-            dialogFragment = new DialogFragment();
+            successDialog = new AlertDialog.Builder(this);
+            failDialog = new AlertDialog.Builder(this);
             Resources res = getResources();
             riddlesArray = res.getStringArray(R.array.riddles_array);
             correctAnswers = res.getStringArray(R.array.correct_answers);
@@ -136,6 +136,11 @@ public class ArActivity extends AppCompatActivity implements SensorEventListener
         super.onResume();
         sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
         sensorManager.registerListener(this, magneticField, SensorManager.SENSOR_DELAY_NORMAL);
+
+        //Set update timing
+        graphicUpdateHandler = Executors.newScheduledThreadPool(0);
+        locationUpdateHandler = Executors.newScheduledThreadPool(0);
+        startRepeatingTask();
     }
 
     @Override
@@ -143,12 +148,12 @@ public class ArActivity extends AppCompatActivity implements SensorEventListener
         super.onPause();
         // Don't receive any more updates from either sensor.
         sensorManager.unregisterListener(this);
+        stopRepeatingTask();
     }
 
     @Override
     protected void onDestroy(){
         super.onDestroy();
-        stopRepeatingTask();
     }
 
     public boolean checkCameraPermission(){
@@ -213,11 +218,6 @@ public class ArActivity extends AppCompatActivity implements SensorEventListener
         // "mRotationMatrix" now has up-to-date information.
 
         sensorManager.getOrientation(mRotationMatrix, mOrientationAngles);
-        arGraphics.setOrientationAngles(mOrientationAngles);
-    }
-
-    public float[] getOrientationAngles(){
-        return this.mOrientationAngles;
     }
 
     @Override
@@ -251,23 +251,32 @@ public class ArActivity extends AppCompatActivity implements SensorEventListener
     }
 
 
-    void startRepeatingTask(){
+    private void startRepeatingTask(){
         graphicUpdateHandler.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run(){
-
                 runOnUiThread(new Runnable(){
                     @Override
                     public void run(){
                         arGraphics.invalidate();
+                        Log.d("debug", "invalidate");
                     }
                 });
             }
-        }, 0, graphicUpdateRate, TimeUnit.MILLISECONDS);
+        }, 0, GRAPHIC_UPDATE_RATE, TimeUnit.MILLISECONDS);
+
+        locationUpdateHandler.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run(){
+                arGraphics.setOrientationAngles(mOrientationAngles);
+                Log.d("debug", "set angles");
+            }
+        }, 0, LOCATION_UPDATE_RATE, TimeUnit.MILLISECONDS);
     }
 
-    void stopRepeatingTask(){
-        //graphicUpdateHandler.removeCallbacks(graphicUpdater);
+    private void stopRepeatingTask(){
+        locationUpdateHandler.shutdown();
+        graphicUpdateHandler.shutdown();
     }
 
     @Override
@@ -280,38 +289,44 @@ public class ArActivity extends AppCompatActivity implements SensorEventListener
                 if(System.currentTimeMillis() - lastTime < touchPause){
                     return false; //Nothing happens
                 }
-                else{
+                else {
                     lastTime = System.currentTimeMillis();
-                    int i = 0;
+                    int i = (int) (Math.random() * (riddlesArray.length));
                     riddleDialog.setMessage(riddlesArray[i]);
                     boolean order;
-                    if(Math.random() < 0.5){
+                    if (Math.random() < 0.5) {
                         order = true;
-                    }
-                    else{
+                    } else {
                         order = false;
                     }
-                    if(order) {
+                    if (order) {
                         riddleDialog.setPositiveButton(correctAnswers[i], new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
-
+                                successDialog.setMessage("Correct! Move to the next waypoint!");
+                                successDialog.show();
+                                //arGraphics.setMarkerLocation(somelocation);
                             }
                         });
                         riddleDialog.setNegativeButton(wrongAnswers[i], new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
-
+                                failDialog.setMessage("Wrong! Try again!");
+                                riddleDialog.show();
+                                failDialog.show();
                             }
                         });
-                    }
-                    else{
+                    } else {
                         riddleDialog.setPositiveButton(wrongAnswers[i], new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
-
+                                failDialog.setMessage("Wrong! Try again!");
+                                riddleDialog.show();
+                                failDialog.show();
                             }
                         });
                         riddleDialog.setNegativeButton(correctAnswers[i], new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
-
+                                successDialog.setMessage("Correct! Move to the next waypoint!");
+                                successDialog.show();
+                                //arGraphics.setMarkerLocation(somelocation);
                             }
                         });
                     }
