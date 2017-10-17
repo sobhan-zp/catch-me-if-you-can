@@ -16,6 +16,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.widget.FrameLayout;
 import android.widget.Button;
 import android.hardware.Camera;
@@ -53,6 +54,9 @@ public class ArActivity extends AppCompatActivity implements SensorEventListener
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ar);
+
+        // Add back button
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         //Check camera permission
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -92,6 +96,17 @@ public class ArActivity extends AppCompatActivity implements SensorEventListener
        // });
     }
 
+    // Set back button on action bar
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     @Override
     protected void onResume(){
         super.onResume();
@@ -104,6 +119,13 @@ public class ArActivity extends AppCompatActivity implements SensorEventListener
         super.onPause();
         // Don't receive any more updates from either sensor.
         sensorManager.unregisterListener(this);
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent returnIntent = new Intent();
+        setResult(Activity.RESULT_OK, returnIntent);
+        finish();
     }
 
     public boolean checkCameraPermission(){
@@ -177,15 +199,6 @@ public class ArActivity extends AppCompatActivity implements SensorEventListener
     public float[] getOrientationAngles(){
         return this.mOrientationAngles;
     }
-
-    @Override
-    public void onBackPressed() {
-        Intent returnIntent = new Intent();
-        setResult(Activity.RESULT_OK, returnIntent);
-        finish();
-    }
-
-
 
     /** Check if this device has a camera */
     private boolean checkCameraHardware(Context context) {

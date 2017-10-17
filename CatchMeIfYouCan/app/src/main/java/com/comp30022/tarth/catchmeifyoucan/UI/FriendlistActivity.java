@@ -35,6 +35,9 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
         setContentView(R.layout.activity_friendlist);
         WebSocketClient.getClient().setActivity(this);
 
+        // Add back button
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         // Enable Internet permissions
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
@@ -69,19 +72,18 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
         return true;
     }
 
+    // Set back button on action bar
     @Override
-    public boolean onOptionsItemSelected(MenuItem menuItem) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = menuItem.getItemId();
-
-        // noinspection SimplifiableIfStatement
-        if (id == R.id.action_name) {
-            openAdd();
-            return true;
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+            case R.id.action_name:
+                openAdd();
+                return true;
         }
-        return super.onOptionsItemSelected(menuItem);
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -35,6 +36,9 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
         WebSocketClient.getClient().setActivity(this);
+
+        // Add back button
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // constructors
         buttonChat = (Button) findViewById(R.id.buttonChat);
@@ -112,6 +116,17 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
                 openUser(getName);
             }
         });
+    }
+
+    // Set back button on action bar
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     // Disables back button -- you need to click logout to exit

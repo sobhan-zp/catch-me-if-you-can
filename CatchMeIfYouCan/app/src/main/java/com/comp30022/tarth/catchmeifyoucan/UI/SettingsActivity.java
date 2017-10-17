@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -39,7 +40,9 @@ public class SettingsActivity extends AppCompatActivity implements Communication
         setContentView(R.layout.activity_settings);
         WebSocketClient.getClient().setActivity(this);
 
-        //buttonGet = (Button) findViewById(R.id.buttonGet);
+        // Add back button
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         buttonUpdate = (Button) findViewById(R.id.buttonUpdate);
 
         // Set unchangable fields
@@ -67,6 +70,17 @@ public class SettingsActivity extends AppCompatActivity implements Communication
                 changeSettings();
             }
         });
+    }
+
+    // Set back button on action bar
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void changeSettings() {

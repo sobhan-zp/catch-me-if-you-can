@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -39,6 +40,9 @@ public class ChatActivity extends AppCompatActivity implements Communication {
         setContentView(R.layout.activity_chat);
         WebSocketClient.getClient().setActivity(this);
 
+        // Add back button
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         // get receiver info
         setFriend();
 
@@ -63,6 +67,17 @@ public class ChatActivity extends AppCompatActivity implements Communication {
         listViewMessages.setAdapter(adapter);
 
         //getOfflineMessages();
+    }
+
+    // Set back button on action bar
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

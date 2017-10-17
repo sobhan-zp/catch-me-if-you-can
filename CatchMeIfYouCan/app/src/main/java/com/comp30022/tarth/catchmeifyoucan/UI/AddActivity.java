@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -27,6 +28,9 @@ public class AddActivity extends AppCompatActivity implements Communication {
         setContentView(R.layout.activity_add);
         WebSocketClient.getClient().setActivity(this);
 
+        // Add back button
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         buttonAdd = (Button) findViewById(R.id.buttonAdd);
         editTextAdd = (EditText) findViewById(R.id.editTextAdd);
 
@@ -49,6 +53,17 @@ public class AddActivity extends AppCompatActivity implements Communication {
             e.printStackTrace();
         }
         WebSocketClient.getClient().send(obj.toString());
+    }
+
+    // Set back button on action bar
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     // Returns to the previous activity

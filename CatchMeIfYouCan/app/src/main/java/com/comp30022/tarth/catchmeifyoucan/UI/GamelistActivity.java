@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -33,6 +34,9 @@ public class GamelistActivity extends AppCompatActivity implements Communication
         setContentView(R.layout.activity_gamelist);
         WebSocketClient.getClient().setActivity(this);
 
+        // Add back button
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         // Enable Internet permissions
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
@@ -56,6 +60,17 @@ public class GamelistActivity extends AppCompatActivity implements Communication
 
         // Obtains the list of friends from the server upon incovation
         getGames();
+    }
+
+    // Set back button on action bar
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

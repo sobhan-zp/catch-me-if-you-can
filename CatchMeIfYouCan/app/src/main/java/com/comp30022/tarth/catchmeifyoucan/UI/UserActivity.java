@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -37,7 +38,9 @@ public class UserActivity extends AppCompatActivity implements Communication {
         // Set server to send responses back to this class
         WebSocketClient.getClient().setActivity(this);
 
-        //buttonGet = (Button) findViewById(R.id.buttonGet);
+        // Add back button
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         buttonChat = (Button) findViewById(R.id.buttonChat);
 
         textViewLocation = (TextView) findViewById(R.id.Location);
@@ -69,6 +72,17 @@ public class UserActivity extends AppCompatActivity implements Communication {
                 openChat(getUsername);
             }
         });
+    }
+
+    // Set back button on action bar
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
