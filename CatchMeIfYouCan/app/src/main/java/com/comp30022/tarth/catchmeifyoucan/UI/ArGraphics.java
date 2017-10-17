@@ -5,20 +5,15 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.ShapeDrawable;
-import android.graphics.drawable.shapes.OvalShape;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
+import android.util.Log;
 import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.graphics.Canvas;
 import android.view.View;
 import android.location.Location;
-import android.hardware.SensorManager;
-import java.math.*;
-
 
 import com.google.android.gms.maps.model.Marker;
+
+import static java.lang.Math.toRadians;
 
 
 /**
@@ -31,6 +26,11 @@ public class ArGraphics extends View{
     private int width;
     private int height;
 
+    //Shape variables
+    private float shapeX;
+    private float shapeY;
+    private float shapeRad;
+
     //Shape Constructors
     private Paint paint;
     private ShapeDrawable shape;
@@ -40,10 +40,11 @@ public class ArGraphics extends View{
     double yViewingAngle = 0.9919;
 
     //Location tests
-    private Location mCurrentLocation = new Location("");
+    private Location mCurrentLocation = new Location("Melbourne");
+    private Location mCurrLocationMarker = new Location ("NearMelbourne");
 
-    private Location mCurrLocationMarker = new Location ("");
-
+    //Phone orientation information
+    private float[] preOrientationAngles = new float[3];
     private float[] mOrientationAngles = new float[3];
 
 
@@ -53,19 +54,27 @@ public class ArGraphics extends View{
 
     public ArGraphics(Context context, ArActivity arActivity){
         super(context);
-        //surfaceHolder = getHolder();
-        //surfaceHolder.addCallback(this);
+
+        //Example Locations
+        mCurrentLocation.setLatitude(-37.8136);
+        mCurrentLocation.setLongitude(144.9631);
+
+        mCurrLocationMarker.setLatitude(-37.81355);
+        mCurrLocationMarker.setLongitude(144.9631);
 
         //Set paint style
         paint = new Paint();
         paint.setStyle(Paint.Style.FILL);
         paint.setColor(Color.RED);
-
+        paint.setAlpha(200);
     }
 
     @Override
     protected void onDraw(Canvas canvas){
-        canvas.drawCircle(calculateGraphicXPos(),calculateGraphicYPos(),0.1F*width, paint);
+        calculateGraphicXPos();
+        calculateGraphicYPos();
+        calculateGraphicSize();
+        canvas.drawCircle(this.shapeX, this.shapeY, this.shapeRad, paint);
     }
 
     @Override
@@ -74,26 +83,44 @@ public class ArGraphics extends View{
         height = h;
     }
 
-    private int calculateGraphicXPos(){
-        int x;
-        x = width/2 - (int) (mOrientationAngles[0]/xViewingAngle * width);
+    private float calculateGraphicXPos(){
+        float x;
+        x = width/2 - (int) ((mOrientationAngles[0]-
+                toRadians(mCurrentLocation.bearingTo(mCurrLocationMarker)))/xViewingAngle * width);
+        this.shapeX = x;
         return x;
     }
 
-    private int calculateGraphicYPos(){
-        int y;
+    private float calculateGraphicYPos(){
+        float y;
         y = height/2 - (int) ((mOrientationAngles[1])/yViewingAngle * height);
+        this.shapeY = y;
         return y;
     }
 
     private float calculateGraphicSize(){
         float s;
-        s = (0.05F*width)/(mCurrentLocation.distanceTo(mCurrLocationMarker));
+        s = (0.5F*width)/(mCurrentLocation.distanceTo(mCurrLocationMarker));
+        //Log.d("debug", "distance :" + Float.toString(mCurrentLocation.distanceTo(mCurrLocationMarker)));
+        this.shapeRad = s;
         return s;
     }
 
     public void setOrientationAngles(float[] orientationAngles){
+        preOrientationAngles = mOrientationAngles;
         mOrientationAngles = orientationAngles;
+    }
+
+    public boolean checkInCircle(float x, float y){
+        boolean inCircle = false;
+        if(x >= (this.shapeX - this.shapeRad) && x <= (this.shapeX + this.shapeRad)){
+            if(y >= (this.shapeY - this.shapeRad) && y <= (this.shapeY + this.shapeRad)){
+                inCircle = true;
+                //Log.d("debug", "inCircle " );
+            }
+        }
+        //else { Log.d("debug", "notInCircle ");}
+        return inCircle;
     }
 
     public void surfaceCreated(SurfaceHolder holder) {
