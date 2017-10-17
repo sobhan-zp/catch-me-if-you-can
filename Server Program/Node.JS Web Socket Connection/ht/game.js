@@ -48,11 +48,11 @@ exports.exit = function(userinfo){
     });
 }
 
-exports.new_waypoint = function(userinfo, x, y, fn){
+exports.new_waypoint = function(userinfo, x, y, info, fn){
     var g_id = "SELECT game_id FROM account_in_game WHERE account_id = " + userinfo.db_id + " and is_owner = " + GAME_OWNER;
     db.execute(g_id, 1, 0, function(result){
         if (result.result.length>0){
-            var sql = "INSERT INTO waypoint (x, y, game_id) VALUES (" + x + ", " + y + ", " + result.result[0].game_id + ")";
+            var sql = "INSERT INTO waypoint (x, y, info, game_id) VALUES (" + x + ", " + y + ", '" + info + "', " + result.result[0].game_id + ")";
             db.execute(sql, GAME_ADD_WAYPOINT_SUCCESS, GAME_ADD_WAYPOINT_FAIL, function(result){
                 var feedback = {
                     "code": result.code
@@ -64,7 +64,7 @@ exports.new_waypoint = function(userinfo, x, y, fn){
 }
 
 exports.get_waypoint = function(userinfo, fn){
-    var sql = "SELECT x, y FROM waypoint WHERE game_id = (SELECT game_id FROM account_in_game WHERE account_id = " + userinfo.db_id + ")";
+    var sql = "SELECT x, y, info FROM waypoint WHERE game_id = (SELECT game_id FROM account_in_game WHERE account_id = " + userinfo.db_id + ")";
     db.execute(sql, GAME_GET_WAYPOINT_SUCCESS, GAME_GET_WAYPOINT_FAIL, function(result){
         return fn(result);
     });
