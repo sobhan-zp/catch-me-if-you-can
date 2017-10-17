@@ -2,8 +2,11 @@ package com.comp30022.tarth.catchmeifyoucan.UI;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ActionBar;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -12,11 +15,18 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Build;
+import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.Button;
 import android.hardware.Camera;
@@ -28,14 +38,21 @@ import com.comp30022.tarth.catchmeifyoucan.Game.ArCamera;
 import com.comp30022.tarth.catchmeifyoucan.Game.ArGraphics;
 import com.comp30022.tarth.catchmeifyoucan.R;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 @SuppressWarnings("deprecation")
-public class ArActivity extends AppCompatActivity implements SensorEventListener{
+public class ArActivity extends AppCompatActivity implements SensorEventListener, View.OnTouchListener {
     private Camera camera;
     private ArCamera cameraView;
     private ArGraphics arGraphics;
-    private Bitmap bitmap;
-    private Canvas canvas;
-    private Paint paint;
+
+    //UI Update timing handler
+    private ScheduledExecutorService graphicUpdateHandler;
+    private long graphicUpdateRate = 100;
+    private long lastTime = -1;
+    private long touchPause = 1000;
 
     //Sensor Constructors
     private SensorManager sensorManager;
@@ -49,6 +66,13 @@ public class ArActivity extends AppCompatActivity implements SensorEventListener
     private Button buttonMaps;
     private static final int REQUEST_CAMERA_PERMISSION = 1;
 
+    //Riddle Arrays
+    private String[] riddlesArray;
+    private String[] correctAnswers;
+    private String[] wrongAnswers;
+
+    private AlertDialog.Builder riddleDialog;
+    private DialogFragment dialogFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +80,9 @@ public class ArActivity extends AppCompatActivity implements SensorEventListener
         setContentView(R.layout.activity_ar);
         // Add back button
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        //Stop screen from dimming
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         //Check camera permission
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -74,11 +101,24 @@ public class ArActivity extends AppCompatActivity implements SensorEventListener
             arGraphics.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
             FrameLayout graphicsView = (FrameLayout) findViewById(R.id.graphicsFrame);
             graphicsView.addView(arGraphics);
+            arGraphics.setOnTouchListener(this);
 
             //Set sensors
             sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
             accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
             magneticField = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+
+            //Set update timing
+            graphicUpdateHandler = Executors.newScheduledThreadPool(5);
+            startRepeatingTask();
+
+            //Initialize Dialog box and Riddle Arrays
+            riddleDialog = new AlertDialog.Builder(this);
+            dialogFragment = new DialogFragment();
+            Resources res = getResources();
+            riddlesArray = res.getStringArray(R.array.riddles_array);
+            correctAnswers = res.getStringArray(R.array.correct_answers);
+            wrongAnswers = res.getStringArray(R.array.wrong_answers);
         }
 
 
@@ -108,8 +148,8 @@ public class ArActivity extends AppCompatActivity implements SensorEventListener
     @Override
     protected void onResume(){
         super.onResume();
-        sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
-        sensorManager.registerListener(this, magneticField, SensorManager.SENSOR_DELAY_UI);
+        sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, magneticField, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     @Override
@@ -166,8 +206,7 @@ public class ArActivity extends AppCompatActivity implements SensorEventListener
         }
         updateOrientationAngles();
         //Log.d("debug", "mAzimuth :" + Float.toString(mOrientationAngles[0]));
-        arGraphics.setOrientationAngles(mOrientationAngles);
-        arGraphics.invalidate();
+        //arGraphics.setOrientationAngles(mOrientationAngles);
     }
 
     //Required for Sensors
@@ -185,10 +224,8 @@ public class ArActivity extends AppCompatActivity implements SensorEventListener
                 SensorManager.AXIS_Z, mRotationMatrix);
         // "mRotationMatrix" now has up-to-date information.
 
-
         sensorManager.getOrientation(mRotationMatrix, mOrientationAngles);
-
-        // "mOrientationAngles" now has up-to-date information.
+        arGraphics.setOrientationAngles(mOrientationAngles);
     }
 
     public float[] getOrientationAngles(){
@@ -220,6 +257,77 @@ public class ArActivity extends AppCompatActivity implements SensorEventListener
         return c; // returns null if camera is unavailable
     }
 
+
+    void startRepeatingTask(){
+        graphicUpdateHandler.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run(){
+
+                runOnUiThread(new Runnable(){
+                    @Override
+                    public void run(){
+                        arGraphics.invalidate();
+                    }
+                });
+            }
+        }, 0, graphicUpdateRate, TimeUnit.MILLISECONDS);
+    }
+
+    void stopRepeatingTask(){
+        //graphicUpdateHandler.removeCallbacks(graphicUpdater);
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event){
+        if(arGraphics.checkInCircle(event.getX(), event.getY())){
+            if(lastTime < 0){
+                lastTime = System.currentTimeMillis();
+            }
+            else{
+                if(System.currentTimeMillis() - lastTime < touchPause){
+                    return false; //Nothing happens
+                }
+                else{
+                    lastTime = System.currentTimeMillis();
+                    int i = 0;
+                    riddleDialog.setMessage(riddlesArray[i]);
+                    boolean order;
+                    if(Math.random() < 0.5){
+                        order = true;
+                    }
+                    else{
+                        order = false;
+                    }
+                    if(order) {
+                        riddleDialog.setPositiveButton(correctAnswers[i], new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+
+                            }
+                        });
+                        riddleDialog.setNegativeButton(wrongAnswers[i], new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+
+                            }
+                        });
+                    }
+                    else{
+                        riddleDialog.setPositiveButton(wrongAnswers[i], new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+
+                            }
+                        });
+                        riddleDialog.setNegativeButton(correctAnswers[i], new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+
+                            }
+                        });
+                    }
+                    riddleDialog.show();
+                }
+            }
+        }
+        return true;
+    }
 
     // Navigates to Maps activity
     // private void openMaps() {
