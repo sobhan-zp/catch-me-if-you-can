@@ -468,9 +468,7 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
 //        marker.setDraggable(true);
         if(marker.getId().equals(theWpId)){
 
-
             // ADD AR FRAGMENT HERE
-
 
             // remoce the way point from the wp list
             mMarkers.remove(marker);
