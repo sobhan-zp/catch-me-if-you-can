@@ -121,6 +121,8 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
 
         MenuItem item = navigation.getMenu().getItem(MAP_ITEM_ID);
         switchFragment(item);
+
+        sendLocation();
     }
 
     private void switchFragment(MenuItem item) {
@@ -274,16 +276,7 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
 
     @Override
     public void onLocationChanged(Location location) {
-        JSONObject obj = new JSONObject();
-        try {
-            //obj.put("action", MESSAGE_COMMAND_SEND);
-            //obj.put("message", "test");
-            // TESTING
-            obj.put("action", getResources().getInteger(R.integer.LOCATION_GET));
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
-        onSend(obj);
+
 //        if (mCurrLocationMarker != null) {
 //            mCurrLocationMarker.remove();
 //        }
@@ -313,6 +306,7 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
             mMap.animateCamera(CameraUpdateFactory.zoomTo(12));
 
             toast("Your Current Location");
+            sendLocation();
         }
 
 
@@ -573,6 +567,24 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
 
     @Override
     public void onSend(JSONObject obj) {
+        WebSocketClient.getClient().send(obj.toString());
+    }
+
+    private void sendLocation() {
+        JSONObject loc = new JSONObject();
+        try {
+            loc.put("x", curr_latitude);
+            loc.put("y", curr_longitude);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("action", getResources().getInteger(R.integer.LOCATION_SEND));
+            obj.put("location", loc);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
         WebSocketClient.getClient().send(obj.toString());
     }
 }

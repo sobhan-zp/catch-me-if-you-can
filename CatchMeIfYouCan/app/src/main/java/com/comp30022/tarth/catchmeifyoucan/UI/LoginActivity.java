@@ -190,6 +190,7 @@ public class LoginActivity extends AppCompatActivity implements Communication {
                 ((TextView) findViewById(R.id.editTextPassword)).setText("");
             }
         }
+        WebSocketClient.getClient().connect();
     }
 
 }
