@@ -7,7 +7,7 @@
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/B_ar"
+        android:layout_below="@+id/B_route"
         android:layout_above="@+id/navigation">
     </FrameLayout>
 
@@ -20,13 +20,13 @@
         app:menu="@menu/navigation" />
 
     <Button
-        android:id="@+id/B_ar"
+        android:id="@+id/B_route"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
         android:layout_above="@+id/map"
         android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
         android:onClick="onClick"
-        android:text="AR" />
+        android:text="Get Route" />
 </RelativeLayout>
 

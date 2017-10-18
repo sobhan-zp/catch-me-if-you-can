@@ -50,8 +50,8 @@ import java.util.TimerTask;
 
 public class TargetActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
-        LocationListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnMarkerDragListener,
-        GoogleMap.OnMapClickListener, Communication, OptionsFragment.FragmentCommunication,
+        LocationListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener,
+        Communication, OptionsFragment.FragmentCommunication,
         ChatFragment.FragmentCommunication {
 
     private GoogleMap mMap;
@@ -65,14 +65,13 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
     private static int FATEST_INTERVAL = 3000; //SEC
     private static int DISPLACEMENT = 10; // METERS
     double curr_latitude, curr_longitude;
-    double end_latitude, end_longitude;
-    boolean addWaypoints = false;
-    MapDirectionsData lastDirectionsData = null;
-    List<Marker> mMarkers = new ArrayList<Marker>();
-    private static final double WP_RADIUS = 10;
-    private boolean nearWp = false;
 
-    private List<Marker> othersMarker = new ArrayList<Marker>();
+    boolean addWaypoints = false;
+
+    List<Double> cMarkers = new ArrayList<Double>();//coordinates of way points
+    List<Marker> mMarkers = new ArrayList<Marker>();//markers of  way points
+
+    private List<Marker> othersMarker = new ArrayList<Marker>();//markers of other users
 
     private final static int CHAT_ITEM_ID = 0;
     private final static int MAP_ITEM_ID = 1;
@@ -261,7 +260,6 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
 
         // set map options
         mMap.getUiSettings().setZoomControlsEnabled(true);
-        mMap.setOnMarkerDragListener(this);
         mMap.setOnMarkerClickListener(this);
         mMap.setOnMapClickListener(this);
     }
@@ -318,30 +316,9 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
             toast("Your Current Location");
         }
 
-
-        //move map camera
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(12));
-
         if(mCurrLocationMarker != null){
             String currLocation = curr_latitude+","+curr_longitude;
             toast(currLocation);
-        }
-
-        checkNearWaypoint();
-    }
-
-    protected void checkNearWaypoint(){
-        int count = mMarkers.size();
-        for(int i=0; i<count; i++){
-            double wp_latitude = mMarkers.get(i).getPosition().latitude;
-            double wp_longitude = mMarkers.get(i).getPosition().longitude;
-            if((curr_latitude-wp_latitude)*(curr_latitude-wp_latitude)+(curr_longitude-wp_longitude)*(curr_longitude-wp_longitude)
-                    <= WP_RADIUS*WP_RADIUS){
-                toast("A waypoint is nearby");
-                nearWp = true;
-                break;
-            }
         }
     }
 
@@ -414,30 +391,7 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
             case R.id.B_finishAddWP:
                 addWaypoints = false;
                 break;
-
-            case R.id.B_route:
-                if(lastDirectionsData != null){
-                    lastDirectionsData.clearPolyline();
-                }
-                String url = getDirectionsUrl();
-                MapDirectionsData directionsData = new MapDirectionsData();
-                dataTransfer[0] = mMap;
-                dataTransfer[1] = url;
-                dataTransfer[2] = new LatLng(end_latitude, end_longitude);
-                directionsData.execute(dataTransfer);
-                lastDirectionsData = directionsData;
-                break;
         }
-    }
-
-    private String getDirectionsUrl() {
-        StringBuilder googleDirectionsUrl = new StringBuilder("https://maps.googleapis.com/maps/api/directions/json?");
-        googleDirectionsUrl.append("origin="+curr_latitude+","+curr_longitude);
-        googleDirectionsUrl.append("&destination="+end_latitude+","+end_longitude);
-        googleDirectionsUrl.append("&mode=walking");
-        googleDirectionsUrl.append("&key="+"AIzaSyAsE7HmeYpP-QDRYblsZZq_yClezBjFQoE");
-
-        return googleDirectionsUrl.toString();
     }
 
     @Override
@@ -473,27 +427,7 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        marker.setDraggable(true);
-        return false;
-    }
-
-    @Override
-    public void onMarkerDragStart(Marker marker) {
-
-    }
-
-    @Override
-    public void onMarkerDrag(Marker marker) {
-
-    }
-
-    @Override
-    public void onMarkerDragEnd(Marker marker) {
-        end_latitude = marker.getPosition().latitude;
-        end_longitude =  marker.getPosition().longitude;
-
-        Log.d("end_lat",""+end_latitude);
-        Log.d("end_lng",""+end_longitude);
+        return true;
     }
 
     @Override
@@ -502,9 +436,12 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
             Marker waypoint = mMap.addMarker(new MarkerOptions()
                     .position(latLng)
                     .title("waypoint")
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
                     .snippet(latLng.toString()));
             //waypoint.showInfoWindow();
 
+            cMarkers.add(latLng.latitude);
+            cMarkers.add(latLng.longitude);
             mMarkers.add(waypoint);
         }
     }
@@ -512,11 +449,6 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
     // Displays a toast message
     private void toast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-    }
-
-    // Broadcasts location to server
-    private void broadcastLocation() {
-        //curr_latitude, curr_longitude
     }
 
 
@@ -537,7 +469,6 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
                 othersMarker.add(oMarker);
             }
         }
-
     }
 
     @Override
@@ -598,13 +529,28 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
         WebSocketClient.getClient().send(obj.toString());
     }
 
+    private void sendLocation() {
+        JSONObject loc = new JSONObject();
+        try {
+            loc.put("x", curr_latitude);
+            loc.put("y", curr_longitude);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("action", getResources().getInteger(R.integer.LOCATION_SEND));
+            obj.put("location", loc);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        WebSocketClient.getClient().send(obj.toString());
+    }
+
     private void getLocation() {
         // Queries server for location updates
         JSONObject obj = new JSONObject();
         try {
-            //obj.put("action", MESSAGE_COMMAND_SEND);
-            //obj.put("message", "test");
-            // TESTING
             obj.put("action", getResources().getInteger(R.integer.LOCATION_GET));
         } catch(Exception e) {
             e.printStackTrace();
@@ -623,6 +569,7 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
                     @Override
                     public void run() {
                         getLocation();
+                        sendLocation();
                     }
                 }, delay, period);
             }
