@@ -140,12 +140,17 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         switch (item.getItemId()) {
             case R.id.navigationChat:
-                transaction.hide(mapFragment);
-                transaction.add(R.id.fragment_container, chatFragment);
-                transaction.addToBackStack("map");
-                //transaction.replace(R.id.fragment_container, chatFragment);
-                if (this.getActionBar() != null) {
-                    this.getActionBar().setTitle("Game Chat");
+                if (!chatFragment.isAdded()) {
+                    if (optionsFragment.isAdded()) {
+                        transaction.remove(optionsFragment);
+                    }
+                    transaction.hide(mapFragment);
+                    transaction.add(R.id.fragment_container, chatFragment);
+                    transaction.addToBackStack("map");
+                    //transaction.replace(R.id.fragment_container, chatFragment);
+                    if (this.getActionBar() != null) {
+                        this.getActionBar().setTitle("Game Chat");
+                    }
                 }
                 break;
             case R.id.navigationMap:
@@ -174,12 +179,17 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
                 }
                 break;
             case R.id.navigationOptions:
-                transaction.hide(mapFragment);
-                transaction.add(R.id.fragment_container, optionsFragment);
-                transaction.addToBackStack("map");
-                //transaction.replace(R.id.fragment_container, optionsFragment);
-                if (this.getActionBar() != null) {
-                    this.getActionBar().setTitle("Game Options");
+                if (!optionsFragment.isAdded()) {
+                    if (chatFragment.isAdded()) {
+                        transaction.remove(chatFragment);
+                    }
+                    transaction.hide(mapFragment);
+                    transaction.add(R.id.fragment_container, optionsFragment);
+                    transaction.addToBackStack("map");
+                    //transaction.replace(R.id.fragment_container, optionsFragment);
+                    if (this.getActionBar() != null) {
+                        this.getActionBar().setTitle("Game Options");
+                    }
                 }
                 break;
         }

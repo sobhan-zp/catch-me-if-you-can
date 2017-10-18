@@ -174,7 +174,7 @@ public class DashboardActivity extends Activity implements Communication {
                     toast("Rejoined existing game");
                     if (message.getIs_owner().equals(1)) {
                         System.out.println("GAME NAME: " + message.getName());
-                        openMaps(message);
+                        openTarget(message);
                     } else {
                         System.out.println("GAME NAME: " + message.getName());
                         openSearcher(message);
@@ -189,7 +189,7 @@ public class DashboardActivity extends Activity implements Communication {
                 } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_ADD_SUCCESS))) {
                     toast("You have been added to the game");
                     if (message.getIs_owner().equals(1)) {
-                        openMaps(message);
+                        openTarget(message);
                     } else {
                         openSearcher(message);
                     }
@@ -206,7 +206,7 @@ public class DashboardActivity extends Activity implements Communication {
     }
 
     // Navigates to Target activity
-    private void openMaps(Message message) {
+    private void openTarget(Message message) {
         Intent intent = new Intent(this, TargetActivity.class);
         intent.putExtra("game_id", message.getGame_id());
         startActivityForResult(intent, 1);
