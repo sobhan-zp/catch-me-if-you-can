@@ -42,8 +42,8 @@ public class ArGraphics extends View{
     private ShapeDrawable shape;
 
     //Graphic positioning constructors
-    double xViewingAngle = 0.70;
-    double yViewingAngle = 0.99;
+    private final double xViewingAngle = 0.70;
+    private final double yViewingAngle = 1.2;
 
     //Location tests
     private Location mCurrentLocation = new Location("Melbourne");
@@ -108,21 +108,32 @@ public class ArGraphics extends View{
 
     private float calculateGraphicXPos(float[] orientationAngles){
         float x;
-        float bearingAngle = (float)toRadians(mCurrentLocation.bearingTo(mCurrLocationMarker));
-        Log.d("debug", "bearingAngle1 :" + Float.toString(bearingAngle));
+        float bearingAngle =  -3.14F; //(float)toRadians(mCurrentLocation.bearingTo(mCurrLocationMarker));
+        //Log.d("debug", "bearingAngle1 :" + Float.toString(bearingAngle));
         if(bearingAngle>Math.PI){
             bearingAngle = -1* (float)((2*Math.PI) - bearingAngle);
         }
 
         Log.d("debug", "bearingAngle2 :" + Float.toString(bearingAngle));
-        x = width/2 - (float)((orientationAngles[0] + bearingAngle)/xViewingAngle * width);
-        Log.d("debug", "x :" + Float.toString(x));
+        Log.d("debug", "orientationAngle :" + Float.toString(orientationAngles[0]));
+        if(orientationAngles[0] < 0  && bearingAngle < 0 ||
+                orientationAngles[0] > 0  && bearingAngle > 0){
+            x = width / 2 - (float) ((orientationAngles[0] - bearingAngle) / xViewingAngle * width);
+            Log.d("debug", "width :" + Integer.toString(width));
+            Log.d("debug", "x :" + Float.toString(x));
+        }
+        else {
+            x = width / 2 - (float) ((orientationAngles[0] + bearingAngle) / xViewingAngle * width);
+            Log.d("debug", "width :" + Integer.toString(width));
+            Log.d("debug", "x :" + Float.toString(x));
+        }
+
         return x;
     }
-
     private float calculateGraphicYPos(float[] orientationAngles){
         float y;
         y = height/2 - (int) ((orientationAngles[1])/yViewingAngle * height);
+        Log.d("debug", "height :" + Integer.toString(height));
         return y;
     }
 
