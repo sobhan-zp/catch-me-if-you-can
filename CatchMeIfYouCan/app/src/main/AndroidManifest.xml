@@ -104,7 +104,8 @@
         </activity>
         <activity
             android:name=".UI.ArActivity"
-            android:label="AR">
+            android:label="AR"
+            android:exported="true">
         </activity>
         <activity
             android:name=".UI.UserDetailActivity"

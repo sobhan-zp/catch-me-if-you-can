@@ -279,7 +279,10 @@ public class ArActivity extends Activity implements SensorEventListener, View.On
         locationUpdateHandler.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run(){
+                double x = 0;
+                double y = 0;
                 arGraphics.setOrientationAngles(mOrientationAngles);
+                arGraphics.setWaypointLocation(x, y);
                 //Log.d("debug", "set angles");
             }
         }, 0, LOCATION_UPDATE_RATE, TimeUnit.MILLISECONDS);
@@ -322,6 +325,7 @@ public class ArActivity extends Activity implements SensorEventListener, View.On
                                     }
                                 }
                     })
+                    .setCancelable(false)
                     .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             if(correctAns) {

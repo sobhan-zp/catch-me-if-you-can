@@ -46,8 +46,8 @@ public class ArGraphics extends View{
     private final double yViewingAngle = 1.2;
 
     //Location tests
-    private Location mCurrentLocation = new Location("Melbourne");
-    private Location mCurrLocationMarker = new Location ("NearMelbourne");
+    private Location mCurrentLocation = new Location("MyLocation");
+    private Location mCurrLocationMarker = new Location ("WaypointLocation");
 
     //Phone orientation information
     private float[] preOrientationAngles = new float[3];
@@ -139,7 +139,7 @@ public class ArGraphics extends View{
     }
 
     public void setOrientationAngles(float[] orientationAngles){
-        Log.d("debug", "setAngles");
+        //Log.d("debug", "setAngles");
         timesMoved = 0;
         preOrientationAngles = mOrientationAngles.clone();
         mOrientationAngles = orientationAngles.clone();
@@ -149,7 +149,13 @@ public class ArGraphics extends View{
                 - calculateGraphicYPos(preOrientationAngles))/NUM_UPDATES;
     }
 
-    public void setMarkerLocation(Location location){
-        this.mCurrLocationMarker.set(location);
+    public void setWaypointLocation(double x, double y){
+        mCurrLocationMarker.setLatitude(y);
+        mCurrLocationMarker.setLongitude(x);
+    }
+
+    public void setCurrentLocation(double x, double y){
+        mCurrentLocation.setLatitude(y);
+        mCurrentLocation.setLongitude(x);
     }
 }
