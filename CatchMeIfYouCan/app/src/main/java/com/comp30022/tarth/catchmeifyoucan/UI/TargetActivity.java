@@ -436,7 +436,7 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
             Marker waypoint = mMap.addMarker(new MarkerOptions()
                     .position(latLng)
                     .title("waypoint")
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE))
                     .snippet(latLng.toString()));
             //waypoint.showInfoWindow();
 
