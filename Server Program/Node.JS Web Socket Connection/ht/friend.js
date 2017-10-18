@@ -29,18 +29,39 @@ exports.add_friend = function(userinfo, add_username, fn){
 }
 
 exports.search_user = function(search_user, fn){
-    var sql = "SELECT username, email, name, status, location FROM account WHERE username = '" + search_user + "'";
     if (search_user == ""){
         var feedback = {
             "code": FRIEND_SEARCH_FAIL
         };
         return fn(feedback);
     }else{
-        db.execute(sql, FRIEND_SEARCH_SUCCESS, FRIEND_SEARCH_FAIL, function(result){
+        var columns = "username, email, name, status, location";
+        var table = "account";
+        var condition = {
+            username: search_user
+        };
+        db.select(condition, columns, table, FRIEND_SEARCH_SUCCESS, FRIEND_SEARCH_FAIL, function(result){
             return fn(result);
         });
     }
+}
 
+exports.search_user_id = function(id, fn){
+    if (id == ""){
+        var feedback = {
+            "code": FRIEND_SEARCH_FAIL
+        };
+        return fn(feedback);
+    }else{
+        var columns = "username, email, name, status, location";
+        var table = "account";
+        var condition = {
+            id: id
+        };
+        db.select(condition, columns, table, FRIEND_SEARCH_SUCCESS, FRIEND_SEARCH_FAIL, function(result){
+            return fn(result);
+        });
+    }
 }
 
 exports.fetch_friend_list = function(userinfo, fn){

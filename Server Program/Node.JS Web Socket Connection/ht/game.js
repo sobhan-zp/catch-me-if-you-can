@@ -48,19 +48,28 @@ exports.exit = function(userinfo){
     });
 }
 
-exports.new_waypoint = function(userinfo, x, y, info, fn){
+exports.new_waypoint = function(userinfo, location, info, fn){
     var g_id = "SELECT game_id FROM account_in_game WHERE account_id = " + userinfo.db_id + " and is_owner = " + GAME_OWNER;
-    db.execute(g_id, 1, 0, function(result){
-        if (result.result.length>0){
-            var sql = "INSERT INTO waypoint (x, y, info, game_id) VALUES (" + x + ", " + y + ", '" + info + "', " + result.result[0].game_id + ")";
-            db.execute(sql, GAME_ADD_WAYPOINT_SUCCESS, GAME_ADD_WAYPOINT_FAIL, function(result){
-                var feedback = {
-                    "code": result.code
-                };
-                return fn(feedback);
-            });
-        }
-    });
+    if (location.x && location.y){
+        db.execute(g_id, 1, 0, function(result){
+            if (result.result.length>0){
+                var table = "waypoint";
+                var data = {
+                    x: x,
+                    y: y,
+                    info: info,
+                    game_id: result.result[0].game_id
+                }
+                db.insert(data, table, GAME_ADD_WAYPOINT_SUCCESS, GAME_ADD_WAYPOINT_FAIL, function(result){
+                    var feedback = {
+                        "code": result.code
+                    };
+                    return fn(feedback);
+                });
+            }
+        });
+    }
+
 }
 
 exports.get_waypoint = function(userinfo, fn){
@@ -71,11 +80,14 @@ exports.get_waypoint = function(userinfo, fn){
 }
 
 function new_game(userinfo, name, fn){
-    var sql = "INSERT INTO game (name) VALUES ('" + name + "')";
     var feedback;
+    var table = "game";
+    var data = {
+        name: name
+    };
     is_in_game(userinfo.db_id, function(result){
         if (!result){
-            db.execute(sql, GAME_CREATE_SUCCESS, GAME_CREATE_FAIL, function(result1){
+            db.insert(data, table, GAME_CREATE_SUCCESS, GAME_CREATE_FAIL, function(result1){
                 if (result1.code == GAME_CREATE_SUCCESS){
                     feedback = {
                         "code": result1.code,
@@ -99,7 +111,12 @@ function new_game(userinfo, name, fn){
 
 function is_in_game(id, fn){
     var sql = "SELECT * FROM account_in_game WHERE account_id = " + id;
-    db.execute(sql, 1, 0, function(result){
+    var table = "account_in_game";
+    var columns = "*";
+    var condition = {
+        account_id: id
+    };
+    db.select(condition, columns, table, 1, 0, function(result){
         if (result.result.length>0 || result.code == 0){
             return fn(true);
         }else{
@@ -154,7 +171,8 @@ function join_game(userinfo, game_id, is_owner, fn){
             };
         }else{
             feedback = {
-                "code": GAME_ADD_SUCCESS
+                "code": GAME_ADD_SUCCESS,
+                "is_owner": is_owner
             };
             //send_notification_to_all(userinfo, userinfo.username + " joined the game.");
         }
@@ -192,13 +210,37 @@ function remove_user_from_game(userinfo, game_id, userid){
 exports.get_current = function(userinfo, fn){
     var sql = "SELECT * FROM game WHERE id in (SELECT game_id FROM account_in_game WHERE account_id = " + userinfo.db_id + ")";
     db.execute(sql, GAME_GET_CURRENT_SUCCESS, GAME_GET_CURRENT_FAIL, function(result){
-        return fn(result);
+        if (result.result.length>0){
+            var sql2 = "SELECT is_owner FROM account_in_game WHERE account_id = " + userinfo.db_id;
+            db.execute(sql2, 1, 0, function(result2){
+                var feedback = {
+                    "code": result.code,
+                    "is_owner": result2.result[0].is_owner,
+                    "id": result.result[0].id,
+                    "name": result.result[0].name
+                };
+                return fn(feedback);
+            });
+        }else{
+            var feedback = {
+                "code": GAME_GET_CURRENT_FAIL
+            };
+            return fn(feedback);
+        }
+
     });
 }
 
 exports.user = function(userinfo, fn){
     var sql = "SELECT game_id, account_id, is_owner FROM account_in_game WHERE game_id in (SELECT game_id FROM account_in_game WHERE account_id = " + userinfo.db_id + ")";
     db.execute(sql, GAME_GET_USER_SUCCESS, GAME_GET_USER_FAIL, function(result){
+        return fn(result);
+    });
+}
+
+exports.get_owner_location = function(userinfo, fn){
+    var sql = "SELECT account_id, x, y FROM account_in_game WHERE game_id in (SELECT game_id FROM account_in_game WHERE account_id = " + userinfo.db_id + ") and is_owner = " + GAME_OWNER;
+    db.execute(sql, LOCATION_GET2_SUCCESS, LOCATION_GET2_FAIL, function(result){
         return fn(result);
     });
 }

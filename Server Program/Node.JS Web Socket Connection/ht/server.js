@@ -50,6 +50,7 @@ wss.on('connection', function(ws) {
     ws.on('message', function(message) {
         if (is_json(message)){
             var data = JSON.parse(message);
+            var new_username;
             //console.log('client [%s] message [%s]', client_uuid, message);
             if (user_status.login == false){
                 switch(data.action){
@@ -77,9 +78,15 @@ wss.on('connection', function(ws) {
                         });
                         break;
                     case FRIEND_SEARCH:
-                        friend.search_user(data.username, function(result){
-                            msg.to_sock(client_ws, JSON.stringify(result));
-                        });
+                        if (data.username){
+                            friend.search_user(data.username, function(result){
+                                msg.to_sock(client_ws, JSON.stringify(result));
+                            });
+                        }else {
+                            friend.search_user_id(data.id, function(result){
+                                msg.to_sock(client_ws, JSON.stringify(result));
+                            });
+                        }
                         break;
                     case FRIEND_ADD:
                         friend.add_friend(user_status.info, data.username, function(result){
@@ -97,7 +104,7 @@ wss.on('connection', function(ws) {
                         });
                         break;
                     case MESSAGE_OFFLINE_GET:
-                        msg.offline_msg_check(user_status.info);
+                        msg.offline_msg_check(user_status.info, data.username);
                         break;
                     case MESSAGE_COMMAND_SEND:
                         msg.user_command(user_status.info, data.username, data.message, clients);
@@ -136,9 +143,9 @@ wss.on('connection', function(ws) {
                             msg.to_sock(client_ws, JSON.stringify(result));
                         });
                         break;
-                    case GAME_NOTIFICATION_SEND:
-                        send_notification_to_all(user_status.info, data.message);
-                        break;
+                    // case GAME_NOTIFICATION_SEND:
+                    //     send_notification_to_all(user_status.info, data.message);
+                    //     break;
                     case PROFILE_ACTION:
                         accounts.fetch_account_info(user_status.info);
                         break;
@@ -149,6 +156,11 @@ wss.on('connection', function(ws) {
                         break;
                     case LOCATION_GET:
                         game.get_location(user_status.info, function(result){
+                            msg.to_sock(client_ws, JSON.stringify(result));
+                        });
+                        break;
+                    case LOCATION_GET2:
+                        game.get_owner_location(user_status.info, function(result){
                             msg.to_sock(client_ws, JSON.stringify(result));
                         });
                         break;

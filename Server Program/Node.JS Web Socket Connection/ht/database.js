@@ -23,6 +23,45 @@ exports.execute = function(sql, s_code, f_code, fn){
     var feedback = {};
     con.query(sql, function (err, result) {
         if (err){
+            console.log(err);
+            feedback.code = f_code;
+        }else{
+            feedback.code = s_code;
+            feedback.result = result;
+            //feedback.result = JSON.stringify(result);
+        }
+        return fn(feedback);
+    });
+}
+
+exports.insert = function(data, table, s_code, f_code, fn){
+    var sql = "INSERT INTO " + table + " SET ?";
+    query(sql, data, s_code, f_code, function(result){
+        return fn(result);
+    });
+}
+
+exports.update = function(data, table, s_code, f_code, fn){
+    var sql = "UPDATE " + table + " SET ?";
+    query(sql, data, s_code, f_code, function(result){
+        return fn(result);
+    });
+}
+
+exports.select = function(condition, columns, table, s_code, f_code, fn){
+    var sql = "SELECT " + columns + " FROM " + table + " WHERE ?";
+    query(sql, condition, s_code, f_code, function(result){
+        // console.log(result);
+        // console.log(sql);
+        return fn(result);
+    });
+}
+
+function query(sql, data, s_code, f_code, fn){
+    var feedback = {};
+    con.query(sql, data, function (err, result) {
+        if (err){
+            //console.log(err);
             feedback.code = f_code;
         }else{
             feedback.code = s_code;

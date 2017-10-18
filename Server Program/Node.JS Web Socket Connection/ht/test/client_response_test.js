@@ -243,15 +243,18 @@ describe('Simulate Client Message Send Test', function() {
             ws.on('open', function open() {
                 ws.send('{"username":"admin","password":"abcd","action":101}');
                 setTimeout(function () {
-                    ws.send('{"action":718}');
+                    // Exit current all game
+                    ws.send('{"action":706}');
                 }, 10);
+                setTimeout(function () {
+                    ws.send('{"action":718}');
+                }, 20);
             });
             ws.on('message', function incoming(data) {
                 var fm = JSON.parse(JSON.parse(data));
                 count = count + 1;
-                if (count>=2){
-                    expect(fm).to.have.a.property('result');
-                    expect(fm).to.have.a.property('code', GAME_GET_CURRENT_SUCCESS);
+                if (count>=3){
+                    expect(fm).to.have.a.property('code', GAME_GET_CURRENT_FAIL);
                     done();
                 }
             });
