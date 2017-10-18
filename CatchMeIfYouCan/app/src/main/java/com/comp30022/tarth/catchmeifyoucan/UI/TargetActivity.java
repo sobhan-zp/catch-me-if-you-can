@@ -45,6 +45,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class TargetActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
@@ -593,5 +595,22 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
     @Override
     public void onSend(JSONObject obj) {
         WebSocketClient.getClient().send(obj.toString());
+    }
+
+    private void sendLocation() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                int delay = 0; // 0 seconds
+                int period = 10000; // 10 seconds
+                Timer timer = new Timer();
+                timer.scheduleAtFixedRate(new TimerTask() {
+                    @Override
+                    public void run() {
+                        // call function
+                    }
+                }, delay, period);
+            }
+        });
     }
 }
