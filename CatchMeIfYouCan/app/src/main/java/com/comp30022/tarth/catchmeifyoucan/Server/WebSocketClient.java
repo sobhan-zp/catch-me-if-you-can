@@ -23,20 +23,19 @@ public class WebSocketClient extends OkHttpClient {
         return instance;
     }
 
-    public static final String SERVER2_IP = "ws://35.197.172.195";  // CentOS 6 Server
-    public static final String SERVER_IP = "ws://45.77.49.3";       // CentOS 7 Server
+    //private static final String SERVER2_IP = "ws://35.197.172.195";  // CentOS 6 Server
+    private static final String SERVER_IP = "ws://45.77.49.3";       // CentOS 7 Server
 
     private static final int NORMAL_CLOSURE_STATUS = 1000;
 
     private Communication activity;
     private OkHttpClient client;
     private WebSocket webSocket;
-    private WebSocketListener listener;
 
     public void connect() {
         client = new OkHttpClient();
         Request request = new Request.Builder().url(SERVER_IP).build();
-        listener = new WebSocketListener() {
+        WebSocketListener listener = new WebSocketListener() {
             /**
              * Invoked when a web socket has been accepted by the remote peer and may begin transmitting
              * messages.

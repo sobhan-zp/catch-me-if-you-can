@@ -1,26 +1,14 @@
 package com.comp30022.tarth.catchmeifyoucan.Game;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.ShapeDrawable;
-import android.util.Log;
-import android.view.SurfaceHolder;
 import android.graphics.Canvas;
 import android.view.View;
 import android.location.Location;
 
 import com.comp30022.tarth.catchmeifyoucan.UI.ArActivity;
-import com.google.android.gms.maps.model.Marker;
-
-import static java.lang.Math.abs;
-import static java.lang.Math.toRadians;
-
-
-/**
- * Created by Jussi on 12/10/2017.
- */
 
 public class ArGraphics extends View{
 

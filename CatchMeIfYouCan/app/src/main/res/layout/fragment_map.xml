@@ -67,15 +67,4 @@
         android:layout_alignBottom="@+id/B_addWaypoints"
         android:layout_toEndOf="@+id/B_addWaypoints" />
 
-    <Button
-        android:id="@+id/B_route"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/map"
-        android:layout_alignParentEnd="true"
-        android:layout_below="@+id/TF_location"
-        android:layout_toEndOf="@+id/B_route"
-        android:onClick="onClick"
-        android:text="AR" />
-
 </RelativeLayout>

@@ -41,7 +41,9 @@ public class LoginActivity extends AppCompatActivity implements Communication {
         setContentView(R.layout.activity_login);
 
         // Add back button
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
         // Enable Internet permissions
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
@@ -177,7 +179,7 @@ public class LoginActivity extends AppCompatActivity implements Communication {
                 0, text.length() - 1,
                 Spannable.SPAN_INCLUSIVE_INCLUSIVE);
 
-        Toast.makeText(this, centeredText, Toast.LENGTH_LONG).show();
+        Toast.makeText(this, centeredText, Toast.LENGTH_SHORT).show();
     }
 
     // Resets the current activity connected to the WebSocket upon terminating child activities

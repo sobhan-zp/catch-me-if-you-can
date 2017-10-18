@@ -5,11 +5,11 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:layout_marginTop="25dip"
-
     >
 
     <ImageView
         android:id="@+id/ProfilePicture"
+        android:contentDescription="profile"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_centerHorizontal="true"
@@ -23,7 +23,7 @@
         android:gravity="center"
         android:layout_below="@+id/ProfilePicture"
         android:layout_marginTop="20dp"
-        android:textSize="10dp"
+        android:textSize="10sp"
         android:text="NAME" />
 
     <EditText
@@ -34,7 +34,7 @@
         android:gravity="center"
         android:layout_below="@+id/title1"
         android:layout_marginTop="-10dp"
-        android:textSize="21dp"
+        android:textSize="21sp"
         android:textStyle="bold"
         android:maxLength="25"
         android:text="Enter Name Here" />
@@ -47,7 +47,7 @@
         android:gravity="center"
         android:layout_below="@+id/Name"
         android:layout_marginTop="8dp"
-        android:textSize="15dp"
+        android:textSize="15sp"
         android:textStyle="italic"
         android:text="/@username" />
 
@@ -59,7 +59,7 @@
         android:gravity="center"
         android:layout_below="@+id/Online"
         android:layout_marginTop="10dp"
-        android:textSize="10dp"
+        android:textSize="10sp"
         android:text="LOCATION" />
 
     <TextView
@@ -70,7 +70,7 @@
         android:gravity="center"
         android:layout_below="@+id/Username"
         android:layout_marginTop="8dp"
-        android:textSize="15dp"
+        android:textSize="15sp"
         android:text="Online Status Unknown" />
 
     <EditText
@@ -81,7 +81,7 @@
         android:gravity="center"
         android:layout_below="@+id/title2"
         android:layout_marginTop="-10dp"
-        android:textSize="15dp"
+        android:textSize="15sp"
         android:maxLength="15"
         android:text="Enter Location Here" />
 
@@ -94,7 +94,7 @@
         android:gravity="center"
         android:layout_below="@+id/Location"
         android:layout_marginTop="10dp"
-        android:textSize="10dp"
+        android:textSize="10sp"
         android:text="EMAIL" />
 
     <EditText
@@ -105,7 +105,7 @@
         android:gravity="center"
         android:layout_below="@+id/title4"
         android:layout_marginTop="-10dp"
-        android:textSize="15dp"
+        android:textSize="15sp"
         android:layout_marginLeft="40dp"
         android:layout_marginRight="40dp"
         android:maxLength="30"
@@ -119,7 +119,7 @@
         android:gravity="center"
         android:layout_below="@+id/Email"
         android:layout_marginTop="10dp"
-        android:textSize="10dp"
+        android:textSize="10sp"
         android:text="STATUS MESSAGE" />
 
     <EditText
@@ -130,7 +130,7 @@
         android:gravity="center"
         android:layout_below="@+id/title3"
         android:layout_marginTop="-10dp"
-        android:textSize="15dp"
+        android:textSize="15sp"
         android:layout_marginLeft="40dp"
         android:layout_marginRight="40dp"
         android:maxLength="45"

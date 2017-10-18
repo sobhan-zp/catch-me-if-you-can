@@ -35,15 +35,17 @@ public class GamelistActivity extends AppCompatActivity implements Communication
         WebSocketClient.getClient().setActivity(this);
 
         // Add back button
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
         // Enable Internet permissions
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
         final ListView listViewGames = (ListView) findViewById(R.id.listViewGames);
-        array = new ArrayList<String>();
-        adapter = new ArrayAdapter<String>(
+        array = new ArrayList<>();
+        adapter = new ArrayAdapter<>(
                 this,
                 R.layout.list_one_item,
                 array
@@ -122,7 +124,7 @@ public class GamelistActivity extends AppCompatActivity implements Communication
                 } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_ADD_SUCCESS))) {
                     toast("Successfully joined game");
                     if (message.getIs_owner().equals(1)) {
-                        openMaps(message);
+                        openTarget(message);
                     } else {
                         openSearcher(message);
                     }
@@ -160,21 +162,17 @@ public class GamelistActivity extends AppCompatActivity implements Communication
         WebSocketClient.getClient().send(obj.toString());
     }
 
-    // Navigates to Game Activity
-    private void openGame() {
-        Intent intent = new Intent(this, GameActivity.class);
-        startActivityForResult(intent, 1);
-    }
-
     // Navigates to Target Activity
-    private void openMaps(Message message) {
+    private void openTarget(Message message) {
         Intent intent = new Intent(this, TargetActivity.class);
+        intent.putExtra("game_id", message.getGame_id());
         startActivityForResult(intent, 1);
     }
 
     // Navigates to Searcher Activity
     private void openSearcher(Message message) {
         Intent intent = new Intent(this, SearcherActivity.class);
+        intent.putExtra("game_id", message.getGame_id());
         startActivityForResult(intent, 1);
     }
 

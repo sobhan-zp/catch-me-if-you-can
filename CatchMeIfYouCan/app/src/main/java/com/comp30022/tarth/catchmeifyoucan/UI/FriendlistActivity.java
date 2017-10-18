@@ -5,12 +5,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -40,18 +38,18 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
         WebSocketClient.getClient().setActivity(this);
 
         // Add back button
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
         // Enable Internet permissions
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
         // Sets up friendlist
-        ListView listView = (ListView)findViewById(android.R.id.list);
-        //TextView textViewEmpty = (TextView)findViewById(android.R.id.empty);
         final ListView listViewFriends = (ListView) findViewById(R.id.listViewFriends);
-        array = new ArrayList<String>();
-        adapter = new ArrayAdapter<String>(
+        array = new ArrayList<>();
+        adapter = new ArrayAdapter<>(
                 this,
                 R.layout.list_one_item_friends,
                 array

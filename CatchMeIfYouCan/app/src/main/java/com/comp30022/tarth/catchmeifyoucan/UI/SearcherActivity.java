@@ -69,12 +69,12 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
     double end_latitude, end_longitude;
     MapDirectionsData lastDirectionsData = null;
 
-    List<Marker> mMarkers = new ArrayList<Marker>();
-    private static final double WP_RADIUS = 0.001;
+    List<Marker> mMarkers = new ArrayList<>();
+    private static final double WP_RADIUS = 0.00001;
     private boolean nearWp = false;
     private String theWpId = "";
 
-    private List<Marker> othersMarker = new ArrayList<Marker>();
+    private List<Marker> othersMarker = new ArrayList<>();
 
     private final static int CHAT_ITEM_ID = 0;
     private final static int MAP_ITEM_ID = 1;
@@ -400,7 +400,7 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
                     // Permission denied, Disable the functionality that depends on this permission.
                     toast("Permission denied");
                 }
-                return;
+                break;
             }
         }
     }
@@ -538,7 +538,7 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
                     toast("Location get successful");
                     //((ChatFragment) chatFragment).onResponse(message);
                     // TESTING
-                    List<Double> locations = new ArrayList<Double>();
+                    List<Double> locations = new ArrayList<>();
                     Result[] results = message.getResult();
                     for (Result result : results) {
                         //array.add(Double.toString(result.getX()) + ", " + Double.toString(result.getY()));
@@ -568,7 +568,7 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
                 } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_WAYPOINT_SUCCESS))) {
                     toast("Get waypoint success");
                     Result[] results = message.getResult();
-                    List<Waypoint> waypoints = new ArrayList<Waypoint>();
+                    List<Waypoint> waypoints = new ArrayList<>();
                     for (Result result : results) {
                         waypoints.add(new Waypoint(result.getInfo(), result.getX(), result.getY()));
                     }

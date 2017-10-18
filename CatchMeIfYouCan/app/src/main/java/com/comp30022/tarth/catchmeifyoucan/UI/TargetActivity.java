@@ -374,7 +374,7 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
                     // Permission denied, Disable the functionality that depends on this permission.
                     toast("Permission denied");
                 }
-                return;
+                break;
             }
         }
     }
@@ -492,7 +492,7 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
                     toast("Location get successful");
                     //((ChatFragment) chatFragment).onResponse(message);
                     // TESTING
-                    List<Double> locations = new ArrayList<Double>();
+                    List<Double> locations = new ArrayList<>();
                     Result[] results = message.getResult();
                     for (Result result : results) {
                         //array.add(Double.toString(result.getX()) + ", " + Double.toString(result.getY()));

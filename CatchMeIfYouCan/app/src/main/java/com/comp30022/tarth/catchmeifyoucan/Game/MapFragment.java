@@ -56,7 +56,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     double end_latitude, end_longitude;
     boolean addWaypoints = false;
     MapDirectionsData lastDirectionsData = null;
-    List<Marker> mMarkers = new ArrayList<Marker>();
+    List<Marker> mMarkers = new ArrayList<>();
     private static final double WP_RADIUS = 100;
     private boolean nearWp = false;
 

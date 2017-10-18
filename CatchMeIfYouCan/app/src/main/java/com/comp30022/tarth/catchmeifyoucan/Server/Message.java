@@ -1,8 +1,5 @@
 package com.comp30022.tarth.catchmeifyoucan.Server;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import java.util.Date;
 
 public class Message {
@@ -87,12 +84,6 @@ public class Message {
 
     public Result[] getResult() {
         return result;
-    }
-
-    public static Message parseJSON(String response) {
-        Gson gson = new GsonBuilder().create();
-        Message message = gson.fromJson(response, Message.class);
-        return message;
     }
 
     @Override

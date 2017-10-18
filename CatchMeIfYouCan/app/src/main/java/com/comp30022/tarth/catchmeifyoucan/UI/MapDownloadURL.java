@@ -25,25 +25,25 @@ public class MapDownloadURL {
             BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
             StringBuffer sb = new StringBuffer();
 
-            String line = "";
+            String line;
             while((line = br.readLine()) != null) {
                 sb.append(line);
             }
 
             data = sb.toString();
-            Log.d("downloadUrl", data.toString());
+            Log.d("downloadUrl", data);
 
             br.close();
 
         } catch (MalformedURLException e) {
             e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
         finally {
             if(inputStream != null)
                 inputStream.close();
-            urlConnection.disconnect();
+            if (urlConnection != null) {
+                urlConnection.disconnect();
+            }
         }
 
         Log.d("data downlaod",data);
