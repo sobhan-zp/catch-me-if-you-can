@@ -315,7 +315,6 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
             mMap.animateCamera(CameraUpdateFactory.zoomTo(12));
 
             toast("Your Current Location");
-            sendLocation();
         }
 
         if(mCurrLocationMarker != null){
@@ -653,6 +652,7 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
             public void run() {
                 int delay = 0; // 0 seconds
                 int period = 5000; // 5 seconds
+                Timer timer = new Timer();
                 timer.scheduleAtFixedRate(new TimerTask() {
                     @Override
                     public void run() {
