@@ -114,18 +114,12 @@ public class ArGraphics extends View{
             bearingAngle = -1* (float)((2*Math.PI) - bearingAngle);
         }
 
-        Log.d("debug", "bearingAngle2 :" + Float.toString(bearingAngle));
-        Log.d("debug", "orientationAngle :" + Float.toString(orientationAngles[0]));
         if(orientationAngles[0] < 0  && bearingAngle < 0 ||
                 orientationAngles[0] > 0  && bearingAngle > 0){
             x = width / 2 - (float) ((orientationAngles[0] - bearingAngle) / xViewingAngle * width);
-            Log.d("debug", "width :" + Integer.toString(width));
-            Log.d("debug", "x :" + Float.toString(x));
         }
         else {
             x = width / 2 - (float) ((orientationAngles[0] + bearingAngle) / xViewingAngle * width);
-            Log.d("debug", "width :" + Integer.toString(width));
-            Log.d("debug", "x :" + Float.toString(x));
         }
 
         return x;
@@ -133,7 +127,7 @@ public class ArGraphics extends View{
     private float calculateGraphicYPos(float[] orientationAngles){
         float y;
         y = height/2 - (int) ((orientationAngles[1])/yViewingAngle * height);
-        Log.d("debug", "height :" + Integer.toString(height));
+        //Log.d("debug", "height :" + Integer.toString(height));
         return y;
     }
 
