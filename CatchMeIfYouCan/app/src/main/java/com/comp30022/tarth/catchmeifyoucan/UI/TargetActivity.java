@@ -539,8 +539,10 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
             e.printStackTrace();
         }
         WebSocketClient.getClient().send(obj.toString());
-        onBackPressed();
-        onBackPressed();
+
+        Intent returnIntent = new Intent();
+        setResult(Activity.RESULT_OK, returnIntent);
+        finish();
     }
 
     @Override
@@ -614,6 +616,16 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
                 e.printStackTrace();
             }
             onSend(obj);
+        }
+    }
+
+    // Resets the current activity connected to the WebSocket upon terminating child activities
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1) {
+            if (resultCode == Activity.RESULT_OK) {
+                WebSocketClient.getClient().setActivity(this);
+            }
         }
     }
 

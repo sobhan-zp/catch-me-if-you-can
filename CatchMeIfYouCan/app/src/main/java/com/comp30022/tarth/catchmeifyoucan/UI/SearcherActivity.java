@@ -419,6 +419,8 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
         Object dataTransfer[] = new Object[3];
 
         if(v.getId() == R.id.B_route) {
+            openAR();
+            /*
             if(lastDirectionsData != null){
                 lastDirectionsData.clearPolyline();
             }
@@ -429,6 +431,7 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
             dataTransfer[2] = new LatLng(end_latitude, end_longitude);
             directionsData.execute(dataTransfer);
             lastDirectionsData = directionsData;
+            */
         }
     }
 
@@ -479,6 +482,7 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
         if(marker.getId().equals(theWpId)){
 
             // ADD AR FRAGMENT HERE
+            openAR();
 
             // remoce the way point from the wp list
             mMarkers.remove(marker);
@@ -599,8 +603,10 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
             e.printStackTrace();
         }
         WebSocketClient.getClient().send(obj.toString());
-        onBackPressed();
-        onBackPressed();
+
+        Intent returnIntent = new Intent();
+        setResult(Activity.RESULT_OK, returnIntent);
+        finish();
     }
 
     @Override
@@ -684,6 +690,26 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
             e.printStackTrace();
         }
         onSend(obj);
+    }
+
+    // Navigates to AR Activity
+    private void openAR() {
+        Intent intent = new Intent(this, ArActivity.class);
+        intent.putExtra("SearcherLatitude", curr_latitude);
+        intent.putExtra("SearcherLongitude", curr_longitude);
+        intent.putExtra("TargetLatitude", end_latitude);
+        intent.putExtra("TargetLongitude", end_longitude);
+        startActivityForResult(intent, 1);
+    }
+
+    // Resets the current activity connected to the WebSocket upon terminating child activities
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1) {
+            if (resultCode == Activity.RESULT_OK) {
+                WebSocketClient.getClient().setActivity(this);
+            }
+        }
     }
 
 }

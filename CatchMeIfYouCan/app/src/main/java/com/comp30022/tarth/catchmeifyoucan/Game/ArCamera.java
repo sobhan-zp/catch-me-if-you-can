@@ -1,11 +1,12 @@
 package com.comp30022.tarth.catchmeifyoucan.Game;
 
-import android.view.SurfaceHolder;
 import android.content.Context;
 import android.hardware.Camera;
-import android.view.SurfaceView;
-import java.util.List;
 import android.util.Log;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
+
+import java.util.List;
 
 
 @SuppressWarnings("deprecation")
@@ -22,10 +23,11 @@ public class ArCamera extends SurfaceView implements SurfaceHolder.Callback{
         mCamera = camera;
 
         // supported preview sizes
-        mSupportedPreviewSizes = mCamera.getParameters().getSupportedPreviewSizes();
-        for(Camera.Size str: mSupportedPreviewSizes)
-            Log.e(TAG, str.width + "/" + str.height);
-
+        if (mCamera != null) {
+            mSupportedPreviewSizes = mCamera.getParameters().getSupportedPreviewSizes();
+            for(Camera.Size str: mSupportedPreviewSizes)
+                Log.e(TAG, str.width + "/" + str.height);
+        }
 
         // Install a SurfaceHolder.Callback so we get notified when the
         // underlying surface is created and destroyed.
