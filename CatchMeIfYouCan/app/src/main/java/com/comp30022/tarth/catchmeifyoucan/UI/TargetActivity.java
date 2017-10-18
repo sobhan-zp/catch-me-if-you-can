@@ -443,6 +443,7 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
 
             cWaypoints.add(latLng.latitude);
             cWaypoints.add(latLng.longitude);
+            System.out.println("Waypoint added: " + latLng.latitude + ", " + latLng.longitude);
             mMarkers.add(waypoint);
         }
     }
@@ -586,6 +587,7 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
 
     private void sendWaypoints() {
         for (int i = 0; i < (cWaypoints.size() - 1); i +=2) {
+            System.out.println("WP: " + cWaypoints.get(i) + ", " + cWaypoints.get(i + 1));
             JSONObject loc = new JSONObject();
             try {
                 loc.put("x", cWaypoints.get(i));
@@ -597,6 +599,7 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
             try {
                 obj.put("action", getResources().getInteger(R.integer.GAME_ADD_WAYPOINT));
                 obj.put("info", "Waypoint " + Integer.toString(i / 2));
+                obj.put("location", loc);
             } catch(Exception e) {
                 e.printStackTrace();
             }
