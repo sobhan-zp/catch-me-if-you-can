@@ -139,7 +139,7 @@ public class ArGraphics extends View{
     }
 
     public void setOrientationAngles(float[] orientationAngles){
-        Log.d("debug", "setAngles");
+        //Log.d("debug", "setAngles");
         timesMoved = 0;
         preOrientationAngles = mOrientationAngles.clone();
         mOrientationAngles = orientationAngles.clone();

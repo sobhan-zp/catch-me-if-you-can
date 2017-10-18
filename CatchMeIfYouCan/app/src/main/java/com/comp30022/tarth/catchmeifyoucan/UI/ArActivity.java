@@ -322,6 +322,7 @@ public class ArActivity extends Activity implements SensorEventListener, View.On
                                     }
                                 }
                     })
+                    .setCancelable(false)
                     .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             if(correctAns) {
