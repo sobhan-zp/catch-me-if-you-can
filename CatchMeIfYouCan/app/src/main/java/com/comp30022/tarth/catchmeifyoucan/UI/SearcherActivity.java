@@ -70,7 +70,7 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
     MapDirectionsData lastDirectionsData = null;
 
     List<Marker> mMarkers = new ArrayList<Marker>();
-    private static final double WP_RADIUS = 10;
+    private static final double WP_RADIUS = 0.00002;
     private boolean nearWp = false;
     private String theWpId = "";
 
@@ -84,11 +84,13 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
     Fragment chatFragment;
     Fragment optionsFragment;
     private BottomNavigationView navigation;
-    private List<Waypoint> waypoints;
 
     private Marker tMarker = null;
     private Double targetX;
     private Double targetY;
+
+    static int i = 0;
+    Timer timer = new Timer();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,8 +119,6 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
         mapFragment = new SupportMapFragment();
         chatFragment = new ChatFragment();
         optionsFragment = new OptionsFragment();
-
-        waypoints = new ArrayList<Waypoint>();
 
         navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.getMenu().getItem(MAP_ITEM_ID).setChecked(true);
@@ -327,18 +327,23 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
     }
 
     protected void checkNearWaypoint(){
-        int count = mMarkers.size();
-        for(int i=0; i<count; i++){
-            Marker theWP = mMarkers.get(i);
-            double wp_latitude = theWP.getPosition().latitude;
-            double wp_longitude = theWP.getPosition().longitude;
-            if((curr_latitude-wp_latitude)*(curr_latitude-wp_latitude)+(curr_longitude-wp_longitude)*(curr_longitude-wp_longitude)
-                    <= WP_RADIUS*WP_RADIUS){
-                theWP.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
-                nearWp = true;
-                theWpId = theWP.getId();
-                break;
+        if(mMarkers.size() > 0) {
+            int nearestWp = 0;
+            double nearestRadius = WP_RADIUS * WP_RADIUS;
+            int count = mMarkers.size();
+            for (int i = 0; i < count; i++) {
+                double wp_latitude = mMarkers.get(i).getPosition().latitude;
+                double wp_longitude = mMarkers.get(i).getPosition().longitude;
+                double radius = (curr_latitude - wp_latitude) * (curr_latitude - wp_latitude) +
+                        (curr_longitude - wp_longitude) * (curr_longitude - wp_longitude);
+                if ((radius < (WP_RADIUS * WP_RADIUS)) && radius < nearestRadius) {
+                    nearestWp = i;
+                    nearestRadius = radius;
+                }
             }
+            mMarkers.get(nearestWp).setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
+            nearWp = true;
+            theWpId = mMarkers.get(nearestWp).getId();
         }
     }
 
@@ -564,10 +569,11 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
                 } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_WAYPOINT_SUCCESS))) {
                     toast("Get waypoint success");
                     Result[] results = message.getResult();
+                    List<Waypoint> waypoints = new ArrayList<Waypoint>();
                     for (Result result : results) {
                         waypoints.add(new Waypoint(result.getInfo(), result.getX(), result.getY()));
                     }
-                    addWp();
+                    addWp(waypoints);
                 } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_WAYPOINT_FAIL))) {
                     toast("Get waypoint failure");
                 }
@@ -622,7 +628,7 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
         onSend(obj);
     }
 
-    private void addWp(){
+    private void addWp(List<Waypoint> waypoints){
         if(waypoints.size() > 0) {
             int count = waypoints.size() - 1;
             for (int i = 0; i < count; i ++) {
@@ -645,16 +651,30 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
             public void run() {
                 int delay = 0; // 0 seconds
                 int period = 5000; // 5 seconds
-                Timer timer = new Timer();
                 timer.scheduleAtFixedRate(new TimerTask() {
                     @Override
                     public void run() {
                         sendLocation();
                         getTargetLocation();
+                        System.out.println(i);
+                        if (i == 1) {
+                            getWaypoints();
+                        }
+                        i ++;
                     }
                 }, delay, period);
             }
         });
+    }
+
+    private void getWaypoints() {
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("action", getResources().getInteger(R.integer.GAME_GET_WAYPOINT));
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        onSend(obj);
     }
 
 }
