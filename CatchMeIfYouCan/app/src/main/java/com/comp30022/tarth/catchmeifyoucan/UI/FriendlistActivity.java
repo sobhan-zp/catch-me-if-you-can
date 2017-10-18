@@ -78,13 +78,6 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
         getFriend();
     }
 
-/*    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu_friendlist
-        getMenuInflater().inflate(R.menu.menu_friendlist, menu);
-        return true;
-    }
-
     // Set back button on action bar
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -92,12 +85,9 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
             case android.R.id.home:
                 onBackPressed();
                 return true;
-            case R.id.action_name:
-                openAdd();
-                return true;
         }
         return super.onOptionsItemSelected(item);
-    }*/
+    }
 
     @Override
     public void onBackPressed() {

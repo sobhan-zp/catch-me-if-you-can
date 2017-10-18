@@ -177,17 +177,11 @@ public class DashboardActivity extends Activity implements Communication {
                         toast("No active games");
                         openGamelist();
                     } else {
-                        toast("Rejoined existing game");
-                        if (message.getIs_owner().equals(1)) {
-                            System.out.println("GAME NAME: " + message.getName());
-                            openMaps(message);
-                        } else {
-                            System.out.println("GAME NAME: " + message.getName());
-                            openSearcher(message);
-                        }
+                        System.out.println("GAME NAME: " + message.getName());
+                        openSearcher(message);
                     }
                 } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_CURRENT_FAIL))) {
-                    toast("Get current game failure");
+                    toast("No active games");
                     openGamelist();
                 } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_CREATE_SUCCESS))) {
                     toast("Game creation successful");
