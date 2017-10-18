@@ -170,7 +170,9 @@ public class DashboardActivity extends Activity implements Communication {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_CURRENT_SUCCESS))) {
+                if (message.getAction() != null) {
+                    toast("New message from " + message.getFrom() + ": " + message.getMessage());
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_CURRENT_SUCCESS))) {
                     if (message.getResult() != null && message.getResult().length == 0) {
                         toast("No active games");
                         openGamelist();

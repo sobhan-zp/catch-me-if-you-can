@@ -80,12 +80,15 @@ public class AddActivity extends AppCompatActivity implements Communication {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_ADD_SUCCESS))) {
+                if (message.getAction() != null) {
+                    toast("New message from " + message.getFrom() + ": " + message.getMessage());
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_ADD_SUCCESS))) {
                     toast("Friend add success");
                     onBackPressed();
                 } else if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_ADD_FAIL))) {
                     toast("Friend add failure");
                 }
+
             }
         });
     }

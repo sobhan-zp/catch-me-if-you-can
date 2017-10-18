@@ -524,7 +524,9 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
             @Override
             public void run() {
                 System.out.println("CODE" + message.getCode());
-                if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_USER_SUCCESS))) {
+                if (message.getAction() != null) {
+                    toast("New message from " + message.getFrom() + ": " + message.getMessage());
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_USER_SUCCESS))) {
                     toast("Game get users successful");
                     ((OptionsFragment) optionsFragment).onResponse(message);
                 } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_USER_FAIL))) {

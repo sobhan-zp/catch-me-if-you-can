@@ -97,7 +97,9 @@ public class GamelistActivity extends AppCompatActivity implements Communication
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_CURRENT_SUCCESS))) {
+                if (message.getAction() != null) {
+                    toast("New message from " + message.getFrom() + ": " + message.getMessage());
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_CURRENT_SUCCESS))) {
                     toast("Game resume get success");
                     joinGame(message.getResult()[0].getGame_id());
                 } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_CURRENT_FAIL))) {
