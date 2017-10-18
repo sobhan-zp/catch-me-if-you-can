@@ -148,11 +148,6 @@ public class UserActivity extends Activity implements Communication {
         WebSocketClient.getClient().send(obj.toString());
     }
 
-    // Displays a toast message
-    private void toast(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-    }
-
     /* Grabs response from server */
     @Override
     public void onResponse(final Message message) {
@@ -210,6 +205,11 @@ public class UserActivity extends Activity implements Communication {
                 WebSocketClient.getClient().setActivity(this);
             }
         }
+    }
+
+    // Displays a toast message
+    private void toast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
 }
