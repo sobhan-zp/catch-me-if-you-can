@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.comp30022.tarth.catchmeifyoucan.Server.Communication;
 import com.comp30022.tarth.catchmeifyoucan.Server.Message;
@@ -23,7 +24,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class ChatActivity extends AppCompatActivity implements Communication {
+public class ChatActivity extends Activity implements Communication {
 
     private ArrayAdapter<String> adapter;
     private List<String> array;
@@ -31,7 +32,8 @@ public class ChatActivity extends AppCompatActivity implements Communication {
     private String name = "You";
     private String friend;
 
-    private SimpleDateFormat dateFormat;
+    SimpleDateFormat dateFormat;
+    TextView textViewName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,14 +41,14 @@ public class ChatActivity extends AppCompatActivity implements Communication {
         setContentView(R.layout.activity_chat);
         WebSocketClient.getClient().setActivity(this);
 
-        // Add back button
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
         // Get receiver info
         setFriend();
 
         // Set date format
         dateFormat = new SimpleDateFormat("HH:mm:ss, dd/MM/yy");
+
+        textViewName = (TextView) findViewById(R.id.Name);
+        textViewName.setText(friend);
 
         Button fab = (Button) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {

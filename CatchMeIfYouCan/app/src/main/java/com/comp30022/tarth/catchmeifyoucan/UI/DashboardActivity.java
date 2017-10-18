@@ -20,7 +20,7 @@ import com.comp30022.tarth.catchmeifyoucan.Server.WebSocketClient;
 
 import org.json.JSONObject;
 
-public class DashboardActivity extends AppCompatActivity implements Communication {
+public class DashboardActivity extends Activity implements Communication {
 
     private Button buttonLogout;
     private Button buttonFriendlist;
@@ -44,6 +44,8 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
         buttonFriendlist = (Button) findViewById(R.id.buttonFriendlist);
         buttonLogout = (Button) findViewById(R.id.buttonLogout);
         buttonSettings = (Button) findViewById(R.id.buttonSettings);
+
+        //buttonTest = (Button) findViewById(R.id.buttonTest);
 
         TextView textViewUsername = (TextView) findViewById(R.id.Username);
         Intent intent = getIntent();
@@ -97,7 +99,15 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
             }
         });
 
+        /*buttonTest.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                test();
+            }
+        });*/
+
         // set a onclick listener for when the button gets clicked
+        imageViewTest.setImageResource(R.mipmap.temp_placeholder);
         imageViewTest.setOnClickListener(new View.OnClickListener() {
             // Start new list activity
             public void onClick(View v) {
@@ -115,14 +125,14 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
     // Reveals pop up asking if user really wants to exit
     public void logoutWarning() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.MyAlertDialogStyle);
-        builder.setTitle("Exiting Login...");
-        builder.setMessage("Are you sure you want to logout? If you are in any game you will leave the game and may end up never finding your friend.");
-        builder.setPositiveButton("Get Me Out of Here!", new DialogInterface.OnClickListener() {
+        builder.setTitle(getResources().getString(R.string.exit_dashboard_title));
+        builder.setMessage(getResources().getString(R.string.exit_dashboard_message));
+        builder.setPositiveButton(getResources().getString(R.string.exit_dialog_pos), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 logout();
             }
         });
-        builder.setNegativeButton("Cancel", null);
+        builder.setNegativeButton(getResources().getString(R.string.exit_dialog_neg), null);
         builder.show();
     }
 
@@ -138,6 +148,12 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
     public void settings() {
         Intent intent = new Intent(this, SettingsActivity.class);
         startActivityForResult(intent, 1);
+    }
+
+    // Navigates to Settings
+    public void test() {
+        Intent intent = new Intent(this, UserDetailActivity.class);
+        startActivity(intent);
     }
 
     // Navigates to User Activity

@@ -14,6 +14,7 @@ public class Result {
     private String name;
     private String status;
     private String username;
+    private String location;
 
     public Double getX() {
         return x;
@@ -47,22 +48,26 @@ public class Result {
     public String getUsername() {
         return username;
     }
+    public String getLocation() {
+        return location;
+    }
 
     @Override
     public String toString() {
         return (
                 "{"
-                        + ((x != null) ? "x: " + Double.toString(x) : "")
-                        + ((y != null) ? ", y: " + Double.toString(y) : "")
-                        + ((id != null) ? ", id: " + Integer.toString(id) : "")
-                        + ((account_id != null) ? ", account_id: " + Integer.toString(account_id) : "")
-                        + ((game_id != null) ? ", game_id: " + Integer.toString(game_id) : "")
-                        + ((is_owner != null) ? ", is_owner: " + Integer.toString(is_owner) : "")
-                        + ((email != null) ? ", email: " + email : "")
-                        + ((name != null) ? ", name: " + name : "")
-                        + ((status != null) ? ", status: " + status : "")
-                        + ((username != null) ? ", username: " + username : "")
-                        + "}"
+                + ((x != null) ? "x: " + Double.toString(x) : "")
+                + ((y != null) ? ", y: " + Double.toString(y) : "")
+                + ((id != null) ? ", id: " + Integer.toString(id) : "")
+                + ((account_id != null) ? ", account_id: " + Integer.toString(account_id) : "")
+                + ((game_id != null) ? ", game_id: " + Integer.toString(game_id) : "")
+                + ((is_owner != null) ? ", is_owner: " + Integer.toString(is_owner) : "")
+                + ((email != null) ? ", email: " + email : "")
+                + ((name != null) ? ", name: " + name : "")
+                + ((location != null) ? ", location: " + location : "")
+                + ((status != null) ? ", status: " + status : "")
+                + ((username != null) ? ", username: " + username : "")
+                + "}"
         );
     }
 

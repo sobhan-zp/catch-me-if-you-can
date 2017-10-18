@@ -83,7 +83,7 @@ public class ArActivity extends AppCompatActivity implements SensorEventListener
         }
 
 
-        buttonMaps = (Button) findViewById(R.id.buttonChat);
+        buttonMaps = (Button) findViewById(R.id.buttonMap);
 
         Intent intent = getIntent();
         Bundle bd = intent.getExtras();

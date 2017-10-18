@@ -10,6 +10,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -28,6 +30,8 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
 
     private ArrayAdapter<String> adapter;
     private List<String> array;
+    private ImageButton fabAdd;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,10 +53,12 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
         array = new ArrayList<String>();
         adapter = new ArrayAdapter<String>(
                 this,
-                R.layout.list_one_item,
+                R.layout.list_one_item_friends,
                 array
         );
         listViewFriends.setAdapter(adapter);
+
+        fabAdd = (ImageButton) findViewById(R.id.floatingAdd);
 
         listViewFriends.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -61,11 +67,18 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
             }
         });
 
+        fabAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openAdd();
+            }
+        });
+
         // Obtains the list of friends from the server upon incovation
         getFriend();
     }
 
-    @Override
+/*    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu_friendlist
         getMenuInflater().inflate(R.menu.menu_friendlist, menu);
@@ -84,7 +97,7 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
                 return true;
         }
         return super.onOptionsItemSelected(item);
-    }
+    }*/
 
     @Override
     public void onBackPressed() {
@@ -103,6 +116,31 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
         }
         WebSocketClient.getClient().send(obj.toString());
     }
+
+    /*
+    // Checks if a friend is online
+    private void checkFriend() {
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("action", FRIEND_CHECK);
+            obj.put("username", "1");
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        LoginActivity.getClient().send(obj.toString());
+    }
+    // Searches for the details of an existing user
+    private void searchFriend() {
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("action", FRIEND_SEARCH);
+            obj.put("username", "TEST");
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        LoginActivity.getClient().send(obj.toString());
+    }
+    */
 
     // Navigates to User Activity
     private void openUser(String username) {

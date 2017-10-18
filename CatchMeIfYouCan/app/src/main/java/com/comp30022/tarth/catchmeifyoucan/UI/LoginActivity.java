@@ -178,7 +178,6 @@ public class LoginActivity extends AppCompatActivity implements Communication {
                 Spannable.SPAN_INCLUSIVE_INCLUSIVE);
 
         Toast.makeText(this, centeredText, Toast.LENGTH_LONG).show();
-        //Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
     // Resets the current activity connected to the WebSocket upon terminating child activities
