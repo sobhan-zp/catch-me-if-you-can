@@ -285,7 +285,6 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
 
     @Override
     public void onLocationChanged(Location location) {
-
         if (mCurrLocationMarker != null) {
             mCurrLocationMarker.remove();
         }
@@ -316,6 +315,7 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
             mMap.animateCamera(CameraUpdateFactory.zoomTo(12));
 
             toast("Your Current Location");
+            sendLocation();
         }
 
         if(mCurrLocationMarker != null){
