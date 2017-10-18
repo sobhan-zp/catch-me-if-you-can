@@ -70,7 +70,7 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
     MapDirectionsData lastDirectionsData = null;
 
     List<Marker> mMarkers = new ArrayList<Marker>();
-    private static final double WP_RADIUS = 0.00002;
+    private static final double WP_RADIUS = 0.001;
     private boolean nearWp = false;
     private String theWpId = "";
 
@@ -328,7 +328,7 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
 
     protected void checkNearWaypoint(){
         if(mMarkers.size() > 0) {
-            int nearestWp = 0;
+            int nearestWp = -1;
             double nearestRadius = WP_RADIUS * WP_RADIUS;
             int count = mMarkers.size();
             for (int i = 0; i < count; i++) {
@@ -341,9 +341,11 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
                     nearestRadius = radius;
                 }
             }
-            mMarkers.get(nearestWp).setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
-            nearWp = true;
-            theWpId = mMarkers.get(nearestWp).getId();
+            if(nearestWp >= 0) {
+                mMarkers.get(nearestWp).setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
+                nearWp = true;
+                theWpId = mMarkers.get(nearestWp).getId();
+            }
         }
     }
 
