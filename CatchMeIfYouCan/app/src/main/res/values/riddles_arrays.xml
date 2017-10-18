@@ -1,28 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="riddles_array">
+        <!--Riddle 1-->
         <item>What is in my pocket?</item>
+        <!--Riddle 2-->
         <item>What has a foot but no legs?</item>
+        <!--Riddle 3-->
         <item>What comes down but never goes up?</item>
+        <!--Riddle 4-->
         <item>I’m tall when I’m young and I’m short when I’m old. What am I?</item>
-        <item>If I drink, I die. If i eat, I am fine. What am I?</item>
+        <!--Riddle 5-->
+        <item>If I drink, I die. If I eat, I am fine. What am I?</item>
+        <!--Riddle 6-->
         <item>What has hands but can not clap?</item>
+        <!--Riddle 7-->
         <item>What can you catch but not throw?</item>
+        <!--Riddle 8-->
         <item>What starts with the letter “t”, is filled with “t” and ends in “t”?</item>
+        <!--Riddle 9-->
         <item>What is so delicate that saying its name breaks it?</item>
+        <!--Riddle 10-->
         <item>What kind of tree can you carry in your hand?</item>
+        <!--Riddle 11-->
+        <item>If I have it, I don’t share it. If I share it, I don’t have it. What is it?</item>
+        <!--Riddle 12-->
+        <item>The more you take of me the more you leave behind?</item>
+        <!--Riddle 13-->
+        <item>What runs without legs?</item>
+        <!--Riddle 14-->
+        <item>What kind of vegetable is unpopular on ships?</item>
+        <!--Riddle 15-->
+        <item>It belongs to you, but others use it more than you, what is it?</item>
+
     </string-array>
     <string-array name ="correct_answers">
+        <!--Riddle 1-->
         <item>The One Ring</item>
+        <!--Riddle 2-->
         <item>A snail</item>
+        <!--Riddle 3-->
         <item>Rain</item>
+        <!--Riddle 4-->
         <item>A candle</item>
+        <!--Riddle 5-->
         <item>A fire</item>
+        <!--Riddle 6-->
         <item>A clock</item>
+        <!--Riddle 7-->
         <item>A cold</item>
+        <!--Riddle 8-->
         <item>A teapot</item>
+        <!--Riddle 9-->
         <item>Silence</item>
+        <!--Riddle 10-->
         <item>A palm</item>
+        <!--Riddle 11-->
+        <item>A secret</item>
+        <!--Riddle 12-->
+        <item>Footsteps</item>
+        <!--Riddle 13-->
+        <item>Water</item>
+        <!--Riddle 14-->
+        <item>A leek</item>
+        <!--Riddle 15-->
+        <item>Your name</item>
+
     </string-array>
     <string-array name ="wrong_answers">
         <!--Riddle 1-->
@@ -59,11 +101,32 @@
         <item>A tent</item>
         <!--Riddle 9-->
         <item>A flower</item>
-        <item>A SJW</item>
+        <item>A phone</item>
         <item>A cop</item>
         <!--Riddle 10-->
         <item>A golden wattle</item>
         <item>A pine</item>
         <item>A eucalyptus</item>
+        <!--Riddle 11-->
+        <item>A car</item>
+        <item>A snag</item>
+        <item>Time</item>
+        <!--Riddle 12-->
+        <item>Your girlfriend</item>
+        <item>Tea</item>
+        <item>Money</item>
+        <!--Riddle 13-->
+        <item>Fire</item>
+        <item>A snail</item>
+        <item>Usain Bolt</item>
+        <!--Riddle 14-->
+        <item>A carrot</item>
+        <item>A potato</item>
+        <item>Beetroot</item>
+        <!--Riddle 15-->
+        <item>Your phone</item>
+        <item>Your money</item>
+        <item>Your lunch</item>
     </string-array>
+    <!--Riddles from https://www.riddles.com/short-riddles and  http://www.funology.com/riddles/-->
 </resources>
