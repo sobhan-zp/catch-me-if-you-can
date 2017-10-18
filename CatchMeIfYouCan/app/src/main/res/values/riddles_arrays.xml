@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="riddles_array">
+        <item>What is in my pocket?</item>
+        <item>What has a foot but no legs?</item>
+        <item>What comes down but never goes up?</item>
+        <item>I’m tall when I’m young and I’m short when I’m old. What am I?</item>
+        <item>If I drink, I die. If i eat, I am fine. What am I?</item>
+        <item>What has hands but can not clap?</item>
+        <item>What can you catch but not throw?</item>
+        <item>What starts with the letter “t”, is filled with “t” and ends in “t”?</item>
+        <item>What is so delicate that saying its name breaks it?</item>
+        <item>What kind of tree can you carry in your hand?</item>
+    </string-array>
+    <string-array name ="correct_answers">
+        <item>The One Ring</item>
+        <item>A snail</item>
+        <item>Rain</item>
+        <item>A candle</item>
+        <item>A fire</item>
+        <item>A clock</item>
+        <item>A cold</item>
+        <item>A teapot</item>
+        <item>Silence</item>
+        <item>A palm</item>
+    </string-array>
+    <string-array name ="wrong_answers">
+        <!--Riddle 1-->
+        <item>Gum</item>
+        <item>A pencil</item>
+        <item>String</item>
+        <!--Riddle 2-->
+        <item>A car</item>
+        <item>A computer</item>
+        <item>A chair</item>
+        <!--Riddle 3-->
+        <item>A bird</item>
+        <item>Smoke</item>
+        <item>Your age</item>
+        <!--Riddle 4-->
+        <item>A tree</item>
+        <item>A mountain</item>
+        <item>Yoda</item>
+        <!--Riddle 5-->
+        <item>An iguana</item>
+        <item>A person</item>
+        <item>A barista</item>
+        <!--Riddle 6-->
+        <item>A gorilla</item>
+        <item>A chair</item>
+        <item>Leonardo Dicaprio</item>
+        <!--Riddle 7-->
+        <item>A ball</item>
+        <item>A match</item>
+        <item>A phone</item>
+        <!--Riddle 8-->
+        <item>A tyrannosaurus rex</item>
+        <item>A Toyota</item>
+        <item>A tent</item>
+        <!--Riddle 9-->
+        <item>A flower</item>
+        <item>A SJW</item>
+        <item>A cop</item>
+        <!--Riddle 10-->
+        <item>A golden wattle</item>
+        <item>A pine</item>
+        <item>A eucalyptus</item>
+    </string-array>
+</resources>

@@ -2,11 +2,10 @@ package com.comp30022.tarth.catchmeifyoucan.UI;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Paint;
+import android.content.res.Resources;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -14,28 +13,43 @@ import android.hardware.SensorManager;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AlertDialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.Button;
 import android.hardware.Camera;
 import android.content.pm.PackageManager;
 import android.app.ActionBar.LayoutParams;
 
-
 import com.comp30022.tarth.catchmeifyoucan.Game.ArCamera;
 import com.comp30022.tarth.catchmeifyoucan.Game.ArGraphics;
 import com.comp30022.tarth.catchmeifyoucan.R;
 
+import java.util.Arrays;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 @SuppressWarnings("deprecation")
-public class ArActivity extends AppCompatActivity implements SensorEventListener{
+public class ArActivity extends Activity implements SensorEventListener, View.OnTouchListener {
     private Camera camera;
     private ArCamera cameraView;
     private ArGraphics arGraphics;
-    private Bitmap bitmap;
-    private Canvas canvas;
-    private Paint paint;
+
+    //UI Update timing handler
+    private ScheduledExecutorService graphicUpdateHandler;
+    public static long GRAPHIC_UPDATE_RATE = 50;
+    private ScheduledExecutorService locationUpdateHandler;
+    public static long LOCATION_UPDATE_RATE = 250;
+
+    //Ensure touches aren't registered multiple times
+    private long lastTime = -1;
+    private long touchPause = 1000;
 
     //Sensor Constructors
     private SensorManager sensorManager;
@@ -49,14 +63,25 @@ public class ArActivity extends AppCompatActivity implements SensorEventListener
     private Button buttonMaps;
     private static final int REQUEST_CAMERA_PERMISSION = 1;
 
+    //Riddle Arrays
+    private String[] riddlesArray;
+    private String[] correctAnswers;
+    private String[] wrongAnswers;
+
+    //Dialog Constructors
+    private AlertDialog.Builder riddleDialog;
+    private AlertDialog.Builder successDialog;
+    private AlertDialog.Builder failDialog;
+    private boolean correctAns = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_ar);
 
-        // Add back button
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //Stop screen from dimming
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         //Check camera permission
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -75,16 +100,26 @@ public class ArActivity extends AppCompatActivity implements SensorEventListener
             arGraphics.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
             FrameLayout graphicsView = (FrameLayout) findViewById(R.id.graphicsFrame);
             graphicsView.addView(arGraphics);
+            arGraphics.setOnTouchListener(this);
 
             //Set sensors
             sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
             accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
             magneticField = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+
+
+            //Initialize Dialog box and Riddle Arrays
+            riddleDialog = new AlertDialog.Builder(this);
+            successDialog = new AlertDialog.Builder(this);
+            failDialog = new AlertDialog.Builder(this);
+            Resources res = getResources();
+            riddlesArray = res.getStringArray(R.array.riddles_array);
+            correctAnswers = res.getStringArray(R.array.correct_answers);
+            wrongAnswers = res.getStringArray(R.array.wrong_answers);
         }
 
 
         buttonMaps = (Button) findViewById(R.id.buttonMap);
-
         Intent intent = getIntent();
         Bundle bd = intent.getExtras();
 
@@ -110,8 +145,13 @@ public class ArActivity extends AppCompatActivity implements SensorEventListener
     @Override
     protected void onResume(){
         super.onResume();
-        sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
-        sensorManager.registerListener(this, magneticField, SensorManager.SENSOR_DELAY_UI);
+        sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, magneticField, SensorManager.SENSOR_DELAY_NORMAL);
+
+        //Set update timing
+        graphicUpdateHandler = Executors.newScheduledThreadPool(0);
+        locationUpdateHandler = Executors.newScheduledThreadPool(0);
+        startRepeatingTask();
     }
 
     @Override
@@ -119,6 +159,7 @@ public class ArActivity extends AppCompatActivity implements SensorEventListener
         super.onPause();
         // Don't receive any more updates from either sensor.
         sensorManager.unregisterListener(this);
+        stopRepeatingTask();
     }
 
     @Override
@@ -126,6 +167,11 @@ public class ArActivity extends AppCompatActivity implements SensorEventListener
         Intent returnIntent = new Intent();
         setResult(Activity.RESULT_OK, returnIntent);
         finish();
+    }
+
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
     }
 
     public boolean checkCameraPermission(){
@@ -154,8 +200,6 @@ public class ArActivity extends AppCompatActivity implements SensorEventListener
         }
     }
 
-
-
     //Required for sensors
     @Override
     public void onSensorChanged(SensorEvent event) {
@@ -169,36 +213,28 @@ public class ArActivity extends AppCompatActivity implements SensorEventListener
         }
         updateOrientationAngles();
         //Log.d("debug", "mAzimuth :" + Float.toString(mOrientationAngles[0]));
-        arGraphics.setOrientationAngles(mOrientationAngles);
-        arGraphics.invalidate();
+        //arGraphics.setOrientationAngles(mOrientationAngles);
     }
 
     //Required for Sensors
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
-
     }
-
 
     // Compute the three orientation angles based on the most recent readings from
     // the device's accelerometer and magnetometer.
     public void updateOrientationAngles() {
         // Update rotation matrix, which is needed to update orientation angles.
+        float[] newRotationMatrix = mRotationMatrix.clone();
         sensorManager.getRotationMatrix(mRotationMatrix, null,
                 mAccelerometerReading, mMagnetometerReading);
         sensorManager.remapCoordinateSystem(mRotationMatrix, SensorManager.AXIS_X,
-                SensorManager.AXIS_Z, mRotationMatrix);
+                SensorManager.AXIS_Z, newRotationMatrix);
         // "mRotationMatrix" now has up-to-date information.
 
-
-        sensorManager.getOrientation(mRotationMatrix, mOrientationAngles);
-
-        // "mOrientationAngles" now has up-to-date information.
+        sensorManager.getOrientation(newRotationMatrix, mOrientationAngles);
     }
 
-    public float[] getOrientationAngles(){
-        return this.mOrientationAngles;
-    }
 
     /** Check if this device has a camera */
     private boolean checkCameraHardware(Context context) {
@@ -223,4 +259,100 @@ public class ArActivity extends AppCompatActivity implements SensorEventListener
         return c; // returns null if camera is unavailable
     }
 
+
+    private void startRepeatingTask(){
+        graphicUpdateHandler.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run(){
+                runOnUiThread(new Runnable(){
+                    @Override
+                    public void run(){
+                        arGraphics.invalidate();
+                        //Log.d("debug", "invalidate");
+                    }
+                });
+            }
+        }, 0, GRAPHIC_UPDATE_RATE, TimeUnit.MILLISECONDS);
+
+        locationUpdateHandler.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run(){
+                arGraphics.setOrientationAngles(mOrientationAngles);
+                //Log.d("debug", "set angles");
+            }
+        }, 0, LOCATION_UPDATE_RATE, TimeUnit.MILLISECONDS);
+    }
+
+    private void stopRepeatingTask(){
+        locationUpdateHandler.shutdown();
+        graphicUpdateHandler.shutdown();
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event){
+        if(arGraphics.checkInCircle(event.getX(), event.getY())){
+            if(lastTime < 0){
+                lastTime = System.currentTimeMillis();
+            }
+            else{
+                if(System.currentTimeMillis() - lastTime < touchPause){
+                    return false; //Nothing happens
+                }
+                else {
+                    correctAns = false;
+                    lastTime = System.currentTimeMillis();
+                    int i = (int) (Math.random() * (riddlesArray.length));
+                    final int ansPos = (int)(Math.random() * 4);
+                    String[] answers = arrayCombine(correctAnswers[i], Arrays.copyOfRange(wrongAnswers, i*3, i*3 + 3), ansPos);
+                    riddleDialog.setTitle(riddlesArray[i]).setSingleChoiceItems(answers, -1,
+                            new DialogInterface.OnClickListener(){
+                                @Override
+                                public void onClick(DialogInterface dialog, int which){
+                                    if(which == ansPos){
+                                        correctAns = true;
+                                    }
+                                    else{
+                                        correctAns = false;
+                                    }
+                                }
+                    })
+                    .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            if(correctAns) {
+                                successDialog.setMessage("Correct! Move to the next waypoint!");
+                                successDialog.show();
+                                //arGraphics.setMarkerLocation(somelocation);
+                            }
+                            else{
+                                failDialog.setMessage("Wrong! Try again.");
+                                riddleDialog.show();
+                                failDialog.show();
+                            }
+                        }
+                    });
+                    riddleDialog.show();
+                }
+            }
+        }
+        return true;
+    }
+
+    public String[] arrayCombine(String a, String[] b, int ansPos){
+        String[] result = new String[1 + b.length];
+        result[ansPos] = a;
+        int i = 0;
+        for(int j = 0; j < 1 + b.length; j++){
+            if(result[j] == null){
+                result[j] = b[i];
+                i++;
+            }
+        }
+        return result;
+    }
+
+    // Navigates to Maps activity
+    // private void openMaps() {
+    //     Intent intent = new Intent(this, MapsActivity.class);
+    //     startActivity(intent);
+    // }
 }

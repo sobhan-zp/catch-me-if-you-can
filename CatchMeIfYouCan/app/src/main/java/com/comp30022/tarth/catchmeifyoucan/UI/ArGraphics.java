@@ -1,4 +1,4 @@
-package com.comp30022.tarth.catchmeifyoucan.Game;
+package com.comp30022.tarth.catchmeifyoucan.UI;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -11,7 +11,6 @@ import android.graphics.Canvas;
 import android.view.View;
 import android.location.Location;
 
-import com.comp30022.tarth.catchmeifyoucan.UI.ArActivity;
 import com.google.android.gms.maps.model.Marker;
 
 import static java.lang.Math.abs;
@@ -42,8 +41,8 @@ public class ArGraphics extends View{
     private ShapeDrawable shape;
 
     //Graphic positioning constructors
-    private final double xViewingAngle = 0.70;
-    private final double yViewingAngle = 1.2;
+    double xViewingAngle = 0.70;
+    double yViewingAngle = 0.99;
 
     //Location tests
     private Location mCurrentLocation = new Location("Melbourne");
@@ -88,18 +87,6 @@ public class ArGraphics extends View{
         }
     }
 
-    public boolean checkInCircle(float x, float y){
-        boolean inCircle = false;
-        if(x >= (this.shapeX - this.shapeRad) && x <= (this.shapeX + this.shapeRad)){
-            if(y >= (this.shapeY - this.shapeRad) && y <= (this.shapeY + this.shapeRad)){
-                inCircle = true;
-                //Log.d("debug", "inCircle " );
-            }
-        }
-        //else { Log.d("debug", "notInCircle ");}
-        return inCircle;
-    }
-
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh){
         width = w;
@@ -108,26 +95,21 @@ public class ArGraphics extends View{
 
     private float calculateGraphicXPos(float[] orientationAngles){
         float x;
-        float bearingAngle =  -3.14F; //(float)toRadians(mCurrentLocation.bearingTo(mCurrLocationMarker));
-        //Log.d("debug", "bearingAngle1 :" + Float.toString(bearingAngle));
+        float bearingAngle = (float)toRadians(mCurrentLocation.bearingTo(mCurrLocationMarker));
+        Log.d("debug", "bearingAngle1 :" + Float.toString(bearingAngle));
         if(bearingAngle>Math.PI){
             bearingAngle = -1* (float)((2*Math.PI) - bearingAngle);
         }
 
-        if(orientationAngles[0] < 0  && bearingAngle < 0 ||
-                orientationAngles[0] > 0  && bearingAngle > 0){
-            x = width / 2 - (float) ((orientationAngles[0] - bearingAngle) / xViewingAngle * width);
-        }
-        else {
-            x = width / 2 - (float) ((orientationAngles[0] + bearingAngle) / xViewingAngle * width);
-        }
-
+        Log.d("debug", "bearingAngle2 :" + Float.toString(bearingAngle));
+        x = width/2 - (float)((orientationAngles[0] + bearingAngle)/xViewingAngle * width);
+        Log.d("debug", "x :" + Float.toString(x));
         return x;
     }
+
     private float calculateGraphicYPos(float[] orientationAngles){
         float y;
         y = height/2 - (int) ((orientationAngles[1])/yViewingAngle * height);
-        //Log.d("debug", "height :" + Integer.toString(height));
         return y;
     }
 
@@ -151,5 +133,17 @@ public class ArGraphics extends View{
 
     public void setMarkerLocation(Location location){
         this.mCurrLocationMarker.set(location);
+    }
+
+    public boolean checkInCircle(float x, float y){
+        boolean inCircle = false;
+        if(x >= (this.shapeX - this.shapeRad) && x <= (this.shapeX + this.shapeRad)){
+            if(y >= (this.shapeY - this.shapeRad) && y <= (this.shapeY + this.shapeRad)){
+                inCircle = true;
+                //Log.d("debug", "inCircle " );
+            }
+        }
+        //else { Log.d("debug", "notInCircle ");}
+        return inCircle;
     }
 }
