@@ -128,6 +128,7 @@ public class ChatActivity extends Activity implements Communication {
         JSONObject obj = new JSONObject();
         try {
             obj.put("action", getResources().getInteger(R.integer.MESSAGE_OFFLINE_GET));
+            obj.put("username", friend);
         } catch(Exception e) {
             e.printStackTrace();
         }
