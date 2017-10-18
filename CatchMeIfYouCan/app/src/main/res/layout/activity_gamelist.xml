@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:gravity="center"
-        android:textSize="21dp"
+        android:textSize="21sp"
         android:textStyle="bold"
         android:text="Games" />
 
@@ -19,7 +19,6 @@
         android:id="@+id/listViewGames"
         android:drawSelectorOnTop="false"
         android:layout_below="@+id/textViewGames"
-        android:layout_above="@+id/buttonExit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 

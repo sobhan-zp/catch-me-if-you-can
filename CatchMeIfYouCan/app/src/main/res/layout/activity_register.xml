@@ -16,7 +16,7 @@
             style="@style/TextAppearance.AppCompat.Title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="4dp"
+            android:layout_marginStart="4dp"
             android:text="@string/login_title"
             />
 
@@ -27,7 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:layout_marginTop="5dp"
-            android:layout_marginLeft="4dp"
+            android:layout_marginStart="4dp"
             android:text="@string/register_subtitle" />
 
         <android.support.design.widget.TextInputLayout
@@ -90,7 +90,7 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/email"
                 android:maxLength="25"
-                android:inputType="text"
+                android:inputType="textEmailAddress"
                 android:maxLines="1"
                 />
 

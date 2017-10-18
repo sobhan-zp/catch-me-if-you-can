@@ -41,7 +41,9 @@ public class SettingsActivity extends AppCompatActivity implements Communication
         WebSocketClient.getClient().setActivity(this);
 
         // Add back button
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
         buttonUpdate = (Button) findViewById(R.id.buttonUpdate);
 
@@ -157,10 +159,10 @@ public class SettingsActivity extends AppCompatActivity implements Communication
                         EditTextName.setText(message.getName());
                         EditTextEmail.setText(message.getEmail());
 
-                        if (message.getLocation() == "") {
+                        if (message.getLocation().equals("")) {
                             EditTextLocation.setText("Enter Location Here");
                         }
-                        if (message.getStatus() == "") {
+                        if (message.getStatus().equals("")) {
                             EditTextStatus.setText("Enter Custom Status Here");
                         }
                         // System.out.println("Profile get success");

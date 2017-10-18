@@ -52,8 +52,8 @@ public class ChatFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         final ListView listViewMessages = (ListView) view.findViewById(R.id.list_of_messages);
-        array = new ArrayList<String>();
-        adapter = new ArrayAdapter<String>(
+        array = new ArrayList<>();
+        adapter = new ArrayAdapter<>(
                 parent,
                 R.layout.list_one_item,
                 array
@@ -92,7 +92,7 @@ public class ChatFragment extends Fragment {
 
     public interface FragmentCommunication {
 
-        public void onSend(JSONObject obj);
+        void onSend(JSONObject obj);
 
     }
 

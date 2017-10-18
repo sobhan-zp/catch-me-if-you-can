@@ -29,6 +29,7 @@
     <integer name="MESSAGE_COMMAND_SEND">606</integer>
     <integer name="LOCATION_SEND">610</integer>
     <integer name="LOCATION_GET">613</integer>
+    <integer name="LOCATION_GET2">616</integer>
     <integer name="GAME_CREATE">700</integer>
     <integer name="GAME_ADD">703</integer>
     <integer name="GAME_EXIT">706</integer>
@@ -39,6 +40,8 @@
     <integer name="GAME_NOTIFICATION_SEND">721</integer>
     <integer name="GAME_NOTIFICATION_RECEIVE">722</integer>
     <integer name="GAME_GET_USER">723</integer>
+    <integer name="GAME_ADD_WAYPOINT">730</integer>
+    <integer name="GAME_GET_WAYPOINT">733</integer>
 
     <!-- Server Responses -->
     <integer name="PROFILE_UPDATE_SUCCESS">104</integer>
@@ -69,6 +72,8 @@
     <integer name="LOCATION_FAIL">612</integer>
     <integer name="LOCATION_GET_SUCCESS">614</integer>
     <integer name="LOCATION_GET_FAIL">615</integer>
+    <integer name="LOCATION_GET2_SUCCESS">617</integer>
+    <integer name="LOCATION_GET2_FAIL">618</integer>
     <integer name="GAME_CREATE_SUCCESS">701</integer>
     <integer name="GAME_CREATE_FAIL">702</integer>
     <integer name="GAME_ADD_SUCCESS">704</integer>
@@ -85,5 +90,10 @@
     <integer name="GAME_GET_CURRENT_FAIL">720</integer>
     <integer name="GAME_GET_USER_SUCCESS">724</integer>
     <integer name="GAME_GET_USER_FAIL">725</integer>
+    <integer name="GAME_ADD_WAYPOINT_SUCCESS">731</integer>
+    <integer name="GAME_ADD_WAYPOINT_FAIL">732</integer>
+    <integer name="GAME_GET_WAYPOINT_SUCCESS">734</integer>
+    <integer name="GAME_GET_WAYPOINT_FAIL">735</integer>
+
 
 </resources>

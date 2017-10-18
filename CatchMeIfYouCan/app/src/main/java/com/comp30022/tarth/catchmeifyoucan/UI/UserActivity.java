@@ -5,10 +5,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -148,14 +145,18 @@ public class UserActivity extends Activity implements Communication {
         WebSocketClient.getClient().send(obj.toString());
     }
 
-    // Handles server response logic
-    private void verify(Message message) {
-        //System.out.println("Message received");
-        System.out.println("getCode->" + message.getCode());
+    /* Grabs response from server */
+    @Override
+    public void onResponse(final Message message) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                //System.out.println("Message received");
+                System.out.println("getCode->" + message.getCode());
 
-        if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_SEARCH_SUCCESS))) {
-            // Strip result from JSON
-            Result profile = message.getResult()[0];
+                if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_SEARCH_SUCCESS))) {
+                    // Strip result from JSON
+                    Result profile = message.getResult()[0];
 
             /*System.out.println("recvname->" + profile.getName());
             System.out.println("recvusername->" + profile.getUsername());
@@ -163,58 +164,16 @@ public class UserActivity extends Activity implements Communication {
             System.out.println("recvstatus->" + profile.getStatus());
             System.out.println("recvlocation->" + profile.getLocation());*/
 
-            // Assign updated fields to UI
-            textViewName.setText(profile.getName());
-            textViewUsername.setText("@" + profile.getUsername());
-            textViewLocation.setText("Location: " + profile.getLocation());
-            //textViewLocation.setText(profile.getX() + "," + profile.getY());
-            textViewStatus.setText(profile.getStatus());
-
-            getOnline();
-
-            //System.out.println("Profile get success");
-        }
-
-        // If online
-        if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_CHECK_SUCCESS))) {
-            textViewOnline.setTextColor(Color.parseColor("#16B72E"));
-            textViewOnline.setText("ONLINE");
-            textViewOnline.setTypeface(null, Typeface.BOLD_ITALIC);
-
-        // If offline
-        } else if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_CHECK_FAIL))) {
-            textViewOnline.setText("OFFLINE");
-            textViewOnline.setTextColor(Color.parseColor("#B72616"));
-            textViewOnline.setTypeface(null, Typeface.BOLD_ITALIC);
-        } else {
-            System.out.println("User Error: Unknown response received");
-        }
-    }
-
-    // Displays a toast message
-    private void toast(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-    }
-
-    /* Grabs response from server */
-    @Override
-    public void onResponse(final Message message) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (message.getAction() != null) {
-                    toast("New message from " + message.getFrom() + ": " + message.getMessage());
-                } else if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_SEARCH_SUCCESS))) {
-                    // Strip result from JSON
-                    Result profile = message.getResult()[0];
-
                     // Assign updated fields to UI
                     textViewName.setText(profile.getName());
                     textViewUsername.setText("@" + profile.getUsername());
-                    textViewLocation.setText(profile.getLocation());
+                    textViewLocation.setText("Location: " + profile.getLocation());
+                    //textViewLocation.setText(profile.getX() + "," + profile.getY());
                     textViewStatus.setText(profile.getStatus());
 
                     getOnline();
+
+                    //System.out.println("Profile get success");
                 }
 
                 // If online
@@ -243,6 +202,11 @@ public class UserActivity extends Activity implements Communication {
                 WebSocketClient.getClient().setActivity(this);
             }
         }
+    }
+
+    // Displays a toast message
+    private void toast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
 }

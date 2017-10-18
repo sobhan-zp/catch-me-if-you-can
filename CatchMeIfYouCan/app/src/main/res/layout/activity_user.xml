@@ -10,6 +10,7 @@
 
     <ImageView
         android:id="@+id/ProfilePicture"
+        android:contentDescription="profile"
         android:layout_width="160dp"
         android:layout_height="160dp"
         android:layout_centerHorizontal="true"

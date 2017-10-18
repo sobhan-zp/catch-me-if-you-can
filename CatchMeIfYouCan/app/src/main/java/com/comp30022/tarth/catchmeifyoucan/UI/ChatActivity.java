@@ -3,7 +3,6 @@ package com.comp30022.tarth.catchmeifyoucan.UI;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -59,8 +58,8 @@ public class ChatActivity extends Activity implements Communication {
         });
 
         ListView listViewMessages = (ListView) findViewById(R.id.list_of_messages);
-        array = new ArrayList<String>();
-        adapter = new ArrayAdapter<String>(
+        array = new ArrayList<>();
+        adapter = new ArrayAdapter<>(
                 this,
                 R.layout.list_one_item,
                 array
@@ -128,6 +127,7 @@ public class ChatActivity extends Activity implements Communication {
         JSONObject obj = new JSONObject();
         try {
             obj.put("action", getResources().getInteger(R.integer.MESSAGE_OFFLINE_GET));
+            obj.put("username", friend);
         } catch(Exception e) {
             e.printStackTrace();
         }
@@ -146,8 +146,8 @@ public class ChatActivity extends Activity implements Communication {
         JSONObject obj = new JSONObject();
         try {
             obj.put("action", getResources().getInteger(R.integer.MESSAGE_SEND));
-            obj.put("username", input.getText().toString());
-            obj.put("message", friend);
+            obj.put("username", friend);
+            obj.put("message", input.getText().toString());
         } catch(Exception e) {
             e.printStackTrace();
         }

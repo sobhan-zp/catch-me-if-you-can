@@ -11,6 +11,7 @@ public class Result {
     private Integer is_owner;
 
     private String email;
+    private String info;
     private String name;
     private String status;
     private String username;
@@ -39,6 +40,9 @@ public class Result {
     public String getEmail() {
         return email;
     }
+    public String getInfo() {
+        return info;
+    }
     public String getName() {
         return name;
     }
@@ -63,6 +67,7 @@ public class Result {
                 + ((game_id != null) ? ", game_id: " + Integer.toString(game_id) : "")
                 + ((is_owner != null) ? ", is_owner: " + Integer.toString(is_owner) : "")
                 + ((email != null) ? ", email: " + email : "")
+                + ((info != null) ? ", info: " + info : "")
                 + ((name != null) ? ", name: " + name : "")
                 + ((location != null) ? ", location: " + location : "")
                 + ((status != null) ? ", status: " + status : "")

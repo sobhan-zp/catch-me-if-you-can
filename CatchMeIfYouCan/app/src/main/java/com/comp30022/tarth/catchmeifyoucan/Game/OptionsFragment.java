@@ -74,8 +74,8 @@ public class OptionsFragment extends Fragment {
         });
 
         final ListView listViewPlayers = (ListView) view.findViewById(R.id.listViewPlayers);
-        array = new ArrayList<String>();
-        adapter = new ArrayAdapter<String>(
+        array = new ArrayList<>();
+        adapter = new ArrayAdapter<>(
                 parent,
                 R.layout.list_one_item,
                 array
@@ -98,9 +98,9 @@ public class OptionsFragment extends Fragment {
 
     public interface FragmentCommunication {
 
-        public void onExit();
+        void onExit();
 
-        public void onSend(JSONObject obj);
+        void onSend(JSONObject obj);
 
     }
 

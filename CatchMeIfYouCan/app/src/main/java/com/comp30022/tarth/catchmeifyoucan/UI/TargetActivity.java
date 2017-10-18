@@ -45,11 +45,13 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class TargetActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
-        LocationListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnMarkerDragListener,
-        GoogleMap.OnMapClickListener, Communication, OptionsFragment.FragmentCommunication,
+        LocationListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener,
+        Communication, OptionsFragment.FragmentCommunication,
         ChatFragment.FragmentCommunication {
 
     private GoogleMap mMap;
@@ -63,14 +65,13 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
     private static int FATEST_INTERVAL = 3000; //SEC
     private static int DISPLACEMENT = 10; // METERS
     double curr_latitude, curr_longitude;
-    double end_latitude, end_longitude;
-    boolean addWaypoints = false;
-    MapDirectionsData lastDirectionsData = null;
-    List<Marker> mMarkers = new ArrayList<Marker>();
-    private static final double WP_RADIUS = 10;
-    private boolean nearWp = false;
 
-    private List<Marker> othersMarker = new ArrayList<Marker>();
+    boolean addWaypoints = false;
+
+    List<Double> cWaypoints = new ArrayList<Double>();//coordinates of way points
+    List<Marker> mMarkers = new ArrayList<Marker>();//markers of  way points
+
+    private List<Marker> othersMarker = new ArrayList<Marker>();//markers of other users
 
     private final static int CHAT_ITEM_ID = 0;
     private final static int MAP_ITEM_ID = 1;
@@ -121,18 +122,24 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
 
         MenuItem item = navigation.getMenu().getItem(MAP_ITEM_ID);
         switchFragment(item);
+        continuousUpdate();
     }
 
     private void switchFragment(MenuItem item) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         switch (item.getItemId()) {
             case R.id.navigationChat:
-                transaction.hide(mapFragment);
-                transaction.add(R.id.fragment_container, chatFragment);
-                transaction.addToBackStack("map");
-                //transaction.replace(R.id.fragment_container, chatFragment);
-                if (this.getActionBar() != null) {
-                    this.getActionBar().setTitle("Game Chat");
+                if (!chatFragment.isAdded()) {
+                    if (optionsFragment.isAdded()) {
+                        transaction.remove(optionsFragment);
+                    }
+                    transaction.hide(mapFragment);
+                    transaction.add(R.id.fragment_container, chatFragment);
+                    transaction.addToBackStack("map");
+                    //transaction.replace(R.id.fragment_container, chatFragment);
+                    if (this.getActionBar() != null) {
+                        this.getActionBar().setTitle("Game Chat");
+                    }
                 }
                 break;
             case R.id.navigationMap:
@@ -161,12 +168,17 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
                 }
                 break;
             case R.id.navigationOptions:
-                transaction.hide(mapFragment);
-                transaction.add(R.id.fragment_container, optionsFragment);
-                transaction.addToBackStack("map");
-                //transaction.replace(R.id.fragment_container, optionsFragment);
-                if (this.getActionBar() != null) {
-                    this.getActionBar().setTitle("Game Options");
+                if (!optionsFragment.isAdded()) {
+                    if (chatFragment.isAdded()) {
+                        transaction.remove(chatFragment);
+                    }
+                    transaction.hide(mapFragment);
+                    transaction.add(R.id.fragment_container, optionsFragment);
+                    transaction.addToBackStack("map");
+                    //transaction.replace(R.id.fragment_container, optionsFragment);
+                    if (this.getActionBar() != null) {
+                        this.getActionBar().setTitle("Game Options");
+                    }
                 }
                 break;
         }
@@ -258,7 +270,6 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
 
         // set map options
         mMap.getUiSettings().setZoomControlsEnabled(true);
-        mMap.setOnMarkerDragListener(this);
         mMap.setOnMarkerClickListener(this);
         mMap.setOnMapClickListener(this);
     }
@@ -283,10 +294,10 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
         } catch(Exception e) {
             e.printStackTrace();
         }
-        onSend(obj);
-//        if (mCurrLocationMarker != null) {
-//            mCurrLocationMarker.remove();
-//        }
+        //onSend(obj);
+        if (mCurrLocationMarker != null) {
+            mCurrLocationMarker.remove();
+        }
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -315,30 +326,9 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
             toast("Your Current Location");
         }
 
-
-        //move map camera
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(12));
-
         if(mCurrLocationMarker != null){
             String currLocation = curr_latitude+","+curr_longitude;
             toast(currLocation);
-        }
-
-        checkNearWaypoint();
-    }
-
-    protected void checkNearWaypoint(){
-        int count = mMarkers.size();
-        for(int i=0; i<count; i++){
-            double wp_latitude = mMarkers.get(i).getPosition().latitude;
-            double wp_longitude = mMarkers.get(i).getPosition().longitude;
-            if((curr_latitude-wp_latitude)*(curr_latitude-wp_latitude)+(curr_longitude-wp_longitude)*(curr_longitude-wp_longitude)
-                    <= WP_RADIUS*WP_RADIUS){
-                toast("A waypoint is nearby");
-                nearWp = true;
-                break;
-            }
         }
     }
 
@@ -394,7 +384,7 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
                     // Permission denied, Disable the functionality that depends on this permission.
                     toast("Permission denied");
                 }
-                return;
+                break;
             }
         }
     }
@@ -410,31 +400,9 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
 
             case R.id.B_finishAddWP:
                 addWaypoints = false;
-                break;
-
-            case R.id.B_route:
-                if(lastDirectionsData != null){
-                    lastDirectionsData.clearPolyline();
-                }
-                String url = getDirectionsUrl();
-                MapDirectionsData directionsData = new MapDirectionsData();
-                dataTransfer[0] = mMap;
-                dataTransfer[1] = url;
-                dataTransfer[2] = new LatLng(end_latitude, end_longitude);
-                directionsData.execute(dataTransfer);
-                lastDirectionsData = directionsData;
+                sendWaypoints();
                 break;
         }
-    }
-
-    private String getDirectionsUrl() {
-        StringBuilder googleDirectionsUrl = new StringBuilder("https://maps.googleapis.com/maps/api/directions/json?");
-        googleDirectionsUrl.append("origin="+curr_latitude+","+curr_longitude);
-        googleDirectionsUrl.append("&destination="+end_latitude+","+end_longitude);
-        googleDirectionsUrl.append("&mode=walking");
-        googleDirectionsUrl.append("&key="+"AIzaSyAsE7HmeYpP-QDRYblsZZq_yClezBjFQoE");
-
-        return googleDirectionsUrl.toString();
     }
 
     @Override
@@ -470,27 +438,7 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        marker.setDraggable(true);
-        return false;
-    }
-
-    @Override
-    public void onMarkerDragStart(Marker marker) {
-
-    }
-
-    @Override
-    public void onMarkerDrag(Marker marker) {
-
-    }
-
-    @Override
-    public void onMarkerDragEnd(Marker marker) {
-        end_latitude = marker.getPosition().latitude;
-        end_longitude =  marker.getPosition().longitude;
-
-        Log.d("end_lat",""+end_latitude);
-        Log.d("end_lng",""+end_longitude);
+        return true;
     }
 
     @Override
@@ -499,9 +447,13 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
             Marker waypoint = mMap.addMarker(new MarkerOptions()
                     .position(latLng)
                     .title("waypoint")
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE))
                     .snippet(latLng.toString()));
             //waypoint.showInfoWindow();
 
+            cWaypoints.add(latLng.latitude);
+            cWaypoints.add(latLng.longitude);
+            System.out.println("Waypoint added: " + latLng.latitude + ", " + latLng.longitude);
             mMarkers.add(waypoint);
         }
     }
@@ -509,11 +461,6 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
     // Displays a toast message
     private void toast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-    }
-
-    // Broadcasts location to server
-    private void broadcastLocation() {
-        //curr_latitude, curr_longitude
     }
 
 
@@ -529,8 +476,10 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
             markerOptions.position(latLng);
             markerOptions.title("people");
             markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
-            Marker oMarker = mMap.addMarker(markerOptions);
-            othersMarker.add(oMarker);
+            if (mMap != null) {
+                Marker oMarker = mMap.addMarker(markerOptions);
+                othersMarker.add(oMarker);
+            }
         }
     }
 
@@ -553,7 +502,7 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
                     toast("Location get successful");
                     //((ChatFragment) chatFragment).onResponse(message);
                     // TESTING
-                    List<Double> locations = new ArrayList<Double>();
+                    List<Double> locations = new ArrayList<>();
                     Result[] results = message.getResult();
                     for (Result result : results) {
                         //array.add(Double.toString(result.getX()) + ", " + Double.toString(result.getY()));
@@ -572,6 +521,10 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
                     toast("Game delete successful");
                 } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_DELETE_FAIL))) {
                     toast("Game delete failure");
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_ADD_WAYPOINT_SUCCESS))) {
+                    toast("Waypoint add success");
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_ADD_WAYPOINT_FAIL))) {
+                    toast("Waypoint add failure");
                 }
             }
         });
@@ -586,12 +539,94 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
             e.printStackTrace();
         }
         WebSocketClient.getClient().send(obj.toString());
-        onBackPressed();
-        onBackPressed();
+
+        Intent returnIntent = new Intent();
+        setResult(Activity.RESULT_OK, returnIntent);
+        finish();
     }
 
     @Override
     public void onSend(JSONObject obj) {
         WebSocketClient.getClient().send(obj.toString());
     }
+
+    private void sendLocation() {
+        JSONObject loc = new JSONObject();
+        try {
+            loc.put("x", curr_latitude);
+            loc.put("y", curr_longitude);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("action", getResources().getInteger(R.integer.LOCATION_SEND));
+            obj.put("location", loc);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        WebSocketClient.getClient().send(obj.toString());
+    }
+
+    private void getLocation() {
+        // Queries server for location updates
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("action", getResources().getInteger(R.integer.LOCATION_GET));
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        onSend(obj);
+    }
+
+    private void continuousUpdate() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                int delay = 0; // 0 seconds
+                int period = 10000; // 10 seconds
+                Timer timer = new Timer();
+                timer.scheduleAtFixedRate(new TimerTask() {
+                    @Override
+                    public void run() {
+                        getLocation();
+                        sendLocation();
+                    }
+                }, delay, period);
+            }
+        });
+    }
+
+    private void sendWaypoints() {
+        for (int i = 0; i < (cWaypoints.size() - 1); i +=2) {
+            System.out.println("WP: " + cWaypoints.get(i) + ", " + cWaypoints.get(i + 1));
+            JSONObject loc = new JSONObject();
+            try {
+                loc.put("x", cWaypoints.get(i));
+                loc.put("y", cWaypoints.get(i + 1));
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
+            JSONObject obj = new JSONObject();
+            try {
+                obj.put("action", getResources().getInteger(R.integer.GAME_ADD_WAYPOINT));
+                obj.put("info", "Waypoint " + Integer.toString(i / 2));
+                obj.put("location", loc);
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
+            onSend(obj);
+        }
+    }
+
+    // Resets the current activity connected to the WebSocket upon terminating child activities
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1) {
+            if (resultCode == Activity.RESULT_OK) {
+                WebSocketClient.getClient().setActivity(this);
+            }
+        }
+    }
+
 }

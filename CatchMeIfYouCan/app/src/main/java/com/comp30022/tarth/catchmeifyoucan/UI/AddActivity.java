@@ -29,7 +29,9 @@ public class AddActivity extends AppCompatActivity implements Communication {
         WebSocketClient.getClient().setActivity(this);
 
         // Add back button
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
         buttonAdd = (Button) findViewById(R.id.buttonAdd);
         editTextAdd = (EditText) findViewById(R.id.editTextAdd);

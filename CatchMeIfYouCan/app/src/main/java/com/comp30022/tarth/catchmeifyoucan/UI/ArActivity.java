@@ -15,7 +15,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -122,15 +121,18 @@ public class ArActivity extends Activity implements SensorEventListener, View.On
 
 
         buttonMaps = (Button) findViewById(R.id.buttonMap);
+        buttonMaps.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
         Intent intent = getIntent();
         Bundle bd = intent.getExtras();
-
-       //  buttonMaps.setOnClickListener(new Button.OnClickListener() {
-       //     @Override
-       //     public void onClick(View v) {
-       //         openMaps();
-       //     }
-       // });
+        System.out.println(bd.get("SearcherLatitude"));
+        System.out.println(bd.get("SearcherLongitude"));
+        System.out.println(bd.get("TargetLatitude"));
+        System.out.println(bd.get("TargetLongitude"));
     }
 
     // Set back button on action bar

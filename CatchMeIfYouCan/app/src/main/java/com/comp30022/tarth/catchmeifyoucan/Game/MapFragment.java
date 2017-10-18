@@ -3,7 +3,6 @@ package com.comp30022.tarth.catchmeifyoucan.Game;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.*;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
@@ -11,26 +10,22 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.comp30022.tarth.catchmeifyoucan.R;
 import com.comp30022.tarth.catchmeifyoucan.UI.ArActivity;
-import com.comp30022.tarth.catchmeifyoucan.UI.DashboardActivity;
 import com.comp30022.tarth.catchmeifyoucan.UI.MapDirectionsData;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.*;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -39,7 +34,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,7 +56,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     double end_latitude, end_longitude;
     boolean addWaypoints = false;
     MapDirectionsData lastDirectionsData = null;
-    List<Marker> mMarkers = new ArrayList<Marker>();
+    List<Marker> mMarkers = new ArrayList<>();
     private static final double WP_RADIUS = 100;
     private boolean nearWp = false;
 
@@ -80,7 +74,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        Button buttonAR = (Button) getActivity().findViewById(R.id.B_ar);
+        Button buttonAR = (Button) getActivity().findViewById(R.id.B_route);
         buttonAR.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -304,34 +298,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         Object dataTransfer[] = new Object[3];
 
         switch(v.getId()) {
-            case R.id.B_search: {
-                EditText tf_location = (EditText) getActivity().findViewById(R.id.TF_location);
-                String location = tf_location.getText().toString();
-                List<Address> addressList = null;
-                MarkerOptions markerOptions = new MarkerOptions();
-                Log.d("location = ", location);
-
-                if (!location.equals("")) {
-                    Geocoder geocoder = new Geocoder(getActivity());
-                    try {
-                        addressList = geocoder.getFromLocationName(location, 5);
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                    if (addressList != null) {
-                        for (int i = 0; i < addressList.size(); i++) {
-                            Address myAddress = addressList.get(i);
-                            LatLng latLng = new LatLng(myAddress.getLatitude(), myAddress.getLongitude());
-                            markerOptions.position(latLng);
-                            mMap.addMarker(markerOptions);
-                            mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
-                        }
-                    }
-                }
-            }
-            break;
 
             case R.id.B_addWaypoints:
                 addWaypoints = true;
@@ -354,12 +320,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                 lastDirectionsData = directionsData;
                 break;
 
-            case R.id.B_ar:
-                if(nearWp){
-                    nearWp = false;
-                    Intent intent = new Intent(getActivity(), ArActivity.class);
-                    startActivityForResult(intent, 1);
-                }
         }
     }
 

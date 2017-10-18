@@ -5,8 +5,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -173,21 +171,16 @@ public class DashboardActivity extends Activity implements Communication {
                 if (message.getAction() != null) {
                     toast("New message from " + message.getFrom() + ": " + message.getMessage());
                 } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_CURRENT_SUCCESS))) {
-                    if (message.getResult() != null && message.getResult().length == 0) {
-                        toast("No active games");
-                        openGamelist();
+                    toast("Rejoined existing game");
+                    if (message.getIs_owner().equals(1)) {
+                        System.out.println("GAME NAME: " + message.getName());
+                        openTarget(message);
                     } else {
-                        toast("Rejoined existing game");
-                        if (message.getIs_owner().equals(1)) {
-                            System.out.println("GAME NAME: " + message.getName());
-                            openMaps(message);
-                        } else {
-                            System.out.println("GAME NAME: " + message.getName());
-                            openSearcher(message);
-                        }
+                        System.out.println("GAME NAME: " + message.getName());
+                        openSearcher(message);
                     }
                 } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_CURRENT_FAIL))) {
-                    toast("Get current game failure");
+                    toast("No active games");
                     openGamelist();
                 } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_CREATE_SUCCESS))) {
                     toast("Game creation successful");
@@ -196,7 +189,7 @@ public class DashboardActivity extends Activity implements Communication {
                 } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_ADD_SUCCESS))) {
                     toast("You have been added to the game");
                     if (message.getIs_owner().equals(1)) {
-                        openMaps(message);
+                        openTarget(message);
                     } else {
                         openSearcher(message);
                     }
@@ -213,21 +206,8 @@ public class DashboardActivity extends Activity implements Communication {
     }
 
     // Navigates to Target activity
-    private void openMaps(Message message) {
+    private void openTarget(Message message) {
         Intent intent = new Intent(this, TargetActivity.class);
-        intent.putExtra("game_id", message.getGame_id());
-        startActivityForResult(intent, 1);
-    }
-
-    // Navigates to User Activity
-    private void openUser() {
-        Intent intent = new Intent(this, UserActivity.class);
-        startActivityForResult(intent, 1);
-    }
-
-    // Navigates to Game Activity
-    private void openGame(Message message) {
-        Intent intent = new Intent(this, GameActivity.class);
         intent.putExtra("game_id", message.getGame_id());
         startActivityForResult(intent, 1);
     }
