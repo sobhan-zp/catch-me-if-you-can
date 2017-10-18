@@ -84,7 +84,6 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
     Fragment chatFragment;
     Fragment optionsFragment;
     private BottomNavigationView navigation;
-    private List<Waypoint> waypoints;
 
     private Marker tMarker = null;
     private Double targetX;
@@ -120,8 +119,6 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
         mapFragment = new SupportMapFragment();
         chatFragment = new ChatFragment();
         optionsFragment = new OptionsFragment();
-
-        waypoints = new ArrayList<Waypoint>();
 
         navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.getMenu().getItem(MAP_ITEM_ID).setChecked(true);
@@ -348,6 +345,9 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
                 nearWp = true;
                 theWpId = mMarkers.get(nearestWp).getId();
             }
+            mMarkers.get(nearestWp).setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
+            nearWp = true;
+            theWpId = mMarkers.get(nearestWp).getId();
         }
     }
 
@@ -573,18 +573,11 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
                 } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_WAYPOINT_SUCCESS))) {
                     toast("Get waypoint success");
                     Result[] results = message.getResult();
-<<<<<<< HEAD
                     List<Waypoint> waypoints = new ArrayList<Waypoint>();
                     for (Result result : results) {
                         waypoints.add(new Waypoint(result.getInfo(), result.getX(), result.getY()));
                     }
                     addWp(waypoints);
-=======
-                    for (Result result : results) {
-                        waypoints.add(new Waypoint(result.getInfo(), result.getX(), result.getY()));
-                    }
-                    addWp();
->>>>>>> Added waypoint sync
                 } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_WAYPOINT_FAIL))) {
                     toast("Get waypoint failure");
                 }
@@ -639,11 +632,7 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
         onSend(obj);
     }
 
-<<<<<<< HEAD
     private void addWp(List<Waypoint> waypoints){
-=======
-    private void addWp(){
->>>>>>> Added waypoint sync
         if(waypoints.size() > 0) {
             int count = waypoints.size() - 1;
             for (int i = 0; i < count; i ++) {
@@ -666,7 +655,6 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
             public void run() {
                 int delay = 0; // 0 seconds
                 int period = 5000; // 5 seconds
-                Timer timer = new Timer();
                 timer.scheduleAtFixedRate(new TimerTask() {
                     @Override
                     public void run() {
