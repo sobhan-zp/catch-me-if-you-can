@@ -137,65 +137,6 @@ public class SettingsActivity extends AppCompatActivity implements Communication
         WebSocketClient.getClient().send(obj.toString());
     }
 
-    /* Handles the response logic from a message sent by the server*/
-    private void verify(Message message) {
-        /*System.out.println("Message received");
-
-        System.out.println("recv->" + message.toString());
-        System.out.println("getAction->" + message.getCode());
-        System.out.println(message.getCode() + " + " + PROFILE_UPDATE_SUCCESS);*/
-
-        if (message.getAction() != null) {
-
-            // Update fields with latest information before user is allowed to change
-            if (message.getAction().equals(getResources().getInteger(R.integer.PROFILE_GET))) {
-
-                textViewUsername.setText("@" + message.getUsername());
-                getOnline(message.getUsername());
-
-                EditTextLocation.setText(message.getLocation());
-                EditTextStatus.setText(message.getStatus());
-                EditTextName.setText(message.getName());
-                EditTextEmail.setText(message.getEmail());
-
-
-             /*   if (message.getLocation() == "") {
-                    System.out.println("*********************LOCATION EMPTY");
-                    EditTextLocation.setText("Enter Location Here");
-                }
-
-                if (message.getStatus() == "") {
-                    System.out.println("*********************STATUS EMPTY");
-                    EditTextStatus.setText("Enter Custom Status Here");
-                }
-*/
-                // System.out.println("Profile get success");
-            }
-
-        } else if (message.getCode() != null) {
-            // Update UI to show Online
-            if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_CHECK_SUCCESS))) {
-                textViewOnline.setTextColor(Color.parseColor("#16B72E"));
-                textViewOnline.setText("ONLINE");
-                textViewOnline.setTypeface(null, Typeface.BOLD_ITALIC);
-            // Update UI to show Offline
-            } else if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_CHECK_FAIL))) {
-                textViewOnline.setText("OFFLINE");
-                textViewOnline.setTextColor(Color.parseColor("#B72616"));
-                textViewOnline.setTypeface(null, Typeface.BOLD_ITALIC);
-            // manages response to profile update request
-            } else if (message.getCode().equals(getResources().getInteger(R.integer.PROFILE_UPDATE_SUCCESS))) {
-                getInfo();
-                toast("Profile Update Success");
-            } else if (message.getCode().equals(getResources().getInteger(R.integer.PROFILE_UPDATE_FAIL))) {
-                //getInfo();
-                toast("Profile Update Failure: Try Again Later");
-            }
-        } else {
-            System.out.println("User Error: Unknown response received");
-        }
-    }
-
     /* Grabs response from server */
     @Override
     public void onResponse(final Message message) {
@@ -203,7 +144,7 @@ public class SettingsActivity extends AppCompatActivity implements Communication
             @Override
             public void run() {
 
-                if (message.getAction() != null && message.getAction() == 601) {
+                if (message.getAction() != null && message.getAction() == R.integer.MESSAGE_RECEIVE) {
                     toast("New message from " + message.getFrom() + ": " + message.getMessage());
                 } else if (message.getAction() != null) {
                     // Update fields with latest information before user is allowed to change
