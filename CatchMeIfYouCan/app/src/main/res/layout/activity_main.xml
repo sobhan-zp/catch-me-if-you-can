@@ -5,52 +5,64 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@mipmap/background"
+    android:layout_alignParentBottom="true"
     tools:context="com.comp30022.tarth.catchmeifyoucan.UI.MainActivity">
 
-    <ImageView
-        android:id="@+id/imageViewLogo"
-        android:layout_width="160dp"
-        android:layout_height="160dp"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="30dp"
-        app:srcCompat="@mipmap/logo_circle" />
+        <TextView
+            android:id="@+id/textViewTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:text="@string/main_title"
+            android:layout_above="@+id/textViewSubTitle"
+            android:textAlignment="center"
+            android:textSize="30sp"
+            android:textColor="@color/colorTextIcons"
+            />
 
-    <TextView
-        android:id="@+id/textViewTitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/imageViewLogo"
-        android:layout_centerHorizontal="true"
-        android:text="COMP30022 IT PROJECT \n
-HOUSE TARTH"
-        android:textAlignment="center"
-        android:textColor="@color/colorPrimaryDark"
-        android:textSize="20sp"
-        android:layout_marginTop="30dp"
-        android:layout_marginBottom="30dp"/>
+        <TextView
+            android:id="@+id/textViewSubTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/buttonLogin"
+            android:layout_centerHorizontal="true"
+            android:text="@string/main_subtitle"
+            android:textAlignment="center"
+            android:textColor="@color/colorTertiaryText"
+            android:textSize="15sp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="30dp"
+            />
 
-    <Button
-        android:id="@+id/buttonLogin"
-        android:layout_below="@+id/textViewTitle"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:text="Login" />
+        <Button
+            android:id="@+id/buttonLogin"
+            android:layout_above="@+id/buttonRegister"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:text="Login"
+            android:theme="@style/AccentButton"/>
 
-    <Button
-        android:id="@+id/buttonRegister"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/buttonLogin"
-        android:layout_centerHorizontal="true"
-        android:text="Register" />
+        <Button
+            android:id="@+id/buttonRegister"
+            android:layout_width="300dp"
+            android:layout_above="@+id/buttonExit"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:text="Register"
+            android:theme="@style/AccentButton"
+            />
 
-    <Button
-        android:id="@+id/buttonExit"
-        android:layout_below="@+id/buttonRegister"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:text="Exit" />
+        <Button
+            android:id="@+id/buttonExit"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentBottom="true"
+            android:text="Exit"
+            android:theme="@style/PrimaryFlatButton"
+            android:layout_marginBottom="30dp"
+            />
 
 </RelativeLayout>

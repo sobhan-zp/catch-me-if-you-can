@@ -1,5 +1,6 @@
 package com.comp30022.tarth.catchmeifyoucan.UI;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -17,9 +18,8 @@ import com.comp30022.tarth.catchmeifyoucan.R;
 
 import org.json.JSONObject;
 
-public class DashboardActivity extends AppCompatActivity implements Communication {
+public class DashboardActivity extends Activity implements Communication {
 
-    private Button buttonChat;
     private Button buttonLogout;
     private Button buttonFriendlist;
     private Button buttonSettings;
@@ -28,14 +28,12 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
     private ImageView imageViewTest;
     private String getName;
 
+    //private Button buttonTest;
+
     private static final Integer GAME_CREATE = 700;
     private static final Integer GAME_CREATE_SUCCESS = 701;
     private static final Integer GAME_CREATE_FAIL = 702;
     private static final Integer GAME_ADD_SUCCESS = 704;
-    private static final Integer GAME_ADD_FAIL = 705;
-    private static final Integer GAME_EXIT = 706;
-    private static final Integer GAME_GET = 709;
-    private static final Integer GAME_DELETE = 712;
     private static final Integer GAME_GET_CURRENT = 718;
     private static final Integer GAME_GET_CURRENT_SUCCESS = 719;
     private static final Integer GAME_GET_CURRENT_FAIL = 720;
@@ -47,7 +45,6 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
         LoginActivity.getClient().setmCurrentActivity(this);
 
         // constructors
-        buttonChat = (Button) findViewById(R.id.buttonChat);
         buttonCreate = (Button) findViewById(R.id.buttonCreate);
         buttonJoin = (Button) findViewById(R.id.buttonJoin);
         buttonFriendlist = (Button) findViewById(R.id.buttonFriendlist);
@@ -56,6 +53,8 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
         buttonLogout = (Button) findViewById(R.id.buttonLogout);
         buttonSettings = (Button) findViewById(R.id.buttonSettings);
 
+        //buttonTest = (Button) findViewById(R.id.buttonTest);
+
         TextView textViewUsername = (TextView) findViewById(R.id.Username);
         Intent intent = getIntent();
         Bundle bd = intent.getExtras();
@@ -63,13 +62,6 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
             getName = (String) bd.get("username");
             textViewUsername.setText("@" + getName);
         }
-
-        buttonChat.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openChat();
-            }
-        });
 
         buttonCreate.setOnClickListener(new Button.OnClickListener() {
             @Override
@@ -115,7 +107,15 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
             }
         });
 
+        /*buttonTest.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                test();
+            }
+        });*/
+
         // set a onclick listener for when the button gets clicked
+        imageViewTest.setImageResource(R.mipmap.temp_placeholder);
         imageViewTest.setOnClickListener(new View.OnClickListener() {
             // Start new list activity
             public void onClick(View v) {
@@ -133,14 +133,14 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
     // Reveals pop up asking if user really wants to exit
     public void logoutWarning() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.MyAlertDialogStyle);
-        builder.setTitle("Exiting Login...");
-        builder.setMessage("Are you sure you want to logout? If you are in any game you will leave the game and may end up never finding your friend.");
-        builder.setPositiveButton("Get Me Out of Here!", new DialogInterface.OnClickListener() {
+        builder.setTitle(getResources().getString(R.string.exit_dashboard_title));
+        builder.setMessage(getResources().getString(R.string.exit_dashboard_message));
+        builder.setPositiveButton(getResources().getString(R.string.exit_dialog_pos), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 logout();
             }
         });
-        builder.setNegativeButton("Cancel", null);
+        builder.setNegativeButton(getResources().getString(R.string.exit_dialog_neg), null);
         builder.show();
     }
 
@@ -154,6 +154,12 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
     // Navigates to Settings
     public void settings() {
         Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
+    }
+
+    // Navigates to Settings
+    public void test() {
+        Intent intent = new Intent(this, UserDetailActivity.class);
         startActivity(intent);
     }
 
@@ -206,11 +212,6 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
-    // Navigates to Chat activity
-    private void openChat() {
-        Intent intent = new Intent(this, ChatActivity.class);
-        startActivity(intent);
-    }
 
     // Navigates to Maps activity
     private void openMaps() {

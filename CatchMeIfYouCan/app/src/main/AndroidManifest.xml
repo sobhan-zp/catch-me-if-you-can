@@ -54,7 +54,7 @@
             android:label="Dashboard"></activity>
         <activity
             android:name=".UI.FriendlistActivity"
-            android:label="Friendlist"></activity>
+            android:label="Friends"></activity>
         <activity
             android:name=".UI.AddActivity"
             android:label="Add"></activity>
@@ -79,6 +79,9 @@
         <activity
             android:name=".UI.ArActivity"
             android:label="AR"></activity>
+        <activity
+            android:name=".UI.UserDetailActivity"
+            android:label="User"></activity>
 
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.

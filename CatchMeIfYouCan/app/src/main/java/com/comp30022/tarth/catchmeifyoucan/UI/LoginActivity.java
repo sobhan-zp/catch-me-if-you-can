@@ -4,6 +4,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Layout;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.AlignmentSpan;
+import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -25,13 +32,14 @@ import java.util.Enumeration;
 
 public class LoginActivity extends AppCompatActivity implements Communication {
 
-    private static final Integer ACTION_LOGIN = 101;              // Login action
+    private static final Integer ACTION_LOGIN = 101;
     private static final Integer LOGIN_SUCCESS_CODE = 200;
     private static final Integer LOGIN_USER_NON_EXIST_CODE = 201;
     private static final Integer LOGIN_EXIST_CODE = 202;
 
     private Button buttonLogin;
-    private Button buttonBack;
+    TextView textViewRegister;
+
 
     public static WebSocketClient mClient;
 
@@ -39,6 +47,9 @@ public class LoginActivity extends AppCompatActivity implements Communication {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        // Add back button
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // Enable Internet permissions
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
@@ -50,7 +61,7 @@ public class LoginActivity extends AppCompatActivity implements Communication {
         mClient.setmCurrentActivity(this);
 
         buttonLogin = (Button) findViewById(R.id.buttonLogin);
-        buttonBack = (Button) findViewById(R.id.buttonBack);
+        textViewRegister = (TextView) findViewById(R.id.registered);
 
         buttonLogin.setOnClickListener(new Button.OnClickListener() {
             @Override
@@ -58,11 +69,10 @@ public class LoginActivity extends AppCompatActivity implements Communication {
                 login();
             }
         });
-
-        buttonBack.setOnClickListener(new Button.OnClickListener() {
+        textViewRegister.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                back();
+                register();
             }
         });
 
@@ -72,6 +82,29 @@ public class LoginActivity extends AppCompatActivity implements Communication {
     public void onBackPressed() {
         mClient.disconnect();
         finish();
+    }
+
+    // Set back button on action bar
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    // Get menu
+    public boolean onCreateOptionsMenu(Menu menu) {
+        return true;
+    }
+
+    // Redirect to register activity
+    private void register() {
+        Intent intent = new Intent(this, RegisterActivity.class);
+        startActivity(intent);
     }
 
     // Extracts user-entered information into a JSON formatted string to be sent
@@ -94,14 +127,14 @@ public class LoginActivity extends AppCompatActivity implements Communication {
 
     private void verify(Message message) {
         if (message.getCode().equals(LOGIN_SUCCESS_CODE)) {
-            toast("Login success");
+            toast("Login Success!");
             openDashboard();
         } else if (message.getCode().equals(LOGIN_EXIST_CODE)) {
-            toast("Login failed, user is logged in on another device");
+            toast("Login Failed: User is Logged in on Another Device");
         } else if (message.getCode().equals(LOGIN_USER_NON_EXIST_CODE)) {
-            toast("Login failed, username or password is incorrect");
+            toast("Login Failed: Username or Password is Incorrect");
         } else {
-            toast("Error: Unknown response received");
+            toast("Error: Unknown Response Received");
         }
     }
 
@@ -150,15 +183,14 @@ public class LoginActivity extends AppCompatActivity implements Communication {
         startActivity(intent);
     }
 
-    // Navigates to previous activity
-    public void back() {
-        mClient.disconnect();
-        finish();
-    }
-
     // Displays a toast message
-    private void toast(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    private void toast(String text) {
+        Spannable centeredText = new SpannableString(text);
+        centeredText.setSpan(new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER),
+                0, text.length() - 1,
+                Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+
+        Toast.makeText(this, centeredText, Toast.LENGTH_LONG).show();
     }
 
     public static WebSocketClient getClient() {

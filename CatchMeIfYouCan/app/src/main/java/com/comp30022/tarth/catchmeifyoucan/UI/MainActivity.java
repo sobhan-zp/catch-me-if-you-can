@@ -1,16 +1,19 @@
 package com.comp30022.tarth.catchmeifyoucan.UI;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 
 import com.comp30022.tarth.catchmeifyoucan.R;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
 
     Button buttonRegister;
     Button buttonLogin;
@@ -19,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
 
         buttonRegister = (Button) findViewById(R.id.buttonRegister);
@@ -54,14 +58,14 @@ public class MainActivity extends AppCompatActivity {
     // Reveals pop up asking if user really wants to exit
     public void logoutWarning() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.MyAlertDialogStyle);
-        builder.setTitle("Exiting Account...");
-        builder.setMessage("Are you sure you want to exit?");
-        builder.setPositiveButton("Get Me Out of Here!", new DialogInterface.OnClickListener() {
+        builder.setTitle(getResources().getString(R.string.exit_app_title));
+        builder.setMessage(getResources().getString(R.string.exit_app_message));
+        builder.setPositiveButton(getResources().getString(R.string.exit_dialog_pos), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 logout();
             }
         });
-        builder.setNegativeButton("Cancel", null);
+        builder.setNegativeButton(getResources().getString(R.string.exit_dialog_neg), null);
         builder.show();
     }
 
