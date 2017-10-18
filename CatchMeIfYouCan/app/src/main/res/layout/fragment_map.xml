@@ -68,7 +68,7 @@
         android:layout_toEndOf="@+id/B_addWaypoints" />
 
     <Button
-        android:id="@+id/B_ar"
+        android:id="@+id/B_route"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/map"

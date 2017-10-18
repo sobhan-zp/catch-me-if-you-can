@@ -29,6 +29,7 @@
     <integer name="MESSAGE_COMMAND_SEND">606</integer>
     <integer name="LOCATION_SEND">610</integer>
     <integer name="LOCATION_GET">613</integer>
+    <integer name="LOCATION_GET2">616</integer>
     <integer name="GAME_CREATE">700</integer>
     <integer name="GAME_ADD">703</integer>
     <integer name="GAME_EXIT">706</integer>
@@ -69,6 +70,8 @@
     <integer name="LOCATION_FAIL">612</integer>
     <integer name="LOCATION_GET_SUCCESS">614</integer>
     <integer name="LOCATION_GET_FAIL">615</integer>
+    <integer name="LOCATION_GET2_SUCCESS">617</integer>
+    <integer name="LOCATION_GET2_FAIL">618</integer>
     <integer name="GAME_CREATE_SUCCESS">701</integer>
     <integer name="GAME_CREATE_FAIL">702</integer>
     <integer name="GAME_ADD_SUCCESS">704</integer>
