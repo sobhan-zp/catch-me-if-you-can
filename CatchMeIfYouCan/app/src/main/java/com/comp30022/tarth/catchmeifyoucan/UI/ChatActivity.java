@@ -1,5 +1,6 @@
 package com.comp30022.tarth.catchmeifyoucan.UI;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -25,7 +26,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class ChatActivity extends AppCompatActivity implements Communication {
+public class ChatActivity extends Activity implements Communication {
 
     private static final Integer MESSAGE_SEND = 600;
     private static final Integer MESSAGE_RECEIVE = 601;
@@ -47,6 +48,7 @@ public class ChatActivity extends AppCompatActivity implements Communication {
     private String friend = "";
 
     SimpleDateFormat dateFormat;
+    TextView textViewName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +61,9 @@ public class ChatActivity extends AppCompatActivity implements Communication {
 
         // set date format
         dateFormat = new SimpleDateFormat("HH:mm:ss, dd/MM/yy");
+
+        textViewName = (TextView) findViewById(R.id.Name);
+        textViewName.setText(friend);
 
         Button fab = (Button) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -175,7 +180,7 @@ public class ChatActivity extends AppCompatActivity implements Communication {
         String time  = dateFormat.format(new Date());
 
         array.add(
-                name + ": " +  msg.getText() + "\n"  + time// + "0"
+                name + ": " +  msg.getText() + "\n"  + time
         );
         adapter.notifyDataSetChanged();
 
