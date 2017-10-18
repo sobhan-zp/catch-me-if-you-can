@@ -13,14 +13,13 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.comp30022.tarth.catchmeifyoucan.Account.Communication;
-import com.comp30022.tarth.catchmeifyoucan.Account.Message;
-import com.comp30022.tarth.catchmeifyoucan.Account.Result;
-import com.comp30022.tarth.catchmeifyoucan.Account.User;
+import com.comp30022.tarth.catchmeifyoucan.Server.Communication;
+import com.comp30022.tarth.catchmeifyoucan.Server.Message;
+import com.comp30022.tarth.catchmeifyoucan.Server.Result;
 import com.comp30022.tarth.catchmeifyoucan.R;
+import com.comp30022.tarth.catchmeifyoucan.Server.WebSocketClient;
 
 import org.json.JSONObject;
 
@@ -28,16 +27,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FriendlistActivity extends AppCompatActivity implements Communication {
-
-    private static final Integer FRIEND_GET = 500;            // Friend get request
-    private static final Integer FRIEND_GET_FAIL = 501;       // Friend get failure
-    private static final Integer FRIEND_GET_SUCCESS = 502;    // Friend get success
-    private static final Integer FRIEND_SEARCH = 503;         // Friend search request
-    private static final Integer FRIEND_SEARCH_FAIL = 504;    // Friend search failure
-    private static final Integer FRIEND_SEARCH_SUCCESS = 505; // Friend search success
-    private static final Integer FRIEND_CHECK = 509;          // Friend check request
-    private static final Integer FRIEND_CHECK_FAIL = 510;     // Friend check failure
-    private static final Integer FRIEND_CHECK_SUCCESS = 511;  // Friend check success
 
     private ArrayAdapter<String> adapter;
     private List<String> array;
@@ -48,7 +37,10 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_friendlist);
-        LoginActivity.getClient().setmCurrentActivity(this);
+        WebSocketClient.getClient().setActivity(this);
+
+        // Add back button
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // Enable Internet permissions
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
@@ -93,23 +85,24 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
         return true;
     }
 
+    // Set back button on action bar
     @Override
-    public boolean onOptionsItemSelected(MenuItem menuItem) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = menuItem.getItemId();
-
-        // noinspection SimplifiableIfStatement
-        if (id == R.id.action_name) {
-            openAdd();
-            return true;
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+            case R.id.action_name:
+                openAdd();
+                return true;
         }
-        return super.onOptionsItemSelected(menuItem);
+        return super.onOptionsItemSelected(item);
     }*/
 
     @Override
     public void onBackPressed() {
+        Intent returnIntent = new Intent();
+        setResult(Activity.RESULT_OK, returnIntent);
         finish();
     }
 
@@ -117,11 +110,11 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
     private void getFriend() {
         JSONObject obj = new JSONObject();
         try {
-            obj.put("action", FRIEND_GET);
+            obj.put("action", getResources().getInteger(R.integer.FRIEND_GET));
         } catch(Exception e) {
             e.printStackTrace();
         }
-        LoginActivity.getClient().send(obj.toString());
+        WebSocketClient.getClient().send(obj.toString());
     }
 
     /*
@@ -149,36 +142,12 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
     }
     */
 
-    // Verifies responses from the server
-    private void verify(Message message) {
-        if (message.getCode().equals(FRIEND_GET_SUCCESS)) {
-            System.out.println("Friend GET Success");
-
-            // Repopulates list
-            Result[] results = message.getResult();
-            array.clear();
-            for (Result result : results) {
-                array.add(result.getUsername());
-            }
-            adapter.notifyDataSetChanged();
-
-        } else if (message.getCode().equals(FRIEND_GET_FAIL)) {
-            toast("Friend get failure");
-        } else if (message.getCode().equals(FRIEND_SEARCH_SUCCESS)) {
-            System.out.println("Friend search success - here");
-        } else if (message.getCode().equals(FRIEND_SEARCH_FAIL)) {
-            System.out.println("Friend search failure");
-        } else {
-            toast("Error: Unknown response received");
-        }
-    }
-
     // Navigates to User Activity
     private void openUser(String username) {
         Intent intent = new Intent(this, UserActivity.class);
         intent.putExtra("username", username);
         intent.putExtra("dashboard", false);
-        startActivity(intent);
+        startActivityForResult(intent, 1);
     }
 
     // Navigates to Add Activity
@@ -187,12 +156,12 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
         startActivityForResult(intent, 1);
     }
 
-    // Resets the current activity connected to the WebSocket upon killing child activities
+    // Resets the current activity connected to the WebSocket upon terminating child activities
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1) {
             if (resultCode == Activity.RESULT_OK) {
-                LoginActivity.getClient().setmCurrentActivity(this);
+                WebSocketClient.getClient().setActivity(this);
             }
         }
         getFriend();
@@ -200,11 +169,30 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
 
     // Called by the WebSocket upon receiving a message
     @Override
-    public void response(final Message message) {
+    public void onResponse(final Message message) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                verify(message);
+                if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_GET_SUCCESS))) {
+                    toast("Friend get success");
+
+                    // Repopulates list
+                    Result[] results = message.getResult();
+                    array.clear();
+                    for (Result result : results) {
+                        array.add(result.getUsername());
+                    }
+                    adapter.notifyDataSetChanged();
+
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_GET_FAIL))) {
+                    toast("Friend get failure");
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_SEARCH_SUCCESS))) {
+                    System.out.println("Friend search success - here");
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_SEARCH_FAIL))) {
+                    System.out.println("Friend search failure");
+                } else {
+                    toast("Error: Unknown response received");
+                }
             }
         });
     }

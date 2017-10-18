@@ -5,7 +5,7 @@
 
     <item
         android:id="@+id/action_name"
-        android:icon="@drawable/common_plus_signin_btn_icon_dark"
+        android:icon="@drawable/common_google_signin_btn_icon_dark_normal"
         android:title="Add"
         app:showAsAction="always"
         android:orderInCategory="0"/>

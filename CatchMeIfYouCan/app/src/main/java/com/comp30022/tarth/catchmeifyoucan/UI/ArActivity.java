@@ -1,6 +1,7 @@
 package com.comp30022.tarth.catchmeifyoucan.UI;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -15,6 +16,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.widget.FrameLayout;
 import android.widget.Button;
 import android.hardware.Camera;
@@ -52,6 +54,9 @@ public class ArActivity extends AppCompatActivity implements SensorEventListener
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ar);
+
+        // Add back button
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         //Check camera permission
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -91,6 +96,17 @@ public class ArActivity extends AppCompatActivity implements SensorEventListener
        // });
     }
 
+    // Set back button on action bar
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     @Override
     protected void onResume(){
         super.onResume();
@@ -103,6 +119,13 @@ public class ArActivity extends AppCompatActivity implements SensorEventListener
         super.onPause();
         // Don't receive any more updates from either sensor.
         sensorManager.unregisterListener(this);
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent returnIntent = new Intent();
+        setResult(Activity.RESULT_OK, returnIntent);
+        finish();
     }
 
     public boolean checkCameraPermission(){
@@ -177,13 +200,6 @@ public class ArActivity extends AppCompatActivity implements SensorEventListener
         return this.mOrientationAngles;
     }
 
-    @Override
-    public void onBackPressed() {
-        finish();
-    }
-
-
-
     /** Check if this device has a camera */
     private boolean checkCameraHardware(Context context) {
         if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)){
@@ -207,9 +223,4 @@ public class ArActivity extends AppCompatActivity implements SensorEventListener
         return c; // returns null if camera is unavailable
     }
 
-    // Navigates to Maps activity
-    // private void openMaps() {
-    //     Intent intent = new Intent(this, MapsActivity.class);
-    //     startActivity(intent);
-    // }
 }

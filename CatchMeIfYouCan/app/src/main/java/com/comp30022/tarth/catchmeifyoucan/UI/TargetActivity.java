@@ -1,52 +1,56 @@
-package com.comp30022.tarth.catchmeifyoucan.Game;
+package com.comp30022.tarth.catchmeifyoucan.UI;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.*;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
+import com.comp30022.tarth.catchmeifyoucan.Game.ChatFragment;
+import com.comp30022.tarth.catchmeifyoucan.Game.OptionsFragment;
 import com.comp30022.tarth.catchmeifyoucan.R;
-import com.comp30022.tarth.catchmeifyoucan.UI.ArActivity;
-import com.comp30022.tarth.catchmeifyoucan.UI.DashboardActivity;
-import com.comp30022.tarth.catchmeifyoucan.UI.MapDirectionsData;
+import com.comp30022.tarth.catchmeifyoucan.Server.Communication;
+import com.comp30022.tarth.catchmeifyoucan.Server.Message;
+import com.comp30022.tarth.catchmeifyoucan.Server.Result;
+import com.comp30022.tarth.catchmeifyoucan.Server.WebSocketClient;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.*;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.io.IOException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class MapFragment extends Fragment implements OnMapReadyCallback,
+public class TargetActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
-        com.google.android.gms.location.LocationListener, GoogleMap.OnMarkerClickListener,
-        GoogleMap.OnMarkerDragListener, GoogleMap.OnMapClickListener {
+        LocationListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnMarkerDragListener,
+        GoogleMap.OnMapClickListener, Communication, OptionsFragment.FragmentCommunication,
+        ChatFragment.FragmentCommunication {
 
     private GoogleMap mMap;
     // Google client to interact with Google API
@@ -63,35 +67,33 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     boolean addWaypoints = false;
     MapDirectionsData lastDirectionsData = null;
     List<Marker> mMarkers = new ArrayList<Marker>();
-    private static final double WP_RADIUS = 100;
+    private static final double WP_RADIUS = 10;
     private boolean nearWp = false;
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-    }
+    private List<Marker> othersMarker = new ArrayList<Marker>();
+
+    private final static int CHAT_ITEM_ID = 0;
+    private final static int MAP_ITEM_ID = 1;
+    private final static int OPTIONS_ITEM_ID = 2;
+
+    SupportMapFragment mapFragment;
+    Fragment chatFragment;
+    Fragment optionsFragment;
+    private BottomNavigationView navigation;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_map, container, false);
-    }
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_target);
+        WebSocketClient.getClient().setActivity(this);
 
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        Button buttonAR = (Button) getActivity().findViewById(R.id.B_ar);
-        buttonAR.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openAR();
-            }
-        });
+        // Add back button
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         //Check if Google Play Services available
         if (!checkGooglePlayServices()) {
             Log.d("onCreate", "Finishing test case since Google Play Services are not available");
-            getActivity().onBackPressed();
+            finish();
         } else {
             Log.d("onCreate", "Google Play Services available.");
         }
@@ -100,19 +102,101 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkLocationPermission();
         }
+
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        //mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        mapFragment = new SupportMapFragment();
+        chatFragment = new ChatFragment();
+        optionsFragment = new OptionsFragment();
+
+        navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        navigation.getMenu().getItem(MAP_ITEM_ID).setChecked(true);
+        navigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switchFragment (item);
+                return true;
+            }
+        });
+
+        MenuItem item = navigation.getMenu().getItem(MAP_ITEM_ID);
+        switchFragment(item);
     }
 
-    private void openAR() {
-        Intent intent = new Intent(getActivity(), ArActivity.class);
-        startActivity(intent);
+    private void switchFragment(MenuItem item) {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        switch (item.getItemId()) {
+            case R.id.navigationChat:
+                transaction.hide(mapFragment);
+                transaction.add(R.id.fragment_container, chatFragment);
+                transaction.addToBackStack("map");
+                //transaction.replace(R.id.fragment_container, chatFragment);
+                if (this.getActionBar() != null) {
+                    this.getActionBar().setTitle("Game Chat");
+                }
+                break;
+            case R.id.navigationMap:
+                if (chatFragment.isAdded()) {
+                    transaction.remove(chatFragment);
+                }
+                if (optionsFragment.isAdded()) {
+                    transaction.remove(optionsFragment);
+                }
+                if (!mapFragment.isAdded()) {
+                    transaction.replace(R.id.fragment_container, mapFragment);
+                } else {
+                    transaction.show(mapFragment);
+                }
+                mapFragment.getMapAsync(this);
+
+                /*
+                if (mapFragment.isAdded()) {
+                    // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+                    SupportMapFragment mapViewFragment = (SupportMapFragment) mapFragment.getChildFragmentManager().findFragmentById(R.id.map);
+                    mapViewFragment.getMapAsync((OnMapReadyCallback) this);
+                }
+                */
+                if (this.getActionBar() != null) {
+                    this.getActionBar().setTitle("Game Map");
+                }
+                break;
+            case R.id.navigationOptions:
+                transaction.hide(mapFragment);
+                transaction.add(R.id.fragment_container, optionsFragment);
+                transaction.addToBackStack("map");
+                //transaction.replace(R.id.fragment_container, optionsFragment);
+                if (this.getActionBar() != null) {
+                    this.getActionBar().setTitle("Game Options");
+                }
+                break;
+        }
+        transaction.commit();
+    }
+
+    // Set back button on action bar
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent returnIntent = new Intent();
+        setResult(Activity.RESULT_OK, returnIntent);
+        finish();
     }
 
     private boolean checkGooglePlayServices() {
         GoogleApiAvailability googleAPI = GoogleApiAvailability.getInstance();
-        int result = googleAPI.isGooglePlayServicesAvailable(getActivity());
+        int result = googleAPI.isGooglePlayServicesAvailable(this);
         if (result != ConnectionResult.SUCCESS) {
             if (googleAPI.isUserResolvableError(result)) {
-                googleAPI.getErrorDialog(getActivity(), result,
+                googleAPI.getErrorDialog(this, result,
                         0).show();
             }
             return false;
@@ -121,22 +205,22 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     }
 
     public boolean checkLocationPermission(){
-        if (ContextCompat.checkSelfPermission(getActivity(),
+        if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
 
             // Asking user if explanation is needed
-            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                     Manifest.permission.ACCESS_FINE_LOCATION)) {
 
                 //Prompt the user once explanation has been shown
-                ActivityCompat.requestPermissions(getActivity(),
+                ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                         REQUEST_LOCATION_CODE);
 
             } else {
                 // No explanation needed, we can request the permission.
-                ActivityCompat.requestPermissions(getActivity(),
+                ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                         REQUEST_LOCATION_CODE);
             }
@@ -161,7 +245,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
 
         //Initialize Google Play Services
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(getActivity(),
+            if (ContextCompat.checkSelfPermission(this,
                     Manifest.permission.ACCESS_FINE_LOCATION)
                     == PackageManager.PERMISSION_GRANTED) {
                 buildGoogleApiClient();
@@ -180,7 +264,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     }
 
     protected synchronized void buildGoogleApiClient() {
-        mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
@@ -189,12 +273,22 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     }
 
     @Override
-    public void onLocationChanged(android.location.Location location) {
+    public void onLocationChanged(Location location) {
+        JSONObject obj = new JSONObject();
+        try {
+            //obj.put("action", MESSAGE_COMMAND_SEND);
+            //obj.put("message", "test");
+            // TESTING
+            obj.put("action", getResources().getInteger(R.integer.LOCATION_GET));
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        onSend(obj);
 //        if (mCurrLocationMarker != null) {
 //            mCurrLocationMarker.remove();
 //        }
-        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(),
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
@@ -221,6 +315,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
             toast("Your Current Location");
         }
 
+
+        //move map camera
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(12));
+
         if(mCurrLocationMarker != null){
             String currLocation = curr_latitude+","+curr_longitude;
             toast(currLocation);
@@ -244,7 +343,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     }
 
     protected void startLocationUpdates() {
-        if (ContextCompat.checkSelfPermission(getActivity(),
+        if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
@@ -280,7 +379,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
 
                     // permission was granted. Do the
                     // contacts-related task you need to do.
-                    if (ContextCompat.checkSelfPermission(getActivity(),
+                    if (ContextCompat.checkSelfPermission(this,
                             Manifest.permission.ACCESS_FINE_LOCATION)
                             == PackageManager.PERMISSION_GRANTED) {
 
@@ -304,34 +403,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         Object dataTransfer[] = new Object[3];
 
         switch(v.getId()) {
-            case R.id.B_search: {
-                EditText tf_location = (EditText) getActivity().findViewById(R.id.TF_location);
-                String location = tf_location.getText().toString();
-                List<Address> addressList = null;
-                MarkerOptions markerOptions = new MarkerOptions();
-                Log.d("location = ", location);
-
-                if (!location.equals("")) {
-                    Geocoder geocoder = new Geocoder(getActivity());
-                    try {
-                        addressList = geocoder.getFromLocationName(location, 5);
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                    if (addressList != null) {
-                        for (int i = 0; i < addressList.size(); i++) {
-                            Address myAddress = addressList.get(i);
-                            LatLng latLng = new LatLng(myAddress.getLatitude(), myAddress.getLongitude());
-                            markerOptions.position(latLng);
-                            mMap.addMarker(markerOptions);
-                            mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
-                        }
-                    }
-                }
-            }
-            break;
 
             case R.id.B_addWaypoints:
                 addWaypoints = true;
@@ -353,13 +424,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                 directionsData.execute(dataTransfer);
                 lastDirectionsData = directionsData;
                 break;
-
-            case R.id.B_ar:
-                if(nearWp){
-                    nearWp = false;
-                    Intent intent = new Intent(getActivity(), ArActivity.class);
-                    startActivityForResult(intent, 1);
-                }
         }
     }
 
@@ -373,37 +437,28 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         return googleDirectionsUrl.toString();
     }
 
-
-    /*
     @Override
     protected void onStart() {
         super.onStart();
     }
-
     @Override
     protected void onResume() {
         super.onResume();
-        checkGooglePlayServices();
+        //checkGooglePlayServices();
     }
-
     @Override
     protected void onPause() {
         super.onPause();
-        stopLocationUpdates();
+        //stopLocationUpdates();
     }
-    */
-
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
     }
-
     @Override
     public void onConnectionSuspended(int i) {
         Log.d("onConnectionSuspended", "Connection suspended");
         mGoogleApiClient.connect();
     }
-
-    /*
     @Override
     protected void onStop() {
         super.onStop();
@@ -412,7 +467,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
             mGoogleApiClient.disconnect();
         }
     }
-    */
 
     @Override
     public boolean onMarkerClick(Marker marker) {
@@ -454,7 +508,87 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
 
     // Displays a toast message
     private void toast(String message) {
-        Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
+    // Broadcasts location to server
+    private void broadcastLocation() {
+        //curr_latitude, curr_longitude
+    }
+
+
+    public void updateOthers(List<Double> othersLocation){
+        for(int j=othersMarker.size()-1; j>=0; j--){
+            othersMarker.get(j).remove();
+        }
+        int count = othersLocation.size()-1;
+        for(int i=0; i<count; i+=2){
+            LatLng latLng = new LatLng(othersLocation.get(i), othersLocation.get(i+1));
+            System.out.println("LOCATION : " + Double.toString(othersLocation.get(i)) + ", " +  Double.toString(othersLocation.get(i + 1)) );
+            MarkerOptions markerOptions = new MarkerOptions();
+            markerOptions.position(latLng);
+            markerOptions.title("people");
+            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
+            Marker oMarker = mMap.addMarker(markerOptions);
+            othersMarker.add(oMarker);
+        }
+    }
+
+    @Override
+    public void onResponse(final Message message) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("CODE" + message.getCode());
+                if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_USER_SUCCESS))) {
+                    toast("Game get users successful");
+                    ((OptionsFragment) optionsFragment).onResponse(message);
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_USER_FAIL))) {
+                    toast("Game get users failure");
+                } else if (message.getCode().equals(614)) {
+                    // TESTING TESTING
+                    toast("Location get successful");
+                    //((ChatFragment) chatFragment).onResponse(message);
+                    // TESTING
+                    List<Double> locations = new ArrayList<Double>();
+                    Result[] results = message.getResult();
+                    for (Result result : results) {
+                        //array.add(Double.toString(result.getX()) + ", " + Double.toString(result.getY()));
+                        locations.add(result.getX());
+                        locations.add(result.getY());
+                    }
+                    updateOthers(locations);
+                    //adapter.notifyDataSetChanged();
+                } else if (message.getCode().equals(615)) {
+                    toast("Location get failure");
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_EXIT_SUCCESS))) {
+                    toast("Game exit successful");
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_EXIT_FAIL))) {
+                    toast("Game exit failure");
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_DELETE_SUCCESS))) {
+                    toast("Game delete successful");
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_DELETE_FAIL))) {
+                    toast("Game delete failure");
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onExit() {
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("action", getResources().getInteger(R.integer.GAME_EXIT));
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        WebSocketClient.getClient().send(obj.toString());
+        onBackPressed();
+        onBackPressed();
+    }
+
+    @Override
+    public void onSend(JSONObject obj) {
+        WebSocketClient.getClient().send(obj.toString());
+    }
 }

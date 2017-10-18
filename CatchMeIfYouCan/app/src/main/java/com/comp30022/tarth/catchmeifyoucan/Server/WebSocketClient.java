@@ -1,4 +1,4 @@
-package com.comp30022.tarth.catchmeifyoucan.Account;
+package com.comp30022.tarth.catchmeifyoucan.Server;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -13,18 +13,29 @@ import okio.ByteString;
 
 public class WebSocketClient extends OkHttpClient {
 
-    //private static final String SERVER_IP = "35.197.172.195"; // CentOS 6 Server
-    public static final String SERVER_IP = "45.77.49.3";    // CentOS 7 Server
+    private static final WebSocketClient instance = new WebSocketClient();
+
+    // Private constructor to avoid reinitializing
+    private WebSocketClient() {
+    }
+
+    public static WebSocketClient getClient() {
+        return instance;
+    }
+
+    public static final String SERVER2_IP = "ws://35.197.172.195";  // CentOS 6 Server
+    public static final String SERVER_IP = "ws://45.77.49.3";       // CentOS 7 Server
+
     private static final int NORMAL_CLOSURE_STATUS = 1000;
 
-    private Communication mCurrentActivity;
-    private OkHttpClient mClient;
+    private Communication activity;
+    private OkHttpClient client;
     private WebSocket webSocket;
     private WebSocketListener listener;
 
     public void connect() {
-        mClient = new OkHttpClient();
-        Request request = new Request.Builder().url("ws://" + SERVER_IP).build();
+        client = new OkHttpClient();
+        Request request = new Request.Builder().url(SERVER_IP).build();
         listener = new WebSocketListener() {
             /**
              * Invoked when a web socket has been accepted by the remote peer and may begin transmitting
@@ -42,7 +53,7 @@ public class WebSocketClient extends OkHttpClient {
                 Gson gson = new GsonBuilder().create();
                 try {
                     Message message = gson.fromJson(filteredText, Message.class);
-                    mCurrentActivity.response(message);
+                    activity.onResponse(message);
                 } catch (JsonSyntaxException e) {
                     e.printStackTrace();
                 }
@@ -80,13 +91,13 @@ public class WebSocketClient extends OkHttpClient {
                 t.printStackTrace();
             }
         };
-        webSocket = mClient.newWebSocket(request, listener);
+        webSocket = client.newWebSocket(request, listener);
     }
 
     // Closes the WebSocket connection with the server
     public void disconnect() {
         webSocket.close(NORMAL_CLOSURE_STATUS, null);
-        mClient.dispatcher().executorService().shutdown();
+        client.dispatcher().executorService().shutdown();
     }
 
     // Sends a message to the WebSocket server
@@ -95,13 +106,13 @@ public class WebSocketClient extends OkHttpClient {
     }
 
     // Updates the current running activity
-    public void setmCurrentActivity(Communication activity) {
-        mCurrentActivity = activity;
+    public void setActivity(Communication activity) {
+        this.activity = activity;
     }
 
     // Returns the current running activity
-    public Communication getmCurrentActivity() {
-        return mCurrentActivity;
+    public Communication getActivity() {
+        return activity;
     }
 
 }

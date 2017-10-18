@@ -12,8 +12,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 
-import com.comp30022.tarth.catchmeifyoucan.Account.Message;
-import com.comp30022.tarth.catchmeifyoucan.Account.Result;
+import com.comp30022.tarth.catchmeifyoucan.Server.Message;
+import com.comp30022.tarth.catchmeifyoucan.Server.Result;
 import com.comp30022.tarth.catchmeifyoucan.R;
 
 import org.json.JSONObject;
@@ -22,10 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OptionsFragment extends Fragment {
-
-    private static final Integer GAME_GET_USER = 723;
-    private static final Integer GAME_GET_USER_SUCCESS = 724;
-    private static final Integer GAME_GET_USER_FAIL = 725;
 
     private Activity parent;
 
@@ -49,7 +45,7 @@ public class OptionsFragment extends Fragment {
         // Obtains list of users
         JSONObject obj = new JSONObject();
         try {
-            obj.put("action", GAME_GET_USER);
+            obj.put("action", getResources().getInteger(R.integer.GAME_GET_USER));
         } catch(Exception e) {
             e.printStackTrace();
         }

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Server Settings -->
+    <integer name="DEFAULT_USER_LEVEL">0</integer>
+    <integer name="SERVER_PORT">0</integer>
+    <integer name="NORMAL_CLOSURE_STATUS">1000</integer>
+
+    <!-- Default Status -->
+    <integer name="MESSAGE_READ">1</integer>
+    <integer name="MESSAGE_UNREAD">0</integer>
+    <integer name="GAME_OWNER">1</integer>
+    <integer name="GAME_PLAYER">0</integer>
+
+    <!-- Client Actions -->
+    <integer name="REGISTER_ACTION">100</integer>
+    <integer name="LOGIN_ACTION">101</integer>
+    <integer name="PROFILE_ACTION">102</integer>
+    <integer name="PROFILE_UPDATE">103</integer>
+    <integer name="UNKNOWN_ACTION">199</integer>
+    <integer name="FRIEND_GET">500</integer>
+    <integer name="FRIEND_SEARCH">503</integer>
+    <integer name="FRIEND_ADD">506</integer>
+    <integer name="FRIEND_CHECK">509</integer>
+    <integer name="FRIEND_DELETE">512</integer>
+    <integer name="MESSAGE_SEND">600</integer>
+    <integer name="MESSAGE_RECEIVE">601</integer>
+    <integer name="MESSAGE_OFFLINE_GET">605</integer>
+    <integer name="MESSAGE_COMMAND_SEND">606</integer>
+    <integer name="LOCATION_SEND">610</integer>
+    <integer name="LOCATION_GET">613</integer>
+    <integer name="GAME_CREATE">700</integer>
+    <integer name="GAME_ADD">703</integer>
+    <integer name="GAME_EXIT">706</integer>
+    <integer name="GAME_GET">709</integer>
+    <integer name="GAME_DELETE">712</integer>
+    <integer name="GAME_USER_REMOVE">715</integer>
+    <integer name="GAME_GET_CURRENT">718</integer>
+    <integer name="GAME_NOTIFICATION_SEND">721</integer>
+    <integer name="GAME_NOTIFICATION_RECEIVE">722</integer>
+    <integer name="GAME_GET_USER">723</integer>
+
+    <!-- Server Responses -->
+    <integer name="PROFILE_UPDATE_SUCCESS">104</integer>
+    <integer name="PROFILE_UPDATE_FAIL">105</integer>
+    <integer name="LOGIN_SUCCESS_CODE">200</integer>
+    <integer name="LOGIN_USER_NON_EXIST_CODE">201</integer>
+    <integer name="LOGIN_EXIST_CODE">202</integer>
+    <integer name="PROFILE_GET">203</integer>
+    <integer name="REGISTER_SUCCESS">300</integer>
+    <integer name="REGISTER_FAIL">301</integer>
+    <integer name="FRIEND_GET_FAIL">501</integer>
+    <integer name="FRIEND_GET_SUCCESS">502</integer>
+    <integer name="FRIEND_SEARCH_FAIL">504</integer>
+    <integer name="FRIEND_SEARCH_SUCCESS">505</integer>
+    <integer name="FRIEND_ADD_FAIL">507</integer>
+    <integer name="FRIEND_ADD_SUCCESS">508</integer>
+    <integer name="FRIEND_CHECK_FAIL">510</integer>
+    <integer name="FRIEND_CHECK_SUCCESS">511</integer>
+    <integer name="FRIEND_DELETE_SUCCESS">513</integer>
+    <integer name="FRIEND_DELETE_FAIL">514</integer>
+    <integer name="MESSAGE_SEND_SUCCESS_ONLINE">602</integer>
+    <integer name="MESSAGE_SEND_SUCCESS_OFFLINE">603</integer>
+    <integer name="MESSAGE_SEND_FAIL">604</integer>
+    <integer name="MESSAGE_COMMAND_SUCCESS">607</integer>
+    <integer name="MESSAGE_COMMAND_FAIL">608</integer>
+    <integer name="MESSAGE_COMMAND_RECEIVE">609</integer>
+    <integer name="LOCATION_SUCCESS">611</integer>
+    <integer name="LOCATION_FAIL">612</integer>
+    <integer name="LOCATION_GET_SUCCESS">614</integer>
+    <integer name="LOCATION_GET_FAIL">615</integer>
+    <integer name="GAME_CREATE_SUCCESS">701</integer>
+    <integer name="GAME_CREATE_FAIL">702</integer>
+    <integer name="GAME_ADD_SUCCESS">704</integer>
+    <integer name="GAME_ADD_FAIL">705</integer>
+    <integer name="GAME_EXIT_SUCCESS">707</integer>
+    <integer name="GAME_EXIT_FAIL">708</integer>
+    <integer name="GAME_GET_SUCCESS">710</integer>
+    <integer name="GAME_GET_FAIL">711</integer>
+    <integer name="GAME_DELETE_SUCCESS">713</integer>
+    <integer name="GAME_DELETE_FAIL">714</integer>
+    <integer name="GAME_USER_REMOVE_SUCCESS">716</integer>
+    <integer name="GAME_USER_REMOVE_FAIL">717</integer>
+    <integer name="GAME_GET_CURRENT_SUCCESS">719</integer>
+    <integer name="GAME_GET_CURRENT_FAIL">720</integer>
+    <integer name="GAME_GET_USER_SUCCESS">724</integer>
+    <integer name="GAME_GET_USER_FAIL">725</integer>
+
+</resources>

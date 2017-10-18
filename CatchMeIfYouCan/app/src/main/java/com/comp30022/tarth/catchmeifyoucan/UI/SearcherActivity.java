@@ -1,20 +1,31 @@
 package com.comp30022.tarth.catchmeifyoucan.UI;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.comp30022.tarth.catchmeifyoucan.Game.ChatFragment;
+import com.comp30022.tarth.catchmeifyoucan.Game.OptionsFragment;
 import com.comp30022.tarth.catchmeifyoucan.R;
+import com.comp30022.tarth.catchmeifyoucan.Server.Communication;
+import com.comp30022.tarth.catchmeifyoucan.Server.Message;
+import com.comp30022.tarth.catchmeifyoucan.Server.Result;
+import com.comp30022.tarth.catchmeifyoucan.Server.WebSocketClient;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -30,14 +41,16 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
-
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
+public class SearcherActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
         LocationListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnMarkerDragListener,
-        GoogleMap.OnMapClickListener {
+        GoogleMap.OnMapClickListener, Communication, OptionsFragment.FragmentCommunication,
+        ChatFragment.FragmentCommunication {
 
     private GoogleMap mMap;
     // Google client to interact with Google API
@@ -58,14 +71,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private boolean nearWp = false;
 
     private List<Marker> othersMarker = new ArrayList<Marker>();
-    public List<Double> othersLocation = new ArrayList<Double>();
 
+    private final static int CHAT_ITEM_ID = 0;
+    private final static int MAP_ITEM_ID = 1;
+    private final static int OPTIONS_ITEM_ID = 2;
 
+    SupportMapFragment mapFragment;
+    Fragment chatFragment;
+    Fragment optionsFragment;
+    private BottomNavigationView navigation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_maps);
+        setContentView(R.layout.activity_searcher);
+        WebSocketClient.getClient().setActivity(this);
+
+        // Add back button
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         //Check if Google Play Services available
         if (!checkGooglePlayServices()) {
@@ -76,14 +99,96 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         //Check location permission
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkLocationPermission();
         }
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+        //mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        mapFragment = new SupportMapFragment();
+        chatFragment = new ChatFragment();
+        optionsFragment = new OptionsFragment();
+
+        navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        navigation.getMenu().getItem(MAP_ITEM_ID).setChecked(true);
+        navigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switchFragment (item);
+                return true;
+            }
+        });
+
+        MenuItem item = navigation.getMenu().getItem(MAP_ITEM_ID);
+        switchFragment(item);
+    }
+
+    private void switchFragment(MenuItem item) {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        switch (item.getItemId()) {
+            case R.id.navigationChat:
+                transaction.hide(mapFragment);
+                transaction.add(R.id.fragment_container, chatFragment);
+                transaction.addToBackStack("map");
+                //transaction.replace(R.id.fragment_container, chatFragment);
+                if (this.getActionBar() != null) {
+                    this.getActionBar().setTitle("Game Chat");
+                }
+                break;
+            case R.id.navigationMap:
+                if (chatFragment.isAdded()) {
+                    transaction.remove(chatFragment);
+                }
+                if (optionsFragment.isAdded()) {
+                    transaction.remove(optionsFragment);
+                }
+                if (!mapFragment.isAdded()) {
+                    transaction.replace(R.id.fragment_container, mapFragment);
+                } else {
+                    transaction.show(mapFragment);
+                }
+                mapFragment.getMapAsync(this);
+
+                /*
+                if (mapFragment.isAdded()) {
+                    // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+                    SupportMapFragment mapViewFragment = (SupportMapFragment) mapFragment.getChildFragmentManager().findFragmentById(R.id.map);
+                    mapViewFragment.getMapAsync((OnMapReadyCallback) this);
+                }
+                */
+                if (this.getActionBar() != null) {
+                    this.getActionBar().setTitle("Game Map");
+                }
+                break;
+            case R.id.navigationOptions:
+                transaction.hide(mapFragment);
+                transaction.add(R.id.fragment_container, optionsFragment);
+                transaction.addToBackStack("map");
+                //transaction.replace(R.id.fragment_container, optionsFragment);
+                if (this.getActionBar() != null) {
+                    this.getActionBar().setTitle("Game Options");
+                }
+                break;
+        }
+        transaction.commit();
+    }
+
+    // Set back button on action bar
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent returnIntent = new Intent();
+        setResult(Activity.RESULT_OK, returnIntent);
+        finish();
     }
 
     private boolean checkGooglePlayServices() {
@@ -139,7 +244,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
 
         //Initialize Google Play Services
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(this,
                     Manifest.permission.ACCESS_FINE_LOCATION)
                     == PackageManager.PERMISSION_GRANTED) {
@@ -169,6 +274,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onLocationChanged(Location location) {
+        JSONObject obj = new JSONObject();
+        try {
+            //obj.put("action", MESSAGE_COMMAND_SEND);
+            //obj.put("message", "test");
+            // TESTING
+            obj.put("action", getResources().getInteger(R.integer.LOCATION_GET));
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        onSend(obj);
 //        if (mCurrLocationMarker != null) {
 //            mCurrLocationMarker.remove();
 //        }
@@ -199,6 +314,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             toast("Your Current Location");
         }
+
+
+        //move map camera
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(12));
 
         if(mCurrLocationMarker != null){
             String currLocation = curr_latitude+","+curr_longitude;
@@ -282,68 +402,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onClick(View v) {
         Object dataTransfer[] = new Object[3];
 
-        switch(v.getId()) {
-            case R.id.B_search: {
-//                EditText tf_location = (EditText) findViewById(R.id.TF_location);
-//                String location = tf_location.getText().toString();
-//                List<Address> addressList = null;
-//                MarkerOptions markerOptions = new MarkerOptions();
-//                Log.d("location = ", location);
-//
-//                if (!location.equals("")) {
-//                    Geocoder geocoder = new Geocoder(this);
-//                    try {
-//                        addressList = geocoder.getFromLocationName(location, 5);
-//
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
-//
-//                    if (addressList != null) {
-//                        for (int i = 0; i < addressList.size(); i++) {
-//                            Address myAddress = addressList.get(i);
-//                            LatLng latLng = new LatLng(myAddress.getLatitude(), myAddress.getLongitude());
-//                            markerOptions.position(latLng);
-//                            mMap.addMarker(markerOptions);
-//                            mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
-//                        }
-//                    }
-//                }
-                othersLocation.add(-37.814);
-                othersLocation.add(144.96332);
-                othersLocation.add(-37.6);
-                othersLocation.add(144.98);
-                updateOthers();
+        if(v.getId() == R.id.B_ar) {
+            if(nearWp){
+                nearWp = false;
+                Intent intent = new Intent(this, DashboardActivity.class);
+                startActivity(intent);
             }
-            break;
-
-            case R.id.B_addWaypoints:
-                addWaypoints = true;
-                break;
-
-            case R.id.B_finishAddWP:
-                addWaypoints = false;
-                break;
-
-            case R.id.B_route:
-                if(lastDirectionsData != null){
-                    lastDirectionsData.clearPolyline();
-                }
-                String url = getDirectionsUrl();
-                MapDirectionsData directionsData = new MapDirectionsData();
-                dataTransfer[0] = mMap;
-                dataTransfer[1] = url;
-                dataTransfer[2] = new LatLng(end_latitude, end_longitude);
-                directionsData.execute(dataTransfer);
-                lastDirectionsData = directionsData;
-                break;
-
-            case R.id.B_ar:
-                if(nearWp){
-                    nearWp = false;
-                    Intent intent = new Intent(this, DashboardActivity.class);
-                    startActivity(intent);
-                }
         }
     }
 
@@ -357,7 +421,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return googleDirectionsUrl.toString();
     }
 
-
     @Override
     protected void onStart() {
         super.onStart();
@@ -365,12 +428,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     protected void onResume() {
         super.onResume();
-        checkGooglePlayServices();
+        //checkGooglePlayServices();
     }
     @Override
     protected void onPause() {
         super.onPause();
-        stopLocationUpdates();
+        //stopLocationUpdates();
     }
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
@@ -438,13 +501,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
-    public void updateOthers(){
+    public void updateOthers(List<Double> othersLocation){
         for(int j=othersMarker.size()-1; j>=0; j--){
             othersMarker.get(j).remove();
         }
         int count = othersLocation.size()-1;
         for(int i=0; i<count; i+=2){
             LatLng latLng = new LatLng(othersLocation.get(i), othersLocation.get(i+1));
+            System.out.println("LOCATION : " + Double.toString(othersLocation.get(i)) + ", " +  Double.toString(othersLocation.get(i + 1)) );
             MarkerOptions markerOptions = new MarkerOptions();
             markerOptions.position(latLng);
             markerOptions.title("people");
@@ -454,4 +518,61 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    @Override
+    public void onResponse(final Message message) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("CODE" + message.getCode());
+                if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_USER_SUCCESS))) {
+                    toast("Game get users successful");
+                    ((OptionsFragment) optionsFragment).onResponse(message);
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_USER_FAIL))) {
+                    toast("Game get users failure");
+                } else if (message.getCode().equals(614)) {
+                    // TESTING TESTING
+                    toast("Location get successful");
+                    //((ChatFragment) chatFragment).onResponse(message);
+                    // TESTING
+                    List<Double> locations = new ArrayList<Double>();
+                    Result[] results = message.getResult();
+                    for (Result result : results) {
+                        //array.add(Double.toString(result.getX()) + ", " + Double.toString(result.getY()));
+                        locations.add(result.getX());
+                        locations.add(result.getY());
+                    }
+                    updateOthers(locations);
+                    //adapter.notifyDataSetChanged();
+                } else if (message.getCode().equals(615)) {
+                    toast("Location get failure");
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_EXIT_SUCCESS))) {
+                    toast("Game exit successful");
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_EXIT_FAIL))) {
+                    toast("Game exit failure");
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_DELETE_SUCCESS))) {
+                    toast("Game delete successful");
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_DELETE_FAIL))) {
+                    toast("Game delete failure");
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onExit() {
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("action", getResources().getInteger(R.integer.GAME_EXIT));
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        WebSocketClient.getClient().send(obj.toString());
+        onBackPressed();
+        onBackPressed();
+    }
+
+    @Override
+    public void onSend(JSONObject obj) {
+        WebSocketClient.getClient().send(obj.toString());
+    }
 }

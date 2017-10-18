@@ -1,5 +1,6 @@
 package com.comp30022.tarth.catchmeifyoucan.UI;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -15,9 +16,9 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.comp30022.tarth.catchmeifyoucan.Account.Communication;
-import com.comp30022.tarth.catchmeifyoucan.Account.Message;
-import com.comp30022.tarth.catchmeifyoucan.Account.WebSocketClient;
+import com.comp30022.tarth.catchmeifyoucan.Server.Communication;
+import com.comp30022.tarth.catchmeifyoucan.Server.Message;
+import com.comp30022.tarth.catchmeifyoucan.Server.WebSocketClient;
 import com.comp30022.tarth.catchmeifyoucan.R;
 
 import org.json.JSONObject;
@@ -29,12 +30,6 @@ import java.net.SocketException;
 import java.util.Enumeration;
 
 public class RegisterActivity extends AppCompatActivity implements Communication {
-
-    private static final Integer ACTION_REGISTER = 100;       // Register action
-    private static final Integer REGISTER_SUCCESS = 300;      // Register success
-    private static final Integer REGISTER_FAIL = 301;         // Register failure
-
-    private WebSocketClient mClient;
 
     TextView textViewSignedup;
 
@@ -50,9 +45,8 @@ public class RegisterActivity extends AppCompatActivity implements Communication
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
-        mClient = new WebSocketClient();
-        mClient.connect();
-        mClient.setmCurrentActivity(this);
+        WebSocketClient.getClient().connect();
+        WebSocketClient.getClient().setActivity(this);
 
         Button buttonCreate = (Button) findViewById(R.id.buttonRegister);
         buttonCreate.setOnClickListener(new View.OnClickListener() {
@@ -73,6 +67,9 @@ public class RegisterActivity extends AppCompatActivity implements Communication
 
     @Override
     public void onBackPressed() {
+        WebSocketClient.getClient().disconnect();
+        Intent returnIntent = new Intent();
+        setResult(Activity.RESULT_OK, returnIntent);
         finish();
     }
 
@@ -81,10 +78,9 @@ public class RegisterActivity extends AppCompatActivity implements Communication
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                finish();
+                onBackPressed();
                 return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -110,7 +106,7 @@ public class RegisterActivity extends AppCompatActivity implements Communication
 
         JSONObject obj = new JSONObject();
         try {
-            obj.put("action", ACTION_REGISTER);
+            obj.put("action", getResources().getInteger(R.integer.REGISTER_ACTION));
             obj.put("client_ip", client_ip);
             obj.put("username", username.getText());
             obj.put("password", password.getText());
@@ -120,18 +116,7 @@ public class RegisterActivity extends AppCompatActivity implements Communication
         } catch(Exception e) {
             e.printStackTrace();
         }
-        mClient.send(obj.toString());
-    }
-
-    private void verify(Message message) {
-        if (message.getCode().equals(REGISTER_SUCCESS)) {
-            toast("Register Success!");
-            finish();
-        } else if (message.getCode().equals(REGISTER_FAIL)) {
-            toast("Register Failed: Please Try Again.");
-        } else {
-            toast("Error: Unknown response received");
-        }
+        WebSocketClient.getClient().send(obj.toString());
     }
 
     // Obtains the IP Address of the host
@@ -161,7 +146,6 @@ public class RegisterActivity extends AppCompatActivity implements Communication
         return hostIp;
     }
 
-
     // Displays a toast message
     private void toast(String text) {
         Spannable centeredText = new SpannableString(text);
@@ -173,13 +157,31 @@ public class RegisterActivity extends AppCompatActivity implements Communication
     }
 
     @Override
-    public void response(final Message message) {
+    public void onResponse(final Message message) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                verify(message);
+                if (message.getCode().equals(getResources().getInteger(R.integer.REGISTER_SUCCESS))) {
+                    toast("Register Success!");
+                    finish();
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.REGISTER_FAIL))) {
+                    toast("Register Failed: Please Try Again.");
+                } else {
+                    toast("Error: Unknown response received");
+                }
             }
         });
     }
+
+    // Resets the current activity connected to the WebSocket upon terminating child activities
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1) {
+            if (resultCode == Activity.RESULT_OK) {
+                WebSocketClient.getClient().setActivity(this);
+            }
+        }
+    }
+
 }
 

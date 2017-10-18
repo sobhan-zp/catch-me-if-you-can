@@ -1,4 +1,4 @@
-package com.comp30022.tarth.catchmeifyoucan.Account;
+package com.comp30022.tarth.catchmeifyoucan.Server;
 
 public class Result {
 
@@ -70,4 +70,5 @@ public class Result {
                 + "}"
         );
     }
+
 }

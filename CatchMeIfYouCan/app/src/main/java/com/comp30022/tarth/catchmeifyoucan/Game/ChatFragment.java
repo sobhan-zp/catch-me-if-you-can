@@ -11,8 +11,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.comp30022.tarth.catchmeifyoucan.Account.Message;
-import com.comp30022.tarth.catchmeifyoucan.Account.Result;
+import com.comp30022.tarth.catchmeifyoucan.Server.Message;
+import com.comp30022.tarth.catchmeifyoucan.Server.Result;
 import com.comp30022.tarth.catchmeifyoucan.R;
 
 import org.json.JSONObject;
@@ -21,14 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ChatFragment extends Fragment {
-
-    private static final Integer GAME_NOTIFICATION_SEND = 721;
-    private static final Integer GAME_NOTIFICATION_RECEIVE = 722;
-
-    private static final Integer MESSAGE_COMMAND_SEND = 606;
-    private static final Integer MESSAGE_COMMAND_SUCCESS = 607;
-    private static final Integer MESSAGE_COMMAND_FAIL = 608;
-    private static final Integer MESSAGE_COMMAND_RECEIVE = 609;
 
     private Activity parent;
 
@@ -76,6 +68,7 @@ public class ChatFragment extends Fragment {
         //array.add(Integer.toString(message.getCode()));
 
         // TESTING
+
         Result[] results = message.getResult();
         for (Result result : results) {
             array.add(Double.toString(result.getX()) + ", " + Double.toString(result.getY()));
@@ -90,7 +83,7 @@ public class ChatFragment extends Fragment {
             //obj.put("action", MESSAGE_COMMAND_SEND);
             //obj.put("message", "test");
             // TESTING
-            obj.put("action", 613);
+            obj.put("action", getResources().getInteger(R.integer.LOCATION_GET));
         } catch(Exception e) {
             e.printStackTrace();
         }

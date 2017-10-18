@@ -1,34 +1,27 @@
 package com.comp30022.tarth.catchmeifyoucan.UI;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.comp30022.tarth.catchmeifyoucan.Account.Communication;
-import com.comp30022.tarth.catchmeifyoucan.Account.Message;
+import com.comp30022.tarth.catchmeifyoucan.Server.Communication;
+import com.comp30022.tarth.catchmeifyoucan.Server.Message;
 import com.comp30022.tarth.catchmeifyoucan.R;
+import com.comp30022.tarth.catchmeifyoucan.Server.WebSocketClient;
 
 import org.json.JSONObject;
 
 /* Opens a detailed view of a user and letting them make changes */
 public class SettingsActivity extends AppCompatActivity implements Communication{
-
-    private static final Integer PROFILE_ACTION_SUCCESS = 203;       // Profile get success
-    private static final Integer PROFILE_ACTION = 102;       // Profile request
-    private static final Integer FRIEND_CHECK = 509;       // Check if friend is online request
-    private static final Integer FRIEND_CHECK_FAIL = 510; // Online check fail
-    private static final Integer FRIEND_CHECK_SUCCESS = 511; // Online check success
-    private static final Integer PROFILE_UPDATE = 103; // Profile Update request
-    private static final Integer PROFILE_UPDATE_SUCCESS = 104; // Profile Update success
-    private static final Integer PROFILE_UPDATE_FAIL = 105; // Profile Update failure
-
 
     EditText EditTextName;
     EditText EditTextLocation;
@@ -37,7 +30,6 @@ public class SettingsActivity extends AppCompatActivity implements Communication
     TextView textViewUsername;
     TextView textViewOnline;
 
-   //private Button buttonGet;
     private Button buttonUpdate;
 
     String getUsername;
@@ -46,9 +38,11 @@ public class SettingsActivity extends AppCompatActivity implements Communication
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
-        LoginActivity.getClient().setmCurrentActivity(this);
+        WebSocketClient.getClient().setActivity(this);
 
-        //buttonGet = (Button) findViewById(R.id.buttonGet);
+        // Add back button
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         buttonUpdate = (Button) findViewById(R.id.buttonUpdate);
 
         // Set unchangable fields
@@ -63,17 +57,9 @@ public class SettingsActivity extends AppCompatActivity implements Communication
         // Get username from dashboard
         Intent intent = getIntent();
         Bundle bd = intent.getExtras();
-        if(bd != null)
-        {
+        if(bd != null) {
             getUsername = (String) bd.get("username");
         }
-
-        /*buttonGet.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });*/
 
         // Update fields
         getInfo();
@@ -86,6 +72,17 @@ public class SettingsActivity extends AppCompatActivity implements Communication
         });
     }
 
+    // Set back button on action bar
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     private void changeSettings() {
         JSONObject obj = new JSONObject();
 
@@ -95,21 +92,21 @@ public class SettingsActivity extends AppCompatActivity implements Communication
         TextView newEmail = (TextView) findViewById(R.id.Email);
 
         try {
-            obj.put("action", PROFILE_UPDATE);
+            obj.put("action", getResources().getInteger(R.integer.PROFILE_UPDATE));
             obj.put("name", name.getText());
             obj.put("email", newEmail.getText());
             obj.put("location", location.getText());
             obj.put("status", status.getText());
-
-            //System.out.println("SentInfo->" + obj.toString(4));
         } catch(Exception e) {
             e.printStackTrace();
         }
-        LoginActivity.getClient().send(obj.toString());
+        WebSocketClient.getClient().send(obj.toString());
     }
 
     @Override
     public void onBackPressed() {
+        Intent returnIntent = new Intent();
+        setResult(Activity.RESULT_OK, returnIntent);
         finish();
     }
 
@@ -118,12 +115,12 @@ public class SettingsActivity extends AppCompatActivity implements Communication
         JSONObject obj = new JSONObject();
 
         try {
-            obj.put("action", PROFILE_ACTION);
+            obj.put("action", getResources().getInteger(R.integer.PROFILE_ACTION));
             //System.out.println("SentInfo->" + obj.toString(4));
         } catch(Exception e) {
             e.printStackTrace();
         }
-        LoginActivity.getClient().send(obj.toString());
+        WebSocketClient.getClient().send(obj.toString());
     }
 
     /* Sends request to see if user is online */
@@ -132,12 +129,12 @@ public class SettingsActivity extends AppCompatActivity implements Communication
 
         try {
             obj.put("username", user);
-            obj.put("action", FRIEND_CHECK);
+            obj.put("action", getResources().getInteger(R.integer.FRIEND_CHECK));
             //System.out.println("SentOnline->" + obj.toString(4));
         } catch(Exception e) {
             e.printStackTrace();
         }
-        LoginActivity.getClient().send(obj.toString());
+        WebSocketClient.getClient().send(obj.toString());
     }
 
     /* Handles the response logic from a message sent by the server*/
@@ -151,7 +148,7 @@ public class SettingsActivity extends AppCompatActivity implements Communication
         if (message.getAction() != null) {
 
             // Update fields with latest information before user is allowed to change
-            if (message.getAction().equals(PROFILE_ACTION_SUCCESS)) {
+            if (message.getAction().equals(getResources().getInteger(R.integer.PROFILE_GET))) {
 
                 textViewUsername.setText("@" + message.getUsername());
                 getOnline(message.getUsername());
@@ -177,20 +174,20 @@ public class SettingsActivity extends AppCompatActivity implements Communication
 
         } else if (message.getCode() != null) {
             // Update UI to show Online
-            if (message.getCode().equals(FRIEND_CHECK_SUCCESS)) {
+            if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_CHECK_SUCCESS))) {
                 textViewOnline.setTextColor(Color.parseColor("#16B72E"));
                 textViewOnline.setText("ONLINE");
                 textViewOnline.setTypeface(null, Typeface.BOLD_ITALIC);
             // Update UI to show Offline
-            } else if (message.getCode().equals(FRIEND_CHECK_FAIL)) {
+            } else if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_CHECK_FAIL))) {
                 textViewOnline.setText("OFFLINE");
                 textViewOnline.setTextColor(Color.parseColor("#B72616"));
                 textViewOnline.setTypeface(null, Typeface.BOLD_ITALIC);
             // manages response to profile update request
-            } else if (message.getCode().equals(PROFILE_UPDATE_SUCCESS)) {
+            } else if (message.getCode().equals(getResources().getInteger(R.integer.PROFILE_UPDATE_SUCCESS))) {
                 getInfo();
                 toast("Profile Update Success");
-            } else if (message.getCode().equals(PROFILE_UPDATE_FAIL)) {
+            } else if (message.getCode().equals(getResources().getInteger(R.integer.PROFILE_UPDATE_FAIL))) {
                 //getInfo();
                 toast("Profile Update Failure: Try Again Later");
             }
@@ -201,13 +198,63 @@ public class SettingsActivity extends AppCompatActivity implements Communication
 
     /* Grabs response from server */
     @Override
-    public void response(final Message message) {
+    public void onResponse(final Message message) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                verify(message);
+                if (message.getAction() != null) {
+                    // Update fields with latest information before user is allowed to change
+                    if (message.getAction().equals(getResources().getInteger(R.integer.PROFILE_GET))) {
+                        textViewUsername.setText("@" + message.getUsername());
+                        getOnline(message.getUsername());
+
+                        EditTextLocation.setText(message.getLocation());
+                        EditTextStatus.setText(message.getStatus());
+                        EditTextName.setText(message.getName());
+                        EditTextEmail.setText(message.getEmail());
+
+                        if (message.getLocation() == "") {
+                            EditTextLocation.setText("Enter Location Here");
+                        }
+                        if (message.getStatus() == "") {
+                            EditTextStatus.setText("Enter Custom Status Here");
+                        }
+                        // System.out.println("Profile get success");
+                    }
+                } else if (message.getCode() != null) {
+                    // Update UI to show Online
+                    if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_CHECK_SUCCESS))) {
+                        textViewOnline.setTextColor(Color.parseColor("#16B72E"));
+                        textViewOnline.setText("ONLINE");
+                        textViewOnline.setTypeface(null, Typeface.BOLD_ITALIC);
+                        // Update UI to show Offline
+                    } else if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_CHECK_FAIL))) {
+                        textViewOnline.setText("OFFLINE");
+                        textViewOnline.setTextColor(Color.parseColor("#B72616"));
+                        textViewOnline.setTypeface(null, Typeface.BOLD_ITALIC);
+                        // manages response to profile update request
+                    } else if (message.getCode().equals(getResources().getInteger(R.integer.PROFILE_UPDATE_SUCCESS))) {
+                        getInfo();
+                        toast("Profile Update Successful");
+                    } else if (message.getCode().equals(getResources().getInteger(R.integer.PROFILE_UPDATE_FAIL))) {
+                        //getInfo();
+                        toast("Profile Update Failure. Try again later.");
+                    }
+                } else {
+                    System.out.println("User Error: Unknown response received");
+                }
             }
         });
+    }
+
+    // Resets the current activity connected to the WebSocket upon terminating child activities
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1) {
+            if (resultCode == Activity.RESULT_OK) {
+                WebSocketClient.getClient().setActivity(this);
+            }
+        }
     }
 
     // Displays a toast message

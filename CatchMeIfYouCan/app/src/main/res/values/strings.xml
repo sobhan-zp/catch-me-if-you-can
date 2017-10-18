@@ -22,6 +22,11 @@
     <string name="login_subtitle">Your username and password are case-sensitive.</string>
     <string name="register_subtitle">Your username and password are case-sensitive. They can be any alphanumeric characters.</string>
     <string name="registered_title">Not Registered? Click here to sign-up.</string>
+
+    <!-- Server related strings -->
+    <string name="SERVER_IP">ws://45.77.49.3</string>
+    <string name="SERVER2_IP">ws://35.197.172.195</string>
+
     <string name="signedup_title">Already signed up? Click here to login.</string>
     <string name="main_title">Let\'s Start!</string>
     <string name="main_subtitle">Login or sign up for an account to play</string>
@@ -32,4 +37,5 @@
     <string name="exit_app_title">Exiting App...</string>
     <string name="exit_app_message">Are you sure you want to exit?</string>
     <string name="add_title">Ask your friend for their username and enter it below</string>
+
 </resources>

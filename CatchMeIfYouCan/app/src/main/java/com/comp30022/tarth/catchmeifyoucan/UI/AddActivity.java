@@ -4,23 +4,20 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.comp30022.tarth.catchmeifyoucan.Account.Communication;
-import com.comp30022.tarth.catchmeifyoucan.Account.Message;
+import com.comp30022.tarth.catchmeifyoucan.Server.Communication;
+import com.comp30022.tarth.catchmeifyoucan.Server.Message;
 import com.comp30022.tarth.catchmeifyoucan.R;
+import com.comp30022.tarth.catchmeifyoucan.Server.WebSocketClient;
 
 import org.json.JSONObject;
 
 public class AddActivity extends AppCompatActivity implements Communication {
-
-    private static final Integer FRIEND_ADD = 506;            // Friend add request
-    private static final Integer FRIEND_ADD_FAIL = 507;       // Friend add failure
-    private static final Integer FRIEND_ADD_SUCCESS = 508;    // Friend add success
 
     private Button buttonAdd;
     private EditText editTextAdd;
@@ -29,7 +26,10 @@ public class AddActivity extends AppCompatActivity implements Communication {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add);
-        LoginActivity.getClient().setmCurrentActivity(this);
+        WebSocketClient.getClient().setActivity(this);
+
+        // Add back button
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         buttonAdd = (Button) findViewById(R.id.buttonAdd);
         editTextAdd = (EditText) findViewById(R.id.editTextAdd);
@@ -47,12 +47,23 @@ public class AddActivity extends AppCompatActivity implements Communication {
     private void addFriend(String username) {
         JSONObject obj = new JSONObject();
         try {
-            obj.put("action", FRIEND_ADD);
+            obj.put("action", getResources().getInteger(R.integer.FRIEND_ADD));
             obj.put("username", username);
         } catch(Exception e) {
             e.printStackTrace();
         }
-        LoginActivity.getClient().send(obj.toString());
+        WebSocketClient.getClient().send(obj.toString());
+    }
+
+    // Set back button on action bar
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     // Returns to the previous activity
@@ -65,22 +76,27 @@ public class AddActivity extends AppCompatActivity implements Communication {
 
     // Called by the WebSocket upon receiving a message
     @Override
-    public void response(final Message message) {
+    public void onResponse(final Message message) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                verify(message);
+                if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_ADD_SUCCESS))) {
+                    toast("Friend add success");
+                    onBackPressed();
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_ADD_FAIL))) {
+                    toast("Friend add failure");
+                }
             }
         });
     }
 
-    // Verifies responses from the server
-    private void verify(Message message) {
-        if (message.getCode().equals(FRIEND_ADD_SUCCESS)) {
-            toast("Friend add success");
-            onBackPressed();
-        } else if (message.getCode().equals(FRIEND_ADD_FAIL)) {
-            toast("Friend add failure");
+    // Resets the current activity connected to the WebSocket upon terminating child activities
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1) {
+            if (resultCode == Activity.RESULT_OK) {
+                WebSocketClient.getClient().setActivity(this);
+            }
         }
     }
 

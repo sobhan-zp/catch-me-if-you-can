@@ -6,43 +6,37 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.comp30022.tarth.catchmeifyoucan.Account.Communication;
-import com.comp30022.tarth.catchmeifyoucan.Account.Message;
-import com.comp30022.tarth.catchmeifyoucan.Account.Result;
-import com.comp30022.tarth.catchmeifyoucan.Account.User;
+import com.comp30022.tarth.catchmeifyoucan.Server.Communication;
+import com.comp30022.tarth.catchmeifyoucan.Server.Message;
+import com.comp30022.tarth.catchmeifyoucan.Server.Result;
 import com.comp30022.tarth.catchmeifyoucan.R;
+import com.comp30022.tarth.catchmeifyoucan.Server.WebSocketClient;
 
 import org.json.JSONObject;
 
 /* Opens a detailed view of a user by querying the server */
 public class UserActivity extends Activity implements Communication {
 
-
-    // Server protocol codes
-    private static final Integer FRIEND_SEARCH = 503;       // Profile request
-    private static final Integer FRIEND_SEARCH_SUCCESS = 505;       // Profile get success
-    private static final Integer FRIEND_CHECK = 509;       // Check if friend is online request
-    private static final Integer FRIEND_CHECK_FAIL = 510; // Online check fail
-    private static final Integer FRIEND_CHECK_SUCCESS = 511; // Online check success
-
     TextView textViewName;
     TextView textViewUsername;
     TextView textViewLocation;
     TextView textViewStatus;
     TextView textViewOnline;
+
     //private Button buttonGet;
     //private Button buttonChat;
     private ImageButton fabChat;
 
     //    ImageView backdropImg;
     ImageView profilePicture;
-    User profile;
+
     String getUsername;
 
     @Override
@@ -50,7 +44,7 @@ public class UserActivity extends Activity implements Communication {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user);
         // Set server to send responses back to this class
-        LoginActivity.getClient().setmCurrentActivity(this);
+        WebSocketClient.getClient().setActivity(this);
 
         //buttonGet = (Button) findViewById(R.id.buttonGet);
         //buttonChat = (Button) findViewById(R.id.buttonChat);
@@ -101,6 +95,7 @@ public class UserActivity extends Activity implements Communication {
         });*/
 
         fabChat.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
                 openChat(getUsername);
@@ -110,6 +105,8 @@ public class UserActivity extends Activity implements Communication {
 
     @Override
     public void onBackPressed() {
+        Intent returnIntent = new Intent();
+        setResult(Activity.RESULT_OK, returnIntent);
         finish();
     }
 
@@ -117,7 +114,7 @@ public class UserActivity extends Activity implements Communication {
     private void openChat(String friend) {
         Intent intent = new Intent(this, ChatActivity.class);
         intent.putExtra("friend", friend);
-        startActivity(intent);
+        startActivityForResult(intent, 1);
     }
 
     /* Sends server a JSON request for the information of a user, takes in unique username as string*/
@@ -127,13 +124,13 @@ public class UserActivity extends Activity implements Communication {
 
         try {
             obj.put("username", uname);
-            obj.put("action", FRIEND_SEARCH);
+            obj.put("action", getResources().getInteger(R.integer.FRIEND_SEARCH));
             //System.out.println("SentInfo->" + obj.toString(4));
         } catch(Exception e) {
             e.printStackTrace();
         }
         // send to server
-        LoginActivity.getClient().send(obj.toString());
+        WebSocketClient.getClient().send(obj.toString());
     }
 
     /* Sends server a JSON request to check if user is online*/
@@ -142,12 +139,12 @@ public class UserActivity extends Activity implements Communication {
 
         try {
             obj.put("username", getUsername);
-            obj.put("action", FRIEND_CHECK);
+            obj.put("action", getResources().getInteger(R.integer.FRIEND_CHECK));
             //System.out.println("SentOnline->" + obj.toString(4));
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        LoginActivity.getClient().send(obj.toString());
+        WebSocketClient.getClient().send(obj.toString());
     }
 
     // Handles server response logic
@@ -155,7 +152,7 @@ public class UserActivity extends Activity implements Communication {
         //System.out.println("Message received");
         System.out.println("getCode->" + message.getCode());
 
-        if (message.getCode().equals(FRIEND_SEARCH_SUCCESS)) {
+        if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_SEARCH_SUCCESS))) {
             // Strip result from JSON
             Result profile = message.getResult()[0];
 
@@ -178,31 +175,67 @@ public class UserActivity extends Activity implements Communication {
         }
 
         // If online
-        if (message.getCode().equals(FRIEND_CHECK_SUCCESS)) {
+        if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_CHECK_SUCCESS))) {
             textViewOnline.setTextColor(Color.parseColor("#16B72E"));
             textViewOnline.setText("ONLINE");
             textViewOnline.setTypeface(null, Typeface.BOLD_ITALIC);
 
         // If offline
-        } else if (message.getCode().equals(FRIEND_CHECK_FAIL)) {
+        } else if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_CHECK_FAIL))) {
             textViewOnline.setText("OFFLINE");
             textViewOnline.setTextColor(Color.parseColor("#B72616"));
             textViewOnline.setTypeface(null, Typeface.BOLD_ITALIC);
         } else {
             System.out.println("User Error: Unknown response received");
         }
-
     }
 
         /* Grabs response from server */
     @Override
-    public void response(final Message message) {
+    public void onResponse(final Message message) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                verify(message);
+                if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_SEARCH_SUCCESS))) {
+                    // Strip result from JSON
+                    Result profile = message.getResult()[0];
+
+                    // Assign updated fields to UI
+                    textViewName.setText(profile.getName());
+                    textViewUsername.setText("@" + profile.getUsername());
+                    textViewLocation.setText(profile.getX() + "," + profile.getY());
+                    textViewStatus.setText(profile.getStatus());
+
+                    getOnline();
+                }
+
+                // If online
+                if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_CHECK_SUCCESS))) {
+                    textViewOnline.setTextColor(Color.parseColor("#16B72E"));
+                    textViewOnline.setText("ONLINE");
+                    textViewOnline.setTypeface(null, Typeface.BOLD_ITALIC);
+
+                    // If offline
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_CHECK_FAIL))) {
+                    textViewOnline.setText("OFFLINE");
+                    textViewOnline.setTextColor(Color.parseColor("#B72616"));
+                    textViewOnline.setTypeface(null, Typeface.BOLD_ITALIC);
+                } else {
+                    System.out.println("User Error: Unknown response received");
+                }
             }
         });
     }
+
+    // Resets the current activity connected to the WebSocket upon terminating child activities
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1) {
+            if (resultCode == Activity.RESULT_OK) {
+                WebSocketClient.getClient().setActivity(this);
+            }
+        }
+    }
+
 }
 
