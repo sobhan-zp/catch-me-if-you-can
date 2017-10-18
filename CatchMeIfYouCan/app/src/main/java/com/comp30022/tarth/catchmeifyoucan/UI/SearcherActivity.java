@@ -45,6 +45,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class SearcherActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
@@ -122,7 +124,7 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
         MenuItem item = navigation.getMenu().getItem(MAP_ITEM_ID);
         switchFragment(item);
 
-        sendLocation();
+        continuousUpdate();
     }
 
     private void switchFragment(MenuItem item) {
@@ -306,7 +308,6 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
             mMap.animateCamera(CameraUpdateFactory.zoomTo(12));
 
             toast("Your Current Location");
-            sendLocation();
         }
 
 
@@ -517,7 +518,6 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                System.out.println("CODE" + message.getCode());
                 if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_USER_SUCCESS))) {
                     toast("Game get users successful");
                     ((OptionsFragment) optionsFragment).onResponse(message);
@@ -586,5 +586,22 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
             e.printStackTrace();
         }
         WebSocketClient.getClient().send(obj.toString());
+    }
+
+    private void continuousUpdate() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                int delay = 0; // 0 seconds
+                int period = 5000; // 5 seconds
+                Timer timer = new Timer();
+                timer.scheduleAtFixedRate(new TimerTask() {
+                    @Override
+                    public void run() {
+                        sendLocation();
+                    }
+                }, delay, period);
+            }
+        });
     }
 }

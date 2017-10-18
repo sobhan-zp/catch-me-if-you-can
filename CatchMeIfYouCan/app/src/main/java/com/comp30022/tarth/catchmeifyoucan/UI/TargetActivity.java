@@ -123,6 +123,7 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
 
         MenuItem item = navigation.getMenu().getItem(MAP_ITEM_ID);
         switchFragment(item);
+        continuousUpdate();
     }
 
     private void switchFragment(MenuItem item) {
@@ -531,9 +532,12 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
             markerOptions.position(latLng);
             markerOptions.title("people");
             markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
-            Marker oMarker = mMap.addMarker(markerOptions);
-            othersMarker.add(oMarker);
+            if (mMap != null) {
+                Marker oMarker = mMap.addMarker(markerOptions);
+                othersMarker.add(oMarker);
+            }
         }
+
     }
 
     @Override
@@ -594,7 +598,21 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
         WebSocketClient.getClient().send(obj.toString());
     }
 
-    private void sendLocation() {
+    private void getLocation() {
+        // Queries server for location updates
+        JSONObject obj = new JSONObject();
+        try {
+            //obj.put("action", MESSAGE_COMMAND_SEND);
+            //obj.put("message", "test");
+            // TESTING
+            obj.put("action", getResources().getInteger(R.integer.LOCATION_GET));
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        onSend(obj);
+    }
+
+    private void continuousUpdate() {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -604,7 +622,7 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
                 timer.scheduleAtFixedRate(new TimerTask() {
                     @Override
                     public void run() {
-                        // call function
+                        getLocation();
                     }
                 }, delay, period);
             }
