@@ -17,7 +17,6 @@ public class MainActivity extends Activity {
     Button buttonRegister;
     Button buttonLogin;
     Button buttonExit;
-    Button buttonAR;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,14 +45,6 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 logoutWarning();
-            }
-        });
-
-        buttonAR = (Button) findViewById(R.id.buttonAR);
-        buttonAR.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ar(v);
             }
         });
     }
@@ -94,14 +85,5 @@ public class MainActivity extends Activity {
         startActivity(intent);
     }
 
-    public void exit(View view) {
-        finish();
-        System.exit(0);
-    }
-
-    public void ar(View view) {
-        Intent intent = new Intent(this, ArActivity.class);
-        startActivity(intent);
-    }
 }
 
