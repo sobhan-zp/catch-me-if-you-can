@@ -147,50 +147,7 @@ public class UserActivity extends Activity implements Communication {
         WebSocketClient.getClient().send(obj.toString());
     }
 
-    // Handles server response logic
-    private void verify(Message message) {
-        //System.out.println("Message received");
-        System.out.println("getCode->" + message.getCode());
-
-        if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_SEARCH_SUCCESS))) {
-            // Strip result from JSON
-            Result profile = message.getResult()[0];
-
-            /*System.out.println("recvname->" + profile.getName());
-            System.out.println("recvusername->" + profile.getUsername());
-            System.out.println("recvemail->" + profile.getEmail());
-            System.out.println("recvstatus->" + profile.getStatus());
-            System.out.println("recvlocation->" + profile.getLocation());*/
-
-            // Assign updated fields to UI
-            textViewName.setText(profile.getName());
-            textViewUsername.setText("@" + profile.getUsername());
-            textViewLocation.setText("Location: " + profile.getLocation());
-            //textViewLocation.setText(profile.getX() + "," + profile.getY());
-            textViewStatus.setText(profile.getStatus());
-
-            getOnline();
-
-            //System.out.println("Profile get success");
-        }
-
-        // If online
-        if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_CHECK_SUCCESS))) {
-            textViewOnline.setTextColor(Color.parseColor("#16B72E"));
-            textViewOnline.setText("ONLINE");
-            textViewOnline.setTypeface(null, Typeface.BOLD_ITALIC);
-
-        // If offline
-        } else if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_CHECK_FAIL))) {
-            textViewOnline.setText("OFFLINE");
-            textViewOnline.setTextColor(Color.parseColor("#B72616"));
-            textViewOnline.setTypeface(null, Typeface.BOLD_ITALIC);
-        } else {
-            System.out.println("User Error: Unknown response received");
-        }
-    }
-
-        /* Grabs response from server */
+    /* Grabs response from server */
     @Override
     public void onResponse(final Message message) {
         runOnUiThread(new Runnable() {

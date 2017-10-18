@@ -217,19 +217,6 @@ public class DashboardActivity extends Activity implements Communication {
         startActivityForResult(intent, 1);
     }
 
-    // Navigates to User Activity
-    private void openUser() {
-        Intent intent = new Intent(this, UserActivity.class);
-        startActivityForResult(intent, 1);
-    }
-
-    // Navigates to Game Activity
-    private void openGame(Message message) {
-        Intent intent = new Intent(this, GameActivity.class);
-        intent.putExtra("game_id", message.getGame_id());
-        startActivityForResult(intent, 1);
-    }
-
     // Navigates to Searcher activity
     private void openSearcher(Message message) {
         Intent intent = new Intent(this, SearcherActivity.class);
