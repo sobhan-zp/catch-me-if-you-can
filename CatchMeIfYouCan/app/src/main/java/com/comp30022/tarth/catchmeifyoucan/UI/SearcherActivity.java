@@ -345,9 +345,6 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
                 nearWp = true;
                 theWpId = mMarkers.get(nearestWp).getId();
             }
-            mMarkers.get(nearestWp).setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
-            nearWp = true;
-            theWpId = mMarkers.get(nearestWp).getId();
         }
     }
 
