@@ -68,7 +68,7 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
 
     boolean addWaypoints = false;
 
-    List<Double> cMarkers = new ArrayList<Double>();//coordinates of way points
+    List<Double> cWaypoints = new ArrayList<Double>();//coordinates of way points
     List<Marker> mMarkers = new ArrayList<Marker>();//markers of  way points
 
     private List<Marker> othersMarker = new ArrayList<Marker>();//markers of other users
@@ -390,6 +390,7 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
 
             case R.id.B_finishAddWP:
                 addWaypoints = false;
+                sendWaypoints();
                 break;
         }
     }
@@ -440,8 +441,8 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
                     .snippet(latLng.toString()));
             //waypoint.showInfoWindow();
 
-            cMarkers.add(latLng.latitude);
-            cMarkers.add(latLng.longitude);
+            cWaypoints.add(latLng.latitude);
+            cWaypoints.add(latLng.longitude);
             mMarkers.add(waypoint);
         }
     }
@@ -506,6 +507,10 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
                     toast("Game delete successful");
                 } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_DELETE_FAIL))) {
                     toast("Game delete failure");
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_ADD_WAYPOINT_SUCCESS))) {
+                    toast("Waypoint add success");
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_ADD_WAYPOINT_FAIL))) {
+                    toast("Waypoint add failure");
                 }
             }
         });
@@ -575,4 +580,25 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
             }
         });
     }
+
+    private void sendWaypoints() {
+        for (int i = 0; i < (cWaypoints.size() - 1); i +=2) {
+            JSONObject loc = new JSONObject();
+            try {
+                loc.put("x", cWaypoints.get(i));
+                loc.put("y", cWaypoints.get(i + 1));
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
+            JSONObject obj = new JSONObject();
+            try {
+                obj.put("action", getResources().getInteger(R.integer.GAME_ADD_WAYPOINT));
+                obj.put("info", "Waypoint " + Integer.toString(i / 2));
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
+            onSend(obj);
+        }
+    }
+
 }
