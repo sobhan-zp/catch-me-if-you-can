@@ -471,7 +471,6 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
                 othersMarker.add(oMarker);
             }
         }
-
     }
 
     @Override
