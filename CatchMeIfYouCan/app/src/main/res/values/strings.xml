@@ -22,6 +22,7 @@
     <string name="login_subtitle">Your username and password are case-sensitive.</string>
     <string name="register_subtitle">Your username and password are case-sensitive. They can be any alphanumeric characters.</string>
     <string name="registered_title">Not Registered? Click here to sign-up.</string>
+    <string name ="ok">OK</string>
 
     <!-- Server related strings -->
     <string name="SERVER_IP">ws://45.77.49.3</string>
@@ -38,5 +39,4 @@
     <string name="exit_app_message">Are you sure you want to exit?</string>
     <string name="add_title">Ask your friend for their username and enter it below</string>
 
-    <string name ="ok">OK</string>
 </resources>

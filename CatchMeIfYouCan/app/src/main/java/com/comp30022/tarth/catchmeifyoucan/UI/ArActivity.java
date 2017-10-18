@@ -25,9 +25,7 @@ import android.hardware.Camera;
 import android.content.pm.PackageManager;
 import android.app.ActionBar.LayoutParams;
 
-
 import com.comp30022.tarth.catchmeifyoucan.Game.ArCamera;
-
 import com.comp30022.tarth.catchmeifyoucan.Game.ArGraphics;
 import com.comp30022.tarth.catchmeifyoucan.R;
 
@@ -170,6 +168,11 @@ public class ArActivity extends Activity implements SensorEventListener, View.On
         finish();
     }
 
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+    }
+
     public boolean checkCameraPermission(){
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.CAMERA)
@@ -195,7 +198,6 @@ public class ArActivity extends Activity implements SensorEventListener, View.On
             return true;
         }
     }
-
 
     //Required for sensors
     @Override
@@ -231,7 +233,6 @@ public class ArActivity extends Activity implements SensorEventListener, View.On
 
         sensorManager.getOrientation(newRotationMatrix, mOrientationAngles);
     }
-
 
 
     /** Check if this device has a camera */
