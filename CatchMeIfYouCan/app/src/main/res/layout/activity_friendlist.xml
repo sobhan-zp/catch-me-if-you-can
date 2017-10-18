@@ -9,7 +9,8 @@
         android:drawSelectorOnTop="false"
         android:layout_alignParentTop="true"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        />
 
     <!--TextView
         android:id="@android:id/empty"
@@ -19,5 +20,16 @@
         android:textAlignment="center"
         android:textSize="20dp"
         android:text="No friends :(" /-->
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/floatingAdd"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="30dp"
+        android:layout_marginBottom="30dp"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_add_black_48dp"
+        android:layout_width="wrap_content"
+        android:clickable="true"/>
 
 </RelativeLayout>
