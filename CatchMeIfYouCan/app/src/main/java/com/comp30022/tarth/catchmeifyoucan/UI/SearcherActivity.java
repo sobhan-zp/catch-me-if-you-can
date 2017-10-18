@@ -50,8 +50,8 @@ import java.util.TimerTask;
 
 public class SearcherActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
-        LocationListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnMarkerDragListener,
-        GoogleMap.OnMapClickListener, Communication, OptionsFragment.FragmentCommunication,
+        LocationListener, GoogleMap.OnMarkerClickListener,
+        Communication, OptionsFragment.FragmentCommunication,
         ChatFragment.FragmentCommunication {
 
     private GoogleMap mMap;
@@ -66,11 +66,12 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
     private static int DISPLACEMENT = 10; // METERS
     double curr_latitude, curr_longitude;
     double end_latitude, end_longitude;
-    boolean addWaypoints = false;
     MapDirectionsData lastDirectionsData = null;
+
     List<Marker> mMarkers = new ArrayList<Marker>();
     private static final double WP_RADIUS = 10;
     private boolean nearWp = false;
+    private String theWpId = "";
 
     private List<Marker> othersMarker = new ArrayList<Marker>();
 
@@ -82,6 +83,10 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
     Fragment chatFragment;
     Fragment optionsFragment;
     private BottomNavigationView navigation;
+
+    private Marker tMarker = null;
+    private Double targetX;
+    private Double targetY;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -262,9 +267,7 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
 
         // set map options
         mMap.getUiSettings().setZoomControlsEnabled(true);
-        mMap.setOnMarkerDragListener(this);
         mMap.setOnMarkerClickListener(this);
-        mMap.setOnMapClickListener(this);
     }
 
     protected synchronized void buildGoogleApiClient() {
@@ -279,9 +282,9 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
     @Override
     public void onLocationChanged(Location location) {
 
-//        if (mCurrLocationMarker != null) {
-//            mCurrLocationMarker.remove();
-//        }
+        if (mCurrLocationMarker != null) {
+            mCurrLocationMarker.remove();
+        }
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -303,17 +306,13 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
             markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
             mCurrLocationMarker = mMap.addMarker(markerOptions);
 
+
             //move map camera
             mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
             mMap.animateCamera(CameraUpdateFactory.zoomTo(12));
 
             toast("Your Current Location");
         }
-
-
-        //move map camera
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(12));
 
         if(mCurrLocationMarker != null){
             String currLocation = curr_latitude+","+curr_longitude;
@@ -326,12 +325,14 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
     protected void checkNearWaypoint(){
         int count = mMarkers.size();
         for(int i=0; i<count; i++){
-            double wp_latitude = mMarkers.get(i).getPosition().latitude;
-            double wp_longitude = mMarkers.get(i).getPosition().longitude;
+            Marker theWP = mMarkers.get(i);
+            double wp_latitude = theWP.getPosition().latitude;
+            double wp_longitude = theWP.getPosition().longitude;
             if((curr_latitude-wp_latitude)*(curr_latitude-wp_latitude)+(curr_longitude-wp_longitude)*(curr_longitude-wp_longitude)
                     <= WP_RADIUS*WP_RADIUS){
-                toast("A waypoint is nearby");
+                theWP.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
                 nearWp = true;
+                theWpId = theWP.getId();
                 break;
             }
         }
@@ -397,12 +398,17 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
     public void onClick(View v) {
         Object dataTransfer[] = new Object[3];
 
-        if(v.getId() == R.id.B_ar) {
-            if(nearWp){
-                nearWp = false;
-                Intent intent = new Intent(this, DashboardActivity.class);
-                startActivity(intent);
+        if(v.getId() == R.id.B_route) {
+            if(lastDirectionsData != null){
+                lastDirectionsData.clearPolyline();
             }
+            String url = getDirectionsUrl();
+            MapDirectionsData directionsData = new MapDirectionsData();
+            dataTransfer[0] = mMap;
+            dataTransfer[1] = url;
+            dataTransfer[2] = new LatLng(end_latitude, end_longitude);
+            directionsData.execute(dataTransfer);
+            lastDirectionsData = directionsData;
         }
     }
 
@@ -449,50 +455,25 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        marker.setDraggable(true);
-        return false;
-    }
+//        marker.setDraggable(true);
+        if(marker.getId().equals(theWpId)){
 
-    @Override
-    public void onMarkerDragStart(Marker marker) {
 
-    }
+            // ADD AR FRAGMENT HERE
 
-    @Override
-    public void onMarkerDrag(Marker marker) {
 
-    }
-
-    @Override
-    public void onMarkerDragEnd(Marker marker) {
-        end_latitude = marker.getPosition().latitude;
-        end_longitude =  marker.getPosition().longitude;
-
-        Log.d("end_lat",""+end_latitude);
-        Log.d("end_lng",""+end_longitude);
-    }
-
-    @Override
-    public void onMapClick(LatLng latLng) {
-        if(addWaypoints){
-            Marker waypoint = mMap.addMarker(new MarkerOptions()
-                    .position(latLng)
-                    .title("waypoint")
-                    .snippet(latLng.toString()));
-            //waypoint.showInfoWindow();
-
-            mMarkers.add(waypoint);
+            // remoce the way point from the wp list
+            mMarkers.remove(marker);
+            // remove the way point from the map
+            marker.remove();
+            nearWp = false;
         }
+        return true;
     }
 
     // Displays a toast message
     private void toast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-    }
-
-    // Broadcasts location to server
-    private void broadcastLocation() {
-        //curr_latitude, curr_longitude
     }
 
 
@@ -508,8 +489,26 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
             markerOptions.position(latLng);
             markerOptions.title("people");
             markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
-            Marker oMarker = mMap.addMarker(markerOptions);
-            othersMarker.add(oMarker);
+            if (mMap != null) {
+                Marker oMarker = mMap.addMarker(markerOptions);
+                othersMarker.add(oMarker);
+            }
+        }
+    }
+
+    public void updateTarget(){
+        if(tMarker != null){
+            tMarker.remove();
+        }
+        LatLng latLng = new LatLng(targetX, targetY);
+        end_latitude = targetX;
+        end_longitude = targetY;
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.position(latLng);
+        markerOptions.title("target");
+        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET));
+        if (mMap != null) {
+            tMarker = mMap.addMarker(markerOptions);
         }
     }
 
@@ -550,6 +549,14 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
                     toast("Game delete successful");
                 } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_DELETE_FAIL))) {
                     toast("Game delete failure");
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.LOCATION_GET2_SUCCESS))) {
+                    System.out.println("Target location receive successful");
+                    Result result = message.getResult()[0];
+                    targetX = result.getX();
+                    targetY = result.getY();
+                    updateTarget();
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.LOCATION_GET2_FAIL))) {
+                    System.out.println("Target location receive failed");
                 }
             }
         });
@@ -591,6 +598,34 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
         WebSocketClient.getClient().send(obj.toString());
     }
 
+    private void getTargetLocation() {
+        // Queries server for location updates
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("action", getResources().getInteger(R.integer.LOCATION_GET2));
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        onSend(obj);
+    }
+
+    private void addWp(List<Double> listWP){
+        if(listWP.size() > 0) {
+            int count = listWP.size() - 1;
+            for (int i = 0; i < count; i += 2) {
+                LatLng latLng = new LatLng(listWP.get(i), listWP.get(i + 1));
+                MarkerOptions markerOptions = new MarkerOptions();
+                markerOptions.position(latLng);
+                markerOptions.title("Way Point");
+                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
+                if (mMap != null) {
+                    Marker oMarker = mMap.addMarker(markerOptions);
+                    mMarkers.add(oMarker);
+                }
+            }
+        }
+    }
+
     private void continuousUpdate() {
         runOnUiThread(new Runnable() {
             @Override
@@ -602,9 +637,11 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
                     @Override
                     public void run() {
                         sendLocation();
+                        getTargetLocation();
                     }
                 }, delay, period);
             }
         });
     }
+
 }
