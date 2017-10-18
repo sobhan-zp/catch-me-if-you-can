@@ -67,6 +67,7 @@ public class ArActivity extends Activity implements SensorEventListener, View.On
     private String[] riddlesArray;
     private String[] correctAnswers;
     private String[] wrongAnswers;
+    private boolean[] usedRiddles;
 
     //Dialog Constructors
     private AlertDialog.Builder riddleDialog;
@@ -114,6 +115,7 @@ public class ArActivity extends Activity implements SensorEventListener, View.On
             failDialog = new AlertDialog.Builder(this);
             Resources res = getResources();
             riddlesArray = res.getStringArray(R.array.riddles_array);
+            usedRiddles = new boolean[riddlesArray.length];
             correctAnswers = res.getStringArray(R.array.correct_answers);
             wrongAnswers = res.getStringArray(R.array.wrong_answers);
         }
@@ -302,6 +304,10 @@ public class ArActivity extends Activity implements SensorEventListener, View.On
                     correctAns = false;
                     lastTime = System.currentTimeMillis();
                     int i = (int) (Math.random() * (riddlesArray.length));
+                    while(usedRiddles[i]){
+                        i = (int) (Math.random() * (riddlesArray.length));
+                    }
+                    usedRiddles[i] = true;
                     final int ansPos = (int)(Math.random() * 4);
                     String[] answers = arrayCombine(correctAnswers[i], Arrays.copyOfRange(wrongAnswers, i*3, i*3 + 3), ansPos);
                     riddleDialog.setTitle(riddlesArray[i]).setSingleChoiceItems(answers, -1,
