@@ -202,7 +202,10 @@ public class SettingsActivity extends AppCompatActivity implements Communication
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (message.getAction() != null) {
+
+                if (message.getAction() != null && message.getAction() == 601) {
+                    toast("New message from " + message.getFrom() + ": " + message.getMessage());
+                } else if (message.getAction() != null) {
                     // Update fields with latest information before user is allowed to change
                     if (message.getAction().equals(getResources().getInteger(R.integer.PROFILE_GET))) {
                         textViewUsername.setText("@" + message.getUsername());

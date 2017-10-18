@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.comp30022.tarth.catchmeifyoucan.Server.Communication;
 import com.comp30022.tarth.catchmeifyoucan.Server.Message;
@@ -190,13 +191,20 @@ public class UserActivity extends Activity implements Communication {
         }
     }
 
-        /* Grabs response from server */
+    // Displays a toast message
+    private void toast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    /* Grabs response from server */
     @Override
     public void onResponse(final Message message) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_SEARCH_SUCCESS))) {
+                if (message.getAction() != null) {
+                    toast("New message from " + message.getFrom() + ": " + message.getMessage());
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_SEARCH_SUCCESS))) {
                     // Strip result from JSON
                     Result profile = message.getResult()[0];
 
