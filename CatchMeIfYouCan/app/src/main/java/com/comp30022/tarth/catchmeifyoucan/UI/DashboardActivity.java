@@ -22,7 +22,6 @@ import org.json.JSONObject;
 
 public class DashboardActivity extends AppCompatActivity implements Communication {
 
-    private Button buttonChat;
     private Button buttonLogout;
     private Button buttonFriendlist;
     private Button buttonSettings;
@@ -38,7 +37,6 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
         WebSocketClient.getClient().setActivity(this);
 
         // constructors
-        buttonChat = (Button) findViewById(R.id.buttonChat);
         buttonCreate = (Button) findViewById(R.id.buttonCreate);
         buttonJoin = (Button) findViewById(R.id.buttonJoin);
         buttonFriendlist = (Button) findViewById(R.id.buttonFriendlist);
@@ -54,13 +52,6 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
             getName = (String) bd.get("username");
             textViewUsername.setText("@" + getName);
         }
-
-        buttonChat.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openChat();
-            }
-        });
 
         buttonCreate.setOnClickListener(new Button.OnClickListener() {
             @Override
@@ -201,12 +192,6 @@ public class DashboardActivity extends AppCompatActivity implements Communicatio
     // Displays a toast message
     private void toast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-    }
-
-    // Navigates to Chat activity
-    private void openChat() {
-        Intent intent = new Intent(this, ChatActivity.class);
-        startActivityForResult(intent, 1);
     }
 
     // Navigates to Target activity

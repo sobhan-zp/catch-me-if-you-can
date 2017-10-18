@@ -29,9 +29,9 @@ public class ChatActivity extends AppCompatActivity implements Communication {
     private List<String> array;
 
     private String name = "You";
-    private String friend = "";
+    private String friend;
 
-    SimpleDateFormat dateFormat;
+    private SimpleDateFormat dateFormat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -135,11 +135,8 @@ public class ChatActivity extends AppCompatActivity implements Communication {
     private void displayMessage(Message message) {
         String time  = dateFormat.format(new Date());
 
-        array.add(
-                message.getFrom() + ": " +  message.getMessage() + "\n" + time
-        );
+        array.add(message.getFrom() + ": " +  message.getMessage() + "\n" + time);
         adapter.notifyDataSetChanged();
-
     }
 
     private void sendMessage() {
@@ -155,10 +152,7 @@ public class ChatActivity extends AppCompatActivity implements Communication {
         WebSocketClient.getClient().send(obj.toString());
 
         String time  = dateFormat.format(new Date());
-
-        array.add(
-                name + ": " +  input.getText().toString() + "\n"  + time// + "0"
-        );
+        array.add(name + ": " +  input.getText().toString() + "\n"  + time);
         adapter.notifyDataSetChanged();
 
         // Clear input
