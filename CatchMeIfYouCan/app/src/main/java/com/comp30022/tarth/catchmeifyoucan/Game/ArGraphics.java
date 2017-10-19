@@ -123,8 +123,8 @@ public class ArGraphics extends View{
     private float calculateGraphicSize(){
         float s;
         s = (0.5F*width)/(mCurrentLocation.distanceTo(mCurrLocationMarker));
-        if(s < 0.1F*width){
-            s = 0.1F*width;
+        if(s < 0.05F*width){
+            s = 0.05F*width;
         }
         //Log.d("debug", "distance :" + Float.toString(mCurrentLocation.distanceTo(mCurrLocationMarker)));
         return s;

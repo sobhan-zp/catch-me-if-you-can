@@ -421,22 +421,6 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
         Object dataTransfer[] = new Object[3];
 
         if(v.getId() == R.id.B_route) {
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            if (chatFragment.isAdded()) {
-                transaction.remove(chatFragment);
-            }
-            if (optionsFragment.isAdded()) {
-                transaction.remove(optionsFragment);
-            }
-            transaction.hide(mapFragment);
-            transaction.add(R.id.fragment_container, arFragment);
-            transaction.addToBackStack("map");
-            //transaction.replace(R.id.fragment_container, chatFragment);
-            if (this.getActionBar() != null) {
-                this.getActionBar().setTitle("AR");
-            }
-            transaction.commit();
-            /*
             if(lastDirectionsData != null){
                 lastDirectionsData.clearPolyline();
             }
@@ -447,7 +431,6 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
             dataTransfer[2] = new LatLng(end_latitude, end_longitude);
             directionsData.execute(dataTransfer);
             lastDirectionsData = directionsData;
-            */
         }
     }
 
