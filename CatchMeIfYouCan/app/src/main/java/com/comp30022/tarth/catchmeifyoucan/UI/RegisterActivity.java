@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.SpannableString;
+import android.text.TextUtils;
 import android.text.style.AlignmentSpan;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -54,7 +55,7 @@ public class RegisterActivity extends AppCompatActivity implements Communication
         buttonCreate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-            register();
+                register();
             }
         });
 
@@ -97,6 +98,11 @@ public class RegisterActivity extends AppCompatActivity implements Communication
         startActivity(intent);
     }
 
+    // Checks if email is valid
+    boolean isEmailValid(String email) {
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
+    }
+
     // Extracts user-entered information into a JSON formatted string to be sent
     private void register() {
         TextView username = (TextView) findViewById(R.id.editTextUsername);
@@ -106,19 +112,38 @@ public class RegisterActivity extends AppCompatActivity implements Communication
         //TextView dob = (TextView) findViewById(R.id.editTextDOB);
         String client_ip = getHostIP();
 
-        JSONObject obj = new JSONObject();
-        try {
-            obj.put("action", getResources().getInteger(R.integer.REGISTER_ACTION));
-            obj.put("client_ip", client_ip);
-            obj.put("username", username.getText());
-            obj.put("password", password.getText());
-            obj.put("name", name.getText());
-            obj.put("email", email.getText());
-            obj.put("date_of_birth", "0");
-        } catch(Exception e) {
-            e.printStackTrace();
+        if (TextUtils.isEmpty(username.getText().toString())) {
+            toast("Username field cannot be empty");
+        } else if (TextUtils.isEmpty(password.getText().toString())) {
+            toast("Password field cannot be empty");
+        } else if (TextUtils.isEmpty(name.getText().toString())) {
+            toast("Name field cannot be empty");
+        } else if (!isEmailValid(email.getText().toString())) {
+            toast("Email is not valid");
+        } else {
+            JSONObject obj = new JSONObject();
+            try {
+                obj.put("action", getResources().getInteger(R.integer.REGISTER_ACTION));
+                obj.put("client_ip", client_ip);
+                obj.put("username", username.getText());
+                obj.put("password", password.getText());
+                obj.put("name", name.getText());
+                obj.put("email", email.getText());
+                obj.put("date_of_birth", "0");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            WebSocketClient.getClient().send(obj.toString());
         }
-        WebSocketClient.getClient().send(obj.toString());
+    }
+
+    // Checks if email is valid
+    boolean isEmailValid(CharSequence target) {
+        if (target == null) {
+            return false;
+        } else {
+            return android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
+        }
     }
 
     // Obtains the IP Address of the host
