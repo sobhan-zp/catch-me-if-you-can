@@ -108,6 +108,10 @@
             android:name=".UI.UserDetailActivity"
             android:label="User">
         </activity>
+        <activity
+            android:name=".UI.EndActivity"
+            android:label="End">
+        </activity>
 
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.

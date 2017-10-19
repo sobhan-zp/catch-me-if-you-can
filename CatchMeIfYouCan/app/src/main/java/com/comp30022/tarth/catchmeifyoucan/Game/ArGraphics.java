@@ -1,12 +1,13 @@
 package com.comp30022.tarth.catchmeifyoucan.Game;
 
+import android.app.Activity;
 import android.content.Context;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.ShapeDrawable;
-import android.graphics.Canvas;
-import android.view.View;
 import android.location.Location;
+import android.view.View;
 
 import com.comp30022.tarth.catchmeifyoucan.UI.ArActivity;
 
@@ -46,7 +47,7 @@ public class ArGraphics extends View{
     //private Bitmap bitmap;
     //private Canvas canvas;
 
-    public ArGraphics(Context context, ArActivity arActivity){
+    public ArGraphics(Context context, Activity activity){
         super(context);
 
         //Example Locations

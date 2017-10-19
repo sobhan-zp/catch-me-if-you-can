@@ -59,6 +59,7 @@ public class DashboardActivity extends Activity implements Communication {
                 JSONObject obj = new JSONObject();
                 try {
                     obj.put("action", getResources().getInteger(R.integer.GAME_CREATE));
+                    obj.put("name", "game");
                 } catch(Exception e) {
                     e.printStackTrace();
                 }
