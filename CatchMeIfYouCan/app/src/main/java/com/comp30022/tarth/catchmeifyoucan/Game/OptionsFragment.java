@@ -77,7 +77,7 @@ public class OptionsFragment extends Fragment {
         array = new ArrayList<>();
         adapter = new ArrayAdapter<>(
                 parent,
-                R.layout.list_one_item,
+                R.layout.list_one_item_friends,
                 array
         );
         listViewPlayers.setAdapter(adapter);
@@ -89,8 +89,8 @@ public class OptionsFragment extends Fragment {
         array.clear();
         for (Result result : results) {
             array.add(
-                    "account_id: " + result.getAccount_id()
-                    + ", is_owner: " + result.getIs_owner()
+                    "Account ID: " + result.getAccount_id()
+                    + " (owner: " + result.getIs_owner() + ")"
             );
         }
         adapter.notifyDataSetChanged();

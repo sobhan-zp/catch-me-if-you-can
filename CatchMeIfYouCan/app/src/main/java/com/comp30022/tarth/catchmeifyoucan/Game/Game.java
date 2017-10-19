@@ -16,8 +16,8 @@ public class Game {
     @Override
     public String toString() {
         return "{"
-                + "game_id : " +  Integer.toString(id)
-                + ", name : " + name
+                + "Game ID : " +  Integer.toString(id)
+                + ", Name : " + name
                 + "}";
     }
 
