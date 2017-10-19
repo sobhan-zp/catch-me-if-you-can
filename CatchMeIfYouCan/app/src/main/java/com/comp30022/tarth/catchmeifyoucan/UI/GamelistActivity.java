@@ -47,7 +47,7 @@ public class GamelistActivity extends AppCompatActivity implements Communication
         array = new ArrayList<>();
         adapter = new ArrayAdapter<>(
                 this,
-                R.layout.list_one_item,
+                R.layout.list_one_item_friends,
                 array
         );
         listViewGames.setAdapter(adapter);

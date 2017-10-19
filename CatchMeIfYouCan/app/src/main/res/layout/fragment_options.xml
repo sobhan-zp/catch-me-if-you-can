@@ -10,8 +10,9 @@ android:layout_height="match_parent">
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:gravity="center"
-        android:textSize="21dp"
-        android:textStyle="bold"
+        android:textSize="31sp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="10dp"
         android:text="Players" />
 
     <ListView
@@ -25,8 +26,11 @@ android:layout_height="match_parent">
     <Button
         android:id="@+id/buttonExit"
         android:text="Exit Game"
+        android:theme="@style/AccentButton"
         android:layout_alignParentBottom="true"
         android:layout_height="wrap_content"
-        android:layout_width="match_parent" />
+        android:layout_marginBottom="10sp"
+        android:layout_centerHorizontal="true"
+        android:layout_width="300sp" />
 
 </RelativeLayout>
