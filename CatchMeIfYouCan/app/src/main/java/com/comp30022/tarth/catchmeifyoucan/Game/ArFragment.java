@@ -24,7 +24,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.FrameLayout;
 
 import com.comp30022.tarth.catchmeifyoucan.R;
@@ -62,7 +61,6 @@ public class ArFragment extends Fragment implements SensorEventListener, View.On
     private final float[] mRotationMatrix = new float[9];
     private final float[] mOrientationAngles = new float[3];
 
-    private Button buttonMaps;
     private static final int REQUEST_CAMERA_PERMISSION = 1;
 
     //Riddle Arrays
@@ -143,15 +141,6 @@ public class ArFragment extends Fragment implements SensorEventListener, View.On
             correctAnswers = res.getStringArray(R.array.correct_answers);
             wrongAnswers = res.getStringArray(R.array.wrong_answers);
         }
-
-
-        buttonMaps = (Button) getActivity().findViewById(R.id.buttonMap);
-        buttonMaps.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //onBackPressed();
-            }
-        });
 
         sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
         sensorManager.registerListener(this, magneticField, SensorManager.SENSOR_DELAY_NORMAL);

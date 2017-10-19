@@ -118,15 +118,7 @@ public class ArActivity extends Activity implements SensorEventListener, View.On
             correctAnswers = res.getStringArray(R.array.correct_answers);
             wrongAnswers = res.getStringArray(R.array.wrong_answers);
         }
-
-
-        buttonMaps = (Button) findViewById(R.id.buttonMap);
-        buttonMaps.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+        ;
         Intent intent = getIntent();
         Bundle bd = intent.getExtras();
         System.out.println(bd.get("SearcherLatitude"));
