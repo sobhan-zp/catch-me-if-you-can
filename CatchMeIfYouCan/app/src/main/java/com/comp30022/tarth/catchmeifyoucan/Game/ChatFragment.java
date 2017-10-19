@@ -77,6 +77,7 @@ public class ChatFragment extends Fragment {
     }
 
     private void updateLocation() {
+        /*
         // Queries server for location updates
         JSONObject obj = new JSONObject();
         try {
@@ -88,6 +89,7 @@ public class ChatFragment extends Fragment {
             e.printStackTrace();
         }
         ((FragmentCommunication) parent).onSend(obj);
+        */
     }
 
     public interface FragmentCommunication {

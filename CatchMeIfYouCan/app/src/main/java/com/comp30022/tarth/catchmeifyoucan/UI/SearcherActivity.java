@@ -119,7 +119,6 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         //mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment = new SupportMapFragment();
-        chatFragment = new ChatFragment();
         optionsFragment = new OptionsFragment();
         arFragment = new ArFragment();
 
@@ -143,12 +142,12 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         switch (item.getItemId()) {
             case R.id.navigationChat:
-                if (!chatFragment.isAdded()) {
+                if (!arFragment.isAdded()) {
                     if (optionsFragment.isAdded()) {
                         transaction.remove(optionsFragment);
                     }
                     transaction.hide(mapFragment);
-                    transaction.add(R.id.fragment_container, chatFragment);
+                    transaction.add(R.id.fragment_container, arFragment);
                     transaction.addToBackStack("map");
                     //transaction.replace(R.id.fragment_container, chatFragment);
                     if (this.getActionBar() != null) {
@@ -157,8 +156,8 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
                 }
                 break;
             case R.id.navigationMap:
-                if (chatFragment.isAdded()) {
-                    transaction.remove(chatFragment);
+                if (arFragment.isAdded()) {
+                    transaction.remove(arFragment);
                 }
                 if (optionsFragment.isAdded()) {
                     transaction.remove(optionsFragment);
@@ -183,8 +182,8 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
                 break;
             case R.id.navigationOptions:
                 if (!optionsFragment.isAdded()) {
-                    if (chatFragment.isAdded()) {
-                        transaction.remove(chatFragment);
+                    if (arFragment.isAdded()) {
+                        transaction.remove(arFragment);
                     }
                     transaction.hide(mapFragment);
                     transaction.add(R.id.fragment_container, optionsFragment);
@@ -422,22 +421,6 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
         Object dataTransfer[] = new Object[3];
 
         if(v.getId() == R.id.B_route) {
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            if (chatFragment.isAdded()) {
-                transaction.remove(chatFragment);
-            }
-            if (optionsFragment.isAdded()) {
-                transaction.remove(optionsFragment);
-            }
-            transaction.hide(mapFragment);
-            transaction.add(R.id.fragment_container, arFragment);
-            transaction.addToBackStack("map");
-            //transaction.replace(R.id.fragment_container, chatFragment);
-            if (this.getActionBar() != null) {
-                this.getActionBar().setTitle("AR");
-            }
-            transaction.commit();
-            /*
             if(lastDirectionsData != null){
                 lastDirectionsData.clearPolyline();
             }
@@ -448,7 +431,6 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
             dataTransfer[2] = new LatLng(end_latitude, end_longitude);
             directionsData.execute(dataTransfer);
             lastDirectionsData = directionsData;
-            */
         }
     }
 
@@ -590,10 +572,12 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
                     toast("Game delete failure");
                 } else if (message.getCode().equals(getResources().getInteger(R.integer.LOCATION_GET2_SUCCESS))) {
                     System.out.println("Target location receive successful");
-                    Result result = message.getResult()[0];
-                    targetX = result.getX();
-                    targetY = result.getY();
-                    updateTarget();
+                    if (message.getResult().length > 0) {
+                        Result result = message.getResult()[0];
+                        targetX = result.getX();
+                        targetY = result.getY();
+                        updateTarget();
+                    }
                 } else if (message.getCode().equals(getResources().getInteger(R.integer.LOCATION_GET2_FAIL))) {
                     System.out.println("Target location receive failed");
                 } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_WAYPOINT_SUCCESS))) {
@@ -606,6 +590,9 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
                     addWp(waypoints);
                 } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_WAYPOINT_FAIL))) {
                     toast("Get waypoint failure");
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_CURRENT_FAIL))) {
+                    toast("Game ended");
+                    onExit();
                 }
             }
         });
@@ -690,6 +677,7 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
                         getTargetLocation();
                         ((ArFragment) arFragment).onUpdate(curr_latitude, curr_longitude, end_latitude, end_longitude);
                         System.out.println(i);
+                        checkGameExist();
                         if (i == 1) {
                             getWaypoints();
                         }
@@ -698,6 +686,16 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
                 }, delay, period);
             }
         });
+    }
+
+    private void checkGameExist() {
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("action", getResources().getInteger(R.integer.GAME_GET_CURRENT));
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        onSend(obj);
     }
 
     private void getWaypoints() {
