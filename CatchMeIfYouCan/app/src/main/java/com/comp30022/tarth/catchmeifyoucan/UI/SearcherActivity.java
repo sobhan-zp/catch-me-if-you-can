@@ -19,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.comp30022.tarth.catchmeifyoucan.Game.ArFragment;
 import com.comp30022.tarth.catchmeifyoucan.Game.ChatFragment;
 import com.comp30022.tarth.catchmeifyoucan.Game.OptionsFragment;
 import com.comp30022.tarth.catchmeifyoucan.Game.Waypoint;
@@ -83,6 +84,7 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
     SupportMapFragment mapFragment;
     Fragment chatFragment;
     Fragment optionsFragment;
+    Fragment arFragment;
     private BottomNavigationView navigation;
 
     private Marker tMarker = null;
@@ -119,6 +121,7 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
         mapFragment = new SupportMapFragment();
         chatFragment = new ChatFragment();
         optionsFragment = new OptionsFragment();
+        arFragment = new ArFragment();
 
         navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.getMenu().getItem(MAP_ITEM_ID).setChecked(true);
@@ -419,7 +422,21 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
         Object dataTransfer[] = new Object[3];
 
         if(v.getId() == R.id.B_route) {
-            openAR();
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            if (chatFragment.isAdded()) {
+                transaction.remove(chatFragment);
+            }
+            if (optionsFragment.isAdded()) {
+                transaction.remove(optionsFragment);
+            }
+            transaction.hide(mapFragment);
+            transaction.add(R.id.fragment_container, arFragment);
+            transaction.addToBackStack("map");
+            //transaction.replace(R.id.fragment_container, chatFragment);
+            if (this.getActionBar() != null) {
+                this.getActionBar().setTitle("AR");
+            }
+            transaction.commit();
             /*
             if(lastDirectionsData != null){
                 lastDirectionsData.clearPolyline();

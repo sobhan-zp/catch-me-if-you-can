@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/background"
+    android:layout_alignParentBottom="true"
+    tools:context="com.comp30022.tarth.catchmeifyoucan.UI.MainActivity">
+
+        <TextView
+            android:id="@+id/textViewTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:text="You Win!"
+            android:layout_above="@+id/textViewSubTitle"
+            android:textAlignment="center"
+            android:textSize="30sp"
+            android:textColor="@color/colorTextIcons"
+            />
+
+        <TextView
+            android:id="@+id/textViewSubTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/buttonReturn"
+            android:layout_centerHorizontal="true"
+            android:text="Congratulations, you have found the target!"
+            android:textAlignment="center"
+            android:textColor="@color/colorTertiaryText"
+            android:textSize="15sp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="30dp"
+            />
+
+        <Button
+            android:id="@+id/buttonReturn"
+            android:layout_above="@+id/buttonExit"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:text="Return"
+            android:theme="@style/AccentButton"/>
+
+        <Button
+            android:id="@+id/buttonExit"
+            android:layout_width="300dp"
+            android:layout_above="@+id/buttonHidden"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:text="Exit"
+            android:theme="@style/AccentButton"
+            />
+
+        <Button
+            android:id="@+id/buttonHidden"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentBottom="true"
+            android:text=""
+            android:theme="@style/PrimaryFlatButton"
+            android:layout_marginBottom="30dp"
+            />
+
+</RelativeLayout>

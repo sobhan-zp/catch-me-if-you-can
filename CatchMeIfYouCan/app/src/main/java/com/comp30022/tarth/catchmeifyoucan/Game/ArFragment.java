@@ -1,11 +1,10 @@
-package com.comp30022.tarth.catchmeifyoucan.UI;
+package com.comp30022.tarth.catchmeifyoucan.Game;
 
 import android.Manifest;
-import android.app.ActionBar.LayoutParams;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.hardware.Camera;
@@ -15,27 +14,33 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.view.MenuItem;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
 
-import com.comp30022.tarth.catchmeifyoucan.Game.ArCamera;
-import com.comp30022.tarth.catchmeifyoucan.Game.ArGraphics;
 import com.comp30022.tarth.catchmeifyoucan.R;
+import com.comp30022.tarth.catchmeifyoucan.Server.Message;
+import com.comp30022.tarth.catchmeifyoucan.UI.SearcherActivity;
+
+import org.json.JSONObject;
 
 import java.util.Arrays;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-@SuppressWarnings("deprecation")
-public class ArActivity extends Activity implements SensorEventListener, View.OnTouchListener {
+public class ArFragment extends Fragment implements SensorEventListener, View.OnTouchListener{
+
+    private Activity parent;
+
     private Camera camera;
     private ArCamera cameraView;
     private ArGraphics arGraphics;
@@ -75,13 +80,32 @@ public class ArActivity extends Activity implements SensorEventListener, View.On
     private boolean correctAns = false;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        setContentView(R.layout.activity_ar);
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            parent = (Activity) context;
+        } catch (ClassCastException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.activity_ar, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         //Stop screen from dimming
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         //Check camera permission
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -89,29 +113,29 @@ public class ArActivity extends Activity implements SensorEventListener, View.On
         }
 
         //camera check for AR to function
-        if(checkCameraHardware(this)) {
+        if(checkCameraHardware(getActivity())) {
             camera = getCameraInstance();
-            cameraView = new ArCamera(this, camera);
-            FrameLayout preview = (FrameLayout) findViewById(R.id.cameraPreview);
+            cameraView = new ArCamera(getActivity(), camera);
+            FrameLayout preview = (FrameLayout) getActivity().findViewById(R.id.cameraPreview);
             preview.addView(cameraView);
 
             //Set graphics
-            arGraphics = new ArGraphics(this, this);
-            arGraphics.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-            FrameLayout graphicsView = (FrameLayout) findViewById(R.id.graphicsFrame);
+            arGraphics = new ArGraphics(getContext(), parent);
+            arGraphics.setLayoutParams(new ActionBar.LayoutParams(ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT));
+            FrameLayout graphicsView = (FrameLayout) getActivity().findViewById(R.id.graphicsFrame);
             graphicsView.addView(arGraphics);
             arGraphics.setOnTouchListener(this);
 
             //Set sensors
-            sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+            sensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
             accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
             magneticField = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
 
 
             //Initialize Dialog box and Riddle Arrays
-            riddleDialog = new AlertDialog.Builder(this);
-            successDialog = new AlertDialog.Builder(this);
-            failDialog = new AlertDialog.Builder(this);
+            riddleDialog = new AlertDialog.Builder(getActivity());
+            successDialog = new AlertDialog.Builder(getActivity());
+            failDialog = new AlertDialog.Builder(getActivity());
             Resources res = getResources();
             riddlesArray = res.getStringArray(R.array.riddles_array);
             usedRiddles = new boolean[riddlesArray.length];
@@ -120,32 +144,24 @@ public class ArActivity extends Activity implements SensorEventListener, View.On
         }
 
 
-        buttonMaps = (Button) findViewById(R.id.buttonMap);
+        buttonMaps = (Button) getActivity().findViewById(R.id.buttonMap);
         buttonMaps.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onBackPressed();
+                //onBackPressed();
             }
         });
+        /*
         Intent intent = getIntent();
         Bundle bd = intent.getExtras();
         System.out.println(bd.get("SearcherLatitude"));
         System.out.println(bd.get("SearcherLongitude"));
         System.out.println(bd.get("TargetLatitude"));
         System.out.println(bd.get("TargetLongitude"));
+        */
     }
 
-    // Set back button on action bar
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                onBackPressed();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
+    /*
     @Override
     protected void onResume(){
         super.onResume();
@@ -177,24 +193,25 @@ public class ArActivity extends Activity implements SensorEventListener, View.On
     protected void onDestroy(){
         super.onDestroy();
     }
+    */
 
     public boolean checkCameraPermission(){
-        if (ContextCompat.checkSelfPermission(this,
+        if (ContextCompat.checkSelfPermission(getActivity(),
                 Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
 
             // Asking user if explanation is needed
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
                     Manifest.permission.CAMERA)) {
 
                 //Prompt the user once explanation has been shown
-                ActivityCompat.requestPermissions(this,
+                ActivityCompat.requestPermissions(getActivity(),
                         new String[]{Manifest.permission.CAMERA},
                         REQUEST_CAMERA_PERMISSION);
 
             } else {
                 // No explanation needed, we can request the permission.
-                ActivityCompat.requestPermissions(this,
+                ActivityCompat.requestPermissions(getActivity(),
                         new String[]{Manifest.permission.CAMERA},
                         REQUEST_CAMERA_PERMISSION);
             }
@@ -268,7 +285,7 @@ public class ArActivity extends Activity implements SensorEventListener, View.On
         graphicUpdateHandler.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run(){
-                runOnUiThread(new Runnable(){
+                parent.runOnUiThread(new Runnable(){
                     @Override
                     public void run(){
                         arGraphics.invalidate();
@@ -326,22 +343,22 @@ public class ArActivity extends Activity implements SensorEventListener, View.On
                                         correctAns = false;
                                     }
                                 }
-                    })
-                    .setCancelable(false)
-                    .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            if(correctAns) {
-                                successDialog.setMessage("Correct! Move to the next waypoint!");
-                                successDialog.show();
-                                //arGraphics.setMarkerLocation(somelocation);
-                            }
-                            else{
-                                failDialog.setMessage("Wrong! Try again.");
-                                riddleDialog.show();
-                                failDialog.show();
-                            }
-                        }
-                    });
+                            })
+                            .setCancelable(false)
+                            .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    if(correctAns) {
+                                        successDialog.setMessage("Correct! Move to the next waypoint!");
+                                        successDialog.show();
+                                        //arGraphics.setMarkerLocation(somelocation);
+                                    }
+                                    else{
+                                        failDialog.setMessage("Wrong! Try again.");
+                                        riddleDialog.show();
+                                        failDialog.show();
+                                    }
+                                }
+                            });
                     riddleDialog.show();
                 }
             }
@@ -362,19 +379,15 @@ public class ArActivity extends Activity implements SensorEventListener, View.On
         return result;
     }
 
-    // Resets the current activity connected to the WebSocket upon terminating child activities
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 1) {
-            if (resultCode == Activity.RESULT_OK) {
-                finish();
-            }
-        }
+    public void onResponse(final Message message) {
     }
 
-    // Navigates to Maps activity
-    // private void openMaps() {
-    //     Intent intent = new Intent(this, MapsActivity.class);
-    //     startActivity(intent);
-    // }
+    public interface FragmentCommunication {
+
+        void onExit();
+
+        void onSend(JSONObject obj);
+
+    }
+
 }
