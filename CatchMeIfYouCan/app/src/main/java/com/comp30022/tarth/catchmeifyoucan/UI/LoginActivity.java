@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.SpannableString;
+import android.text.TextUtils;
 import android.text.style.AlignmentSpan;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -106,16 +107,22 @@ public class LoginActivity extends AppCompatActivity implements Communication {
         TextView password = (TextView) findViewById(R.id.editTextPassword);
         String client_ip = getHostIP();
 
-        JSONObject obj = new JSONObject();
-        try {
-            obj.put("action", getResources().getInteger(R.integer.LOGIN_ACTION));
-            obj.put("client_ip", client_ip);
-            obj.put("username", username.getText());
-            obj.put("password", password.getText());
-        } catch(Exception e) {
-            e.printStackTrace();
+        if (TextUtils.isEmpty(username.getText().toString())) {
+            toast("Username field cannot be empty");
+        } else if (TextUtils.isEmpty(password.getText().toString())) {
+            toast("Password field cannot be empty");
+        } else {
+            JSONObject obj = new JSONObject();
+            try {
+                obj.put("action", getResources().getInteger(R.integer.LOGIN_ACTION));
+                obj.put("client_ip", client_ip);
+                obj.put("username", username.getText());
+                obj.put("password", password.getText());
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
+            WebSocketClient.getClient().send(obj.toString());
         }
-        WebSocketClient.getClient().send(obj.toString());
     }
 
     // Obtains the IP Address of the host
