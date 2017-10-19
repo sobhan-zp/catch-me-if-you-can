@@ -688,6 +688,7 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
                     public void run() {
                         sendLocation();
                         getTargetLocation();
+                        ((ArFragment) arFragment).onUpdate(curr_latitude, curr_longitude, end_latitude, end_longitude);
                         System.out.println(i);
                         if (i == 1) {
                             getWaypoints();

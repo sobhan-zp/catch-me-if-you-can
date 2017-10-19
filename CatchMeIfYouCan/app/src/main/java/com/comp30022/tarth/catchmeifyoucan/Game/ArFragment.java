@@ -29,11 +29,9 @@ import android.widget.FrameLayout;
 
 import com.comp30022.tarth.catchmeifyoucan.R;
 import com.comp30022.tarth.catchmeifyoucan.Server.Message;
-import com.comp30022.tarth.catchmeifyoucan.UI.SearcherActivity;
-
-import org.json.JSONObject;
 
 import java.util.Arrays;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -79,6 +77,8 @@ public class ArFragment extends Fragment implements SensorEventListener, View.On
     private AlertDialog.Builder failDialog;
     private boolean correctAns = false;
 
+    FrameLayout graphicsView;
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -122,7 +122,7 @@ public class ArFragment extends Fragment implements SensorEventListener, View.On
             //Set graphics
             arGraphics = new ArGraphics(getContext(), parent);
             arGraphics.setLayoutParams(new ActionBar.LayoutParams(ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT));
-            FrameLayout graphicsView = (FrameLayout) getActivity().findViewById(R.id.graphicsFrame);
+            graphicsView = (FrameLayout) getActivity().findViewById(R.id.graphicsFrame);
             graphicsView.addView(arGraphics);
             arGraphics.setOnTouchListener(this);
 
@@ -151,6 +151,14 @@ public class ArFragment extends Fragment implements SensorEventListener, View.On
                 //onBackPressed();
             }
         });
+
+        sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, magneticField, SensorManager.SENSOR_DELAY_NORMAL);
+
+        //Set update timing
+        graphicUpdateHandler = Executors.newScheduledThreadPool(0);
+        locationUpdateHandler = Executors.newScheduledThreadPool(0);
+        startRepeatingTask();
         /*
         Intent intent = getIntent();
         Bundle bd = intent.getExtras();
@@ -298,10 +306,8 @@ public class ArFragment extends Fragment implements SensorEventListener, View.On
         locationUpdateHandler.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run(){
-                double x = 0;
-                double y = 0;
                 arGraphics.setOrientationAngles(mOrientationAngles);
-                arGraphics.setWaypointLocation(x, y);
+                System.out.println("AR CIRCLE POSITION  " + arGraphics.getX() + "," + arGraphics.getY());
                 //Log.d("debug", "set angles");
             }
         }, 0, LOCATION_UPDATE_RATE, TimeUnit.MILLISECONDS);
@@ -379,15 +385,14 @@ public class ArFragment extends Fragment implements SensorEventListener, View.On
         return result;
     }
 
-    public void onResponse(final Message message) {
+    public void onUpdate(Double latSearcher, Double lonSearcher, Double latTarget, Double lonTarget) {
+        if (arGraphics != null) {
+            arGraphics.setCurrentLocation(latSearcher, lonSearcher);
+            arGraphics.setWaypointLocation(latTarget, lonTarget);
+        }
     }
 
-    public interface FragmentCommunication {
-
-        void onExit();
-
-        void onSend(JSONObject obj);
-
+    public void onResponse(final Message message) {
     }
 
 }
