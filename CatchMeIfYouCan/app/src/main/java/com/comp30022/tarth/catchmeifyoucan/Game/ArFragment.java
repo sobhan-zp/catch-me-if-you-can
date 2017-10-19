@@ -70,6 +70,7 @@ public class ArFragment extends Fragment implements SensorEventListener, View.On
     private String[] correctAnswers;
     private String[] wrongAnswers;
     private boolean[] usedRiddles;
+    private int numUsed = 0;
 
     //Dialog Constructors
     private AlertDialog.Builder riddleDialog;
@@ -331,11 +332,16 @@ public class ArFragment extends Fragment implements SensorEventListener, View.On
                 else {
                     correctAns = false;
                     lastTime = System.currentTimeMillis();
+                    if(numUsed == riddlesArray.length){
+                        Arrays.fill(usedRiddles, false);
+                        numUsed = 0;
+                    }
                     int i = (int) (Math.random() * (riddlesArray.length));
                     while(usedRiddles[i]){
                         i = (int) (Math.random() * (riddlesArray.length));
                     }
                     usedRiddles[i] = true;
+                    numUsed++;
                     final int ansPos = (int)(Math.random() * 4);
                     String[] answers = arrayCombine(correctAnswers[i], Arrays.copyOfRange(wrongAnswers, i*3, i*3 + 3), ansPos);
                     riddleDialog.setTitle(riddlesArray[i]).setSingleChoiceItems(answers, -1,
