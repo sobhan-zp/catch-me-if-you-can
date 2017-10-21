@@ -64,7 +64,7 @@
     
     -- server.js // the main program of the server
     
-    -- test/
+    -- test/ // mocha will run all test file in this folder
     
     --- function_test.js // auto test functions validity
     
