@@ -8,11 +8,19 @@
 
     3. Port 80 accessible
     
-## To run the test (mocha has installed locally):
+## To run the unit test (mocha has installed locally):
 
     1. Install Mocha globally and run 'mocha' in ht folder
 
     2. Install Mocha locally and run 'npm test' in ht folder
+    
+## To run the manual test
+    
+    1. run the server
+    
+    2. run ht/client_test.html
+    
+    3. There are few samples of input, or you can input your own tests
 
 ## Node JS Modules Requirements for Server:
 
