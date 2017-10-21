@@ -211,6 +211,20 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
 
     @Override
     public void onBackPressed() {
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                sendLocation();
+                getTargetLocation();
+                ((ArFragment) arFragment).onUpdate(curr_latitude, curr_longitude, end_latitude, end_longitude);
+                System.out.println(i);
+                checkGameExist();
+                if (i == 1) {
+                    getWaypoints();
+                }
+                i ++;
+            }
+        }, 0, 0);
         Intent returnIntent = new Intent();
         setResult(Activity.RESULT_OK, returnIntent);
         finish();
@@ -608,6 +622,20 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
         }
         WebSocketClient.getClient().send(obj.toString());
 
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                sendLocation();
+                getTargetLocation();
+                ((ArFragment) arFragment).onUpdate(curr_latitude, curr_longitude, end_latitude, end_longitude);
+                System.out.println(i);
+                checkGameExist();
+                if (i == 1) {
+                    getWaypoints();
+                }
+                i ++;
+            }
+        }, 0, 0);
         Intent returnIntent = new Intent();
         setResult(Activity.RESULT_OK, returnIntent);
         finish();
@@ -665,27 +693,24 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
     }
 
     private void continuousUpdate() {
-        runOnUiThread(new Runnable() {
+        int delay = 0; // 0 seconds
+        int period = 3000; // 3 seconds
+
+        timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                int delay = 0; // 0 seconds
-                int period = 5000; // 5 seconds
-                timer.scheduleAtFixedRate(new TimerTask() {
-                    @Override
-                    public void run() {
-                        sendLocation();
-                        getTargetLocation();
-                        ((ArFragment) arFragment).onUpdate(curr_latitude, curr_longitude, end_latitude, end_longitude);
-                        System.out.println(i);
-                        checkGameExist();
-                        if (i == 1) {
-                            getWaypoints();
-                        }
-                        i ++;
-                    }
-                }, delay, period);
+                sendLocation();
+                getTargetLocation();
+                ((ArFragment) arFragment).onUpdate(curr_latitude, curr_longitude, end_latitude, end_longitude);
+                System.out.println(i);
+                checkGameExist();
+                if (i == 1) {
+                    getWaypoints();
+                }
+                i ++;
             }
-        });
+        }, delay, period);
+
     }
 
     private void checkGameExist() {

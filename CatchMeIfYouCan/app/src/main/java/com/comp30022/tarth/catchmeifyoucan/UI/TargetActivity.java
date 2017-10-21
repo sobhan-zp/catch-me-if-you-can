@@ -67,6 +67,7 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
     double curr_latitude, curr_longitude;
 
     boolean addWaypoints = false;
+    Timer timer;
 
     List<Double> cWaypoints = new ArrayList<Double>();//coordinates of way points
     List<Marker> mMarkers = new ArrayList<Marker>();//markers of  way points
@@ -198,6 +199,7 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
 
     @Override
     public void onBackPressed() {
+        timer.scheduleAtFixedRate(null, 0, 0);
         Intent returnIntent = new Intent();
         setResult(Activity.RESULT_OK, returnIntent);
         finish();
@@ -540,6 +542,7 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
         }
         WebSocketClient.getClient().send(obj.toString());
 
+        timer.scheduleAtFixedRate(null, 0, 0);
         Intent returnIntent = new Intent();
         setResult(Activity.RESULT_OK, returnIntent);
         finish();
@@ -580,21 +583,16 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
     }
 
     private void continuousUpdate() {
-        runOnUiThread(new Runnable() {
+        int delay = 0; // 0 seconds
+        int period = 3000; // 3 seconds
+        timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                int delay = 0; // 0 seconds
-                int period = 10000; // 10 seconds
-                Timer timer = new Timer();
-                timer.scheduleAtFixedRate(new TimerTask() {
-                    @Override
-                    public void run() {
-                        getLocation();
-                        sendLocation();
-                    }
-                }, delay, period);
+                getLocation();
+                sendLocation();
             }
-        });
+        }, delay, period);
     }
 
     private void sendWaypoints() {

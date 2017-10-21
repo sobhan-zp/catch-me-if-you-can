@@ -11,6 +11,8 @@ import android.view.View;
 
 import com.comp30022.tarth.catchmeifyoucan.UI.ArActivity;
 
+import static java.lang.Math.toRadians;
+
 public class ArGraphics extends View{
 
     //View width and height
@@ -97,7 +99,7 @@ public class ArGraphics extends View{
 
     private float calculateGraphicXPos(float[] orientationAngles){
         float x;
-        float bearingAngle =  -3.14F; //(float)toRadians(mCurrentLocation.bearingTo(mCurrLocationMarker));
+        float bearingAngle = (float)toRadians(mCurrentLocation.bearingTo(mCurrLocationMarker));
         //Log.d("debug", "bearingAngle1 :" + Float.toString(bearingAngle));
         if(bearingAngle>Math.PI){
             bearingAngle = -1* (float)((2*Math.PI) - bearingAngle);
@@ -122,9 +124,9 @@ public class ArGraphics extends View{
 
     private float calculateGraphicSize(){
         float s;
-        s = (0.5F*width)/(mCurrentLocation.distanceTo(mCurrLocationMarker));
-        if(s < 0.05F*width){
-            s = 0.05F*width;
+        s = (0.6F*width)/(mCurrentLocation.distanceTo(mCurrLocationMarker));
+        if(s < 0.08F*width){
+            s = 0.08F*width;
         }
         //Log.d("debug", "distance :" + Float.toString(mCurrentLocation.distanceTo(mCurrLocationMarker)));
         return s;
