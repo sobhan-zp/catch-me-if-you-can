@@ -48,6 +48,7 @@ exports.exit = function(userinfo){
     });
 }
 
+// Create a waypoint
 exports.new_waypoint = function(userinfo, location, info, fn){
     var g_id = "SELECT game_id FROM account_in_game WHERE account_id = " + userinfo.db_id + " and is_owner = " + GAME_OWNER;
     if (location.x && location.y){
@@ -76,6 +77,7 @@ exports.new_waypoint = function(userinfo, location, info, fn){
     }
 }
 
+// Get all waypoint of current game
 exports.get_waypoint = function(userinfo, fn){
     var sql = "SELECT x, y, info FROM waypoint WHERE game_id = (SELECT game_id FROM account_in_game WHERE account_id = " + userinfo.db_id + ")";
     db.execute(sql, GAME_GET_WAYPOINT_SUCCESS, GAME_GET_WAYPOINT_FAIL, function(result){
@@ -83,6 +85,7 @@ exports.get_waypoint = function(userinfo, fn){
     });
 }
 
+// Create new game (only execute)
 function new_game(userinfo, name, fn){
     var feedback;
     var table = "game";
@@ -113,6 +116,7 @@ function new_game(userinfo, name, fn){
     });
 }
 
+// Whether the user in game already
 function is_in_game(id, fn){
     var sql = "SELECT * FROM account_in_game WHERE account_id = " + id;
     var table = "account_in_game";
@@ -129,6 +133,7 @@ function is_in_game(id, fn){
     });
 }
 
+// Whether the user is a game owner
 function is_game_owner(userinfo, fn){
     var sql = "SELECT game_id FROM account_in_game WHERE account_id = " + userinfo.db_id + " and is_owner = " + GAME_OWNER;
     db.execute(sql, 1, 0, function(result){
@@ -140,6 +145,7 @@ function is_game_owner(userinfo, fn){
     })
 }
 
+// Exit game (execute only)
 function exit_game(userinfo, fn){
     // If the user is owner of game(s), those game(s) will also be deleted.
     is_game_owner(userinfo, function(result){
@@ -165,6 +171,7 @@ function exit_game(userinfo, fn){
     })
 }
 
+// Join a game (execute only)
 function join_game(userinfo, game_id, is_owner, fn){
     var sql = "INSERT INTO account_in_game (game_id, account_id, is_owner) VALUES (" + game_id + ", " + userinfo.db_id + ", " + is_owner + ")";
     db.execute(sql, GAME_ADD_SUCCESS, GAME_ADD_FAIL, function(result){
@@ -185,6 +192,7 @@ function join_game(userinfo, game_id, is_owner, fn){
     });
 }
 
+// Delete a game
 function delete_game(userinfo, game_id){
     // Delete game will also remove all users in the game
     var sql = "DELETE FROM game WHERE id = " + game_id;

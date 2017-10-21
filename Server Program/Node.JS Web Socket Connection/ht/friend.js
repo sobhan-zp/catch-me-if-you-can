@@ -1,6 +1,7 @@
 // Friend Management
 var db = require("./database");
 
+// Add a friend
 exports.add_friend = function(userinfo, add_username, fn){
     if (userinfo.username == add_username || add_username == ""){
         var feedback = {
@@ -31,6 +32,7 @@ exports.add_friend = function(userinfo, add_username, fn){
     }
 }
 
+// Search a userprofile using username
 exports.search_user = function(search_user, fn){
     if (search_user == ""){
         var feedback = {
@@ -49,6 +51,7 @@ exports.search_user = function(search_user, fn){
     }
 }
 
+// Search a userprofile using id
 exports.search_user_id = function(id, fn){
     if (id == ""){
         var feedback = {
@@ -67,6 +70,7 @@ exports.search_user_id = function(id, fn){
     }
 }
 
+// Get friend list
 exports.fetch_friend_list = function(userinfo, fn){
     var sql = "SELECT username FROM account WHERE id IN (SELECT friend_id FROM friend WHERE self_id = " + userinfo.db_id + ")";
     db.execute(sql, FRIEND_GET_SUCCESS, FRIEND_GET_FAIL, function(result){
@@ -74,6 +78,7 @@ exports.fetch_friend_list = function(userinfo, fn){
     });
 }
 
+// Delete a friend
 exports.delete_friend = function(userinfo, delete_username, fn){
     var sql = "DELETE FROM friend WHERE self_id = " + userinfo.db_id + " and friend_id = (SELECT id FROM account WHERE username = '" + delete_username + "')";
     db.execute(sql, FRIEND_DELETE_SUCCESS, FRIEND_DELETE_FAIL, function(result){

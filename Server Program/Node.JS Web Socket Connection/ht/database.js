@@ -9,6 +9,7 @@ var con = mysql.createConnection({
     port: DATABASE_PORT
 });
 
+// Connect to database
 exports.set_database_con = function(){
     con.connect(function(err) {
         if (err) {
@@ -20,6 +21,7 @@ exports.set_database_con = function(){
     });
 }
 
+// Execute a single sql statement
 exports.execute = function(sql, s_code, f_code, fn){
     var feedback = {};
     con.query(sql, function (err, result) {
@@ -35,6 +37,7 @@ exports.execute = function(sql, s_code, f_code, fn){
     });
 }
 
+// Execute an insert sql
 exports.insert = function(data, table, s_code, f_code, fn){
     var sql = "INSERT INTO " + table + " SET ?";
     query(sql, data, s_code, f_code, function(result){
@@ -42,6 +45,7 @@ exports.insert = function(data, table, s_code, f_code, fn){
     });
 }
 
+// Execute an update sql (only one condition can be applied)
 exports.update = function(data, table, condition, s_code, f_code, fn){
     var sql = "UPDATE " + table + " SET ? WHERE ?";
     query(sql, [data, condition], s_code, f_code, function(result){
@@ -50,6 +54,7 @@ exports.update = function(data, table, condition, s_code, f_code, fn){
     });
 }
 
+// Execute an select sql (only one condition can be applied)
 exports.select = function(condition, columns, table, s_code, f_code, fn){
     var sql = "SELECT " + columns + " FROM " + table + " WHERE ?";
     query(sql, condition, s_code, f_code, function(result){

@@ -3,6 +3,7 @@ var db = require("./database");
 var mysql = require('mysql');
 var msg = require("./message");
 
+// Validate a username string
 function valid_username(str){
     if (str == undefined){
         return true;
@@ -13,6 +14,7 @@ function valid_username(str){
     }
 }
 
+// Get logined account information
 exports.fetch_account_info = function(userinfo){
     var feedback = {
         "action": PROFILE_GET,
@@ -27,6 +29,7 @@ exports.fetch_account_info = function(userinfo){
     msg.to_sock(userinfo.ws, JSON.stringify(feedback));
 }
 
+// Update user's profile information
 exports.update_user_infor = function(userinfo, name, email, location, status, fn){
     var data = {
         name: name,
@@ -51,6 +54,7 @@ exports.update_user_infor = function(userinfo, name, email, location, status, fn
     });
 }
 
+// Check the login validity
 exports.login_check = function(username, password, sock, client_uuid, user_status, clients, fn){
     if (valid_username(username)){
         for (var i = 0; i < clients.length; i++) {
@@ -97,6 +101,7 @@ exports.login_check = function(username, password, sock, client_uuid, user_statu
     }
 }
 
+// Check the user if online
 exports.check_online = function(username, clients, fn){
     var feedback = {};
     var online = false;
@@ -112,6 +117,7 @@ exports.check_online = function(username, clients, fn){
     return fn(feedback);
 }
 
+// Register as a new user
 exports.register = function(username, password, email, name, sock, fn){
     if (valid_username(username) == "" || password == "" || email == "" || name == ""){
         var feedback = {
