@@ -60,39 +60,54 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
     // Google client to interact with Google API
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
+    // user's current location data
     private Location mCurrentLocation;
+    // the marker indicating user's current location
     private Marker mCurrLocationMarker = null;
+    // hardcoded number for requesting location permission
     public static final int REQUEST_LOCATION_CODE = 999;
+    // time intervals for requesting location updates
     private static int UPDATE_INTERVAL = 5000; //SEC
     private static int FATEST_INTERVAL = 3000; //SEC
     private static int DISPLACEMENT = 10; // METERS
+    // user's current geocoordinates - latitude and longitude
     double curr_latitude, curr_longitude;
+    // destination coordinate of a route, for now equals the game creater's
     double end_latitude, end_longitude;
+    // the end point of a route on the map
     MapDirectionsData lastDirectionsData = null;
-
+    //markers of  way points
     List<Marker> mMarkers = new ArrayList<>();
+    // radius of the waypoint, within which the user will be notified
     private static final double WP_RADIUS = 0.00001;
+    // indicate whether the user is near a waypoint
     private boolean nearWp = false;
-    private String theWpId = "";
-
+    // string id of the nearest waypoint
+    String theWpId = "";
+    //markers of other users
     private List<Marker> othersMarker = new ArrayList<>();
 
     private final static int CHAT_ITEM_ID = 0;
     private final static int MAP_ITEM_ID = 1;
     private final static int OPTIONS_ITEM_ID = 2;
 
+    // fragment switching related variables
     SupportMapFragment mapFragment;
     Fragment chatFragment;
     Fragment optionsFragment;
     Fragment arFragment;
     private BottomNavigationView navigation;
 
+    // the marker of the game creator (target)
     private Marker tMarker = null;
-    private Double targetX;
-    private Double targetY;
+    private Double targetX;//latitude
+    private Double targetY;//longitude
 
-    static int i = 0;
+
+    // timer used for continuous updating locations of other users
     Timer timer = new Timer();
+    // trace the run time of continuous requests of updating others locations
+    static int i = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -311,6 +326,7 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
 
     @Override
     public void onLocationChanged(Location location) {
+        // only need the marker indicating current user's location when the user enter the map at the 1st time
         if (mCurrLocationMarker != null) {
             mCurrLocationMarker.remove();
         }
@@ -319,14 +335,15 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
                 Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
+        // get the user's current location
         mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-
         if (mCurrentLocation != null) {
             curr_latitude = mCurrentLocation.getLatitude();
             curr_longitude = mCurrentLocation.getLongitude();
         }
 
         LatLng latLng = new LatLng(curr_latitude, curr_longitude);
+        // add a marker when the user enter the map at the first time
         if(mCurrLocationMarker == null){
             MarkerOptions markerOptions = new MarkerOptions();
             markerOptions.position(latLng);
@@ -342,15 +359,11 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
 
             toast("Your Current Location");
         }
-
-        if(mCurrLocationMarker != null){
-            String currLocation = curr_latitude+","+curr_longitude;
-            toast(currLocation);
-        }
-
+        // check whether the user is near a waypoint once its location has changed
         checkNearWaypoint();
     }
 
+    // check whether the user is near a waypoint
     protected void checkNearWaypoint(){
         if(mMarkers.size() > 0) {
             int nearestWp = -1;
@@ -366,6 +379,7 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
                     nearestRadius = radius;
                 }
             }
+            // change the color of the nearest waypoint from rose to yellow
             if(nearestWp >= 0) {
                 mMarkers.get(nearestWp).setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
                 nearWp = true;
@@ -431,6 +445,7 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
         }
     }
 
+    // give reaction to the user according to user's behavior (tapping different button)
     public void onClick(View v) {
         Object dataTransfer[] = new Object[3];
 
@@ -448,11 +463,13 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
         }
     }
 
+    // generate a route by applying the service of google direction api
     private String getDirectionsUrl() {
         StringBuilder googleDirectionsUrl = new StringBuilder("https://maps.googleapis.com/maps/api/directions/json?");
         googleDirectionsUrl.append("origin="+curr_latitude+","+curr_longitude);
         googleDirectionsUrl.append("&destination="+end_latitude+","+end_longitude);
         googleDirectionsUrl.append("&mode=walking");
+        // the api key for google direction service
         googleDirectionsUrl.append("&key="+"AIzaSyAsE7HmeYpP-QDRYblsZZq_yClezBjFQoE");
 
         return googleDirectionsUrl.toString();
@@ -489,9 +506,9 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
         }
     }
 
+    // intended to open ar when a nearby waypoint is clicked
     @Override
     public boolean onMarkerClick(Marker marker) {
-//        marker.setDraggable(true);
         if(marker.getId().equals(theWpId)){
 
             // ADD AR FRAGMENT HERE
@@ -511,11 +528,13 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
-
+    // update markers indicating other users on the map
     public void updateOthers(List<Double> othersLocation){
+        // clear old markers
         for(int j=othersMarker.size()-1; j>=0; j--){
             othersMarker.get(j).remove();
         }
+        // add new markers
         int count = othersLocation.size()-1;
         for(int i=0; i<count; i+=2){
             LatLng latLng = new LatLng(othersLocation.get(i), othersLocation.get(i+1));
@@ -531,6 +550,7 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
         }
     }
 
+    // updates the marker of the game creator (the target)
     public void updateTarget(){
         if(tMarker != null){
             tMarker.remove();
@@ -646,6 +666,7 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
         WebSocketClient.getClient().send(obj.toString());
     }
 
+    // send the location data of myself to server
     private void sendLocation() {
         JSONObject loc = new JSONObject();
         try {
@@ -664,7 +685,8 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
         WebSocketClient.getClient().send(obj.toString());
     }
 
-    private void getTargetLocation() {
+    // request location data of the game creator
+    void getTargetLocation() {
         // Queries server for location updates
         JSONObject obj = new JSONObject();
         try {
@@ -675,6 +697,7 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
         onSend(obj);
     }
 
+    // add waypoints to the map
     private void addWp(List<Waypoint> waypoints){
         if(waypoints.size() > 0) {
             int count = waypoints.size() - 1;
@@ -692,6 +715,7 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
         }
     }
 
+    // continuous requests for getting other users location data to the server
     private void continuousUpdate() {
         int delay = 0; // 0 seconds
         int period = 3000; // 3 seconds
@@ -723,7 +747,8 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
         onSend(obj);
     }
 
-    private void getWaypoints() {
+    // request location data od waypoints made by the game creator
+    void getWaypoints() {
         JSONObject obj = new JSONObject();
         try {
             obj.put("action", getResources().getInteger(R.integer.GAME_GET_WAYPOINT));
@@ -734,7 +759,7 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
     }
 
     // Navigates to AR Activity
-    private void openAR() {
+    void openAR() {
         Intent intent = new Intent(this, ArActivity.class);
         intent.putExtra("SearcherLatitude", curr_latitude);
         intent.putExtra("SearcherLongitude", curr_longitude);
