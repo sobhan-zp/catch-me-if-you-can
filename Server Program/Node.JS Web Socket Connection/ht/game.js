@@ -55,8 +55,8 @@ exports.new_waypoint = function(userinfo, location, info, fn){
             if (result.result.length>0){
                 var table = "waypoint";
                 var data = {
-                    x: x,
-                    y: y,
+                    x: location.x,
+                    y: location.y,
                     info: info,
                     game_id: result.result[0].game_id
                 }
@@ -68,8 +68,12 @@ exports.new_waypoint = function(userinfo, location, info, fn){
                 });
             }
         });
+    }else{
+        var feedback = {
+            "code": GAME_ADD_WAYPOINT_FAIL
+        };
+        return fn(feedback);
     }
-
 }
 
 exports.get_waypoint = function(userinfo, fn){

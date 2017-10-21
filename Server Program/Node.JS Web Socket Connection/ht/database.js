@@ -5,7 +5,8 @@ var con = mysql.createConnection({
     host: DATABASE_HOST,
     user: DATABASE_USERNAME,
     password: DATABASE_PASSWORD,
-    database: DATABASE_DATABASE
+    database: DATABASE_DATABASE,
+    port: DATABASE_PORT
 });
 
 exports.set_database_con = function(){
@@ -23,7 +24,7 @@ exports.execute = function(sql, s_code, f_code, fn){
     var feedback = {};
     con.query(sql, function (err, result) {
         if (err){
-            console.log(err);
+            //console.log(err);
             feedback.code = f_code;
         }else{
             feedback.code = s_code;
@@ -41,9 +42,10 @@ exports.insert = function(data, table, s_code, f_code, fn){
     });
 }
 
-exports.update = function(data, table, s_code, f_code, fn){
-    var sql = "UPDATE " + table + " SET ?";
-    query(sql, data, s_code, f_code, function(result){
+exports.update = function(data, table, condition, s_code, f_code, fn){
+    var sql = "UPDATE " + table + " SET ? WHERE ?";
+    query(sql, [data, condition], s_code, f_code, function(result){
+        console.log();
         return fn(result);
     });
 }

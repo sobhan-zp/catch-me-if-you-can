@@ -1,9 +1,10 @@
 // Constant
 // Database settings
 DATABASE_HOST = "45.77.49.3";
-DATABASE_USERNAME = "ht_remote";
-DATABASE_PASSWORD = "2Ds*vkT%YQ{sC#=R";
+DATABASE_USERNAME = "root";
+DATABASE_PASSWORD = "ht!!!";
 DATABASE_DATABASE = "house_tarth";
+DATABASE_PORT = "8888";
 // Global user settings
 DEFAULT_USER_LEVEL = 0;
 // Server settings

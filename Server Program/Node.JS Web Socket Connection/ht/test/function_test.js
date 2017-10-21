@@ -6,7 +6,6 @@ var friend = require("../friend");
 var game = require("../game");
 var assert = require("assert");
 var expect = require('chai').expect;
-var sinon = require('sinon');
 
 SUCCESS = 1;
 FAIL = 0;
@@ -14,26 +13,26 @@ FAIL = 0;
 describe('JS Functions Test', function() {
     // database.js test
     describe('SQL Statement Execution Test', function() {
-        it('SELECT all item in the account should return SUCCESS', function(done) {
-            db.execute("SELECT * FROM asccount", SUCCESS, FAIL, function(result1){
+        it('SELECT all item in the account', function(done) {
+            db.execute("SELECT * FROM account", SUCCESS, FAIL, function(result1){
                 expect(result1).to.be.an('object');
                 done();
             });
 
         });
-        it('SELECT an not exist item in account should return FAIL', function(done) {
-            db.execute("SELECT * FROM account WHERE id = '" + 9999, SUCCESS, FAIL, function(result1){
-                expect(result1.code).to.be.equal(FAIL);
+        it('SELECT an not exist item in account', function(done) {
+            db.execute("SELECT * FROM account WHERE id = 'abc'", SUCCESS, FAIL, function(result1){
+                expect(result1.code).to.be.equal(SUCCESS);
                 done();
             });
         });
-        it('Execution an empty string should return FAIL', function(done) {
+        it('Execution an empty string', function(done) {
             db.execute("", SUCCESS, FAIL, function(result1){
                 expect(result1.code).to.be.equal(FAIL);
                 done();
             });
         });
-        it('Execution an invalid SQL string should return FAIL', function(done) {
+        it('Execution an invalid SQL string', function(done) {
             db.execute("SELECT * FR", SUCCESS, FAIL, function(result1){
                 expect(result1).to.have.a.property('code', 0);
                 done();
@@ -125,7 +124,7 @@ describe('JS Functions Test', function() {
             var fake_info = {
                 "db_id":1
             }
-            friend.add_friend(fake_info, "adm23131in", function(result1){
+            friend.add_friend(fake_info, "imnotexist99999", function(result1){
                 expect(result1).to.have.a.property('code', FRIEND_ADD_FAIL);
                 done();
             });

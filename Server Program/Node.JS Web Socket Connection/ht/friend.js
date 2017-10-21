@@ -10,6 +10,7 @@ exports.add_friend = function(userinfo, add_username, fn){
     }else{
         var sql_is_in_db = "SELECT friend_id from friend WHERE self_id = " + userinfo.db_id + " and friend_id = (SELECT id FROM account WHERE username = '" + add_username + "')";
         var sql = "INSERT INTO friend (self_id, friend_id) VALUES (" + userinfo.db_id + ", (SELECT id FROM account WHERE username = '" + add_username + "'))";
+        var sql2 = "INSERT INTO friend (friend_id, self_id) VALUES (" + userinfo.db_id + ", (SELECT id FROM account WHERE username = '" + add_username + "'))";
         db.execute(sql_is_in_db, 1, 0, function (result) {
             if (result.result.length>0){
                 var feedback = {
@@ -17,11 +18,13 @@ exports.add_friend = function(userinfo, add_username, fn){
                 };
                 return fn(feedback);
             }else{
-                db.execute(sql, FRIEND_ADD_SUCCESS, FRIEND_ADD_FAIL, function(result){
-                    var feedback = {
-                        "code": result.code
-                    };
-                    return fn(feedback);
+                db.execute(sql, FRIEND_ADD_SUCCESS, FRIEND_ADD_FAIL, function(result2){
+                    db.execute(sql2, FRIEND_ADD_SUCCESS, FRIEND_ADD_FAIL, function(result3){
+                        var feedback = {
+                            "code": result2.code
+                        };
+                        return fn(feedback);
+                    });
                 });
             }
         });

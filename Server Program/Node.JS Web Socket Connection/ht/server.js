@@ -124,7 +124,7 @@ wss.on('connection', function(ws) {
                         });
                         break;
                     case GAME_ADD_WAYPOINT:
-                        game.new_waypoint(user_status.info, data.location.x, data.location.y, data.info, function(result){
+                        game.new_waypoint(user_status.info, data.location, data.info, function(result){
                             msg.to_sock(client_ws, JSON.stringify(result));
                         });
                         break;

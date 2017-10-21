@@ -34,7 +34,10 @@ exports.update_user_infor = function(userinfo, name, email, location, status, fn
         location: location,
         status: status
     };
-    db.update(data, "account", PROFILE_UPDATE_SUCCESS, PROFILE_UPDATE_FAIL, function(result){
+    var condition = {
+        id: userinfo.db_id
+    };
+    db.update(data, "account", condition, PROFILE_UPDATE_SUCCESS, PROFILE_UPDATE_FAIL, function(result){
         var feedback = {
             "code": result.code
         };
