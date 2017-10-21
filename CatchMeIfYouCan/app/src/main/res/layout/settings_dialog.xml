@@ -41,4 +41,5 @@
         android:layout_centerHorizontal="true"
         android:id="@+id/editStatus"
         android:layout_gravity="center_horizontal"/>
+
 </LinearLayout>

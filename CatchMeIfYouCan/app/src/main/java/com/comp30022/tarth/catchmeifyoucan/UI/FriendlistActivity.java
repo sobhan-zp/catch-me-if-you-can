@@ -3,7 +3,6 @@ package com.comp30022.tarth.catchmeifyoucan.UI;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,8 +27,6 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
 
     private ArrayAdapter<String> adapter;
     private List<String> array;
-    private ImageButton fabAdd;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,10 +39,6 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        // Enable Internet permissions
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
-
         // Sets up friendlist
         final ListView listViewFriends = (ListView) findViewById(R.id.listViewFriends);
         array = new ArrayList<>();
@@ -56,7 +49,7 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
         );
         listViewFriends.setAdapter(adapter);
 
-        fabAdd = (ImageButton) findViewById(R.id.floatingAdd);
+        ImageButton fabAdd = (ImageButton) findViewById(R.id.floatingAdd);
 
         listViewFriends.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -92,56 +85,6 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
         Intent returnIntent = new Intent();
         setResult(Activity.RESULT_OK, returnIntent);
         finish();
-    }
-
-    // Obtains a list of all friends from the server
-    private void getFriend() {
-        JSONObject obj = new JSONObject();
-        try {
-            obj.put("action", getResources().getInteger(R.integer.FRIEND_GET));
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
-        WebSocketClient.getClient().send(obj.toString());
-    }
-
-    /*
-    // Checks if a friend is online
-    private void checkFriend() {
-        JSONObject obj = new JSONObject();
-        try {
-            obj.put("action", FRIEND_CHECK);
-            obj.put("username", "1");
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
-        LoginActivity.getClient().send(obj.toString());
-    }
-    // Searches for the details of an existing user
-    private void searchFriend() {
-        JSONObject obj = new JSONObject();
-        try {
-            obj.put("action", FRIEND_SEARCH);
-            obj.put("username", "TEST");
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
-        LoginActivity.getClient().send(obj.toString());
-    }
-    */
-
-    // Navigates to User Activity
-    private void openUser(String username) {
-        Intent intent = new Intent(this, UserActivity.class);
-        intent.putExtra("username", username);
-        intent.putExtra("dashboard", false);
-        startActivityForResult(intent, 1);
-    }
-
-    // Navigates to Add Activity
-    private void openAdd() {
-        Intent intent = new Intent(this, AddActivity.class);
-        startActivityForResult(intent, 1);
     }
 
     // Resets the current activity connected to the WebSocket upon terminating child activities
@@ -187,10 +130,34 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
         });
     }
 
+    // Obtains a list of all friends from the server
+    private void getFriend() {
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("action", getResources().getInteger(R.integer.FRIEND_GET));
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        WebSocketClient.getClient().send(obj.toString());
+    }
+
+    // Navigates to User Activity
+    private void openUser(String username) {
+        Intent intent = new Intent(this, UserActivity.class);
+        intent.putExtra("username", username);
+        intent.putExtra("dashboard", false);
+        startActivityForResult(intent, 1);
+    }
+
+    // Navigates to Add Activity
+    private void openAdd() {
+        Intent intent = new Intent(this, AddActivity.class);
+        startActivityForResult(intent, 1);
+    }
+
     // Displays a toast message
     private void toast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
 }
-

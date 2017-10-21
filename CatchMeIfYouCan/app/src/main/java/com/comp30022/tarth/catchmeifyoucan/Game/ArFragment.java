@@ -27,7 +27,6 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 import com.comp30022.tarth.catchmeifyoucan.R;
-import com.comp30022.tarth.catchmeifyoucan.Server.Message;
 
 import java.util.Arrays;
 import java.util.concurrent.Executors;
@@ -385,9 +384,6 @@ public class ArFragment extends Fragment implements SensorEventListener, View.On
             arGraphics.setCurrentLocation(latSearcher, lonSearcher);
             arGraphics.setWaypointLocation(latTarget, lonTarget);
         }
-    }
-
-    public void onResponse(final Message message) {
     }
 
 }

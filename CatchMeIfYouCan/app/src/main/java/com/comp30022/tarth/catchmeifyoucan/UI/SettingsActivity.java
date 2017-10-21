@@ -30,8 +30,6 @@ public class SettingsActivity extends AppCompatActivity implements Communication
     TextView textViewUsername;
     TextView textViewOnline;
 
-    private Button buttonUpdate;
-
     String getUsername;
 
     @Override
@@ -45,7 +43,7 @@ public class SettingsActivity extends AppCompatActivity implements Communication
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        buttonUpdate = (Button) findViewById(R.id.buttonUpdate);
+        Button buttonUpdate = (Button) findViewById(R.id.buttonUpdate);
 
         // Set unchangable fields
         textViewUsername = (TextView) findViewById(R.id.Username);
@@ -112,31 +110,14 @@ public class SettingsActivity extends AppCompatActivity implements Communication
         finish();
     }
 
-    /* Sends JSON request for latest information of user */
-    private void getInfo() {
-        JSONObject obj = new JSONObject();
-
-        try {
-            obj.put("action", getResources().getInteger(R.integer.PROFILE_ACTION));
-            //System.out.println("SentInfo->" + obj.toString(4));
-        } catch(Exception e) {
-            e.printStackTrace();
+    // Resets the current activity connected to the WebSocket upon terminating child activities
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1) {
+            if (resultCode == Activity.RESULT_OK) {
+                WebSocketClient.getClient().setActivity(this);
+            }
         }
-        WebSocketClient.getClient().send(obj.toString());
-    }
-
-    /* Sends request to see if user is online */
-    private void getOnline(String user) {
-        JSONObject obj = new JSONObject();
-
-        try {
-            obj.put("username", user);
-            obj.put("action", getResources().getInteger(R.integer.FRIEND_CHECK));
-            //System.out.println("SentOnline->" + obj.toString(4));
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
-        WebSocketClient.getClient().send(obj.toString());
     }
 
     /* Grabs response from server */
@@ -145,13 +126,13 @@ public class SettingsActivity extends AppCompatActivity implements Communication
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-
                 if (message.getAction() != null && message.getAction() == R.integer.MESSAGE_RECEIVE) {
                     toast("New message from " + message.getFrom() + ": " + message.getMessage());
                 } else if (message.getAction() != null) {
                     // Update fields with latest information before user is allowed to change
                     if (message.getAction().equals(getResources().getInteger(R.integer.PROFILE_GET))) {
-                        textViewUsername.setText("@" + message.getUsername());
+                        String username = "@" + message.getUsername();
+                        textViewUsername.setText(username);
                         getOnline(message.getUsername());
 
                         EditTextLocation.setText(message.getLocation());
@@ -160,22 +141,25 @@ public class SettingsActivity extends AppCompatActivity implements Communication
                         EditTextEmail.setText(message.getEmail());
 
                         if (message.getLocation().equals("")) {
-                            EditTextLocation.setText("Enter Location Here");
+                            String location = "Enter Location Here";
+                            EditTextLocation.setText(location);
                         }
                         if (message.getStatus().equals("")) {
-                            EditTextStatus.setText("Enter Custom Status Here");
+                            String status = "Enter Custom Status Here";
+                            EditTextStatus.setText(status);
                         }
-                        // System.out.println("Profile get success");
                     }
                 } else if (message.getCode() != null) {
                     // Update UI to show Online
                     if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_CHECK_SUCCESS))) {
                         textViewOnline.setTextColor(Color.parseColor("#16B72E"));
-                        textViewOnline.setText("ONLINE");
+                        String online = "ONLINE";
+                        textViewOnline.setText(online);
                         textViewOnline.setTypeface(null, Typeface.BOLD_ITALIC);
                         // Update UI to show Offline
                     } else if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_CHECK_FAIL))) {
-                        textViewOnline.setText("OFFLINE");
+                        String offline = "OFFLINE";
+                        textViewOnline.setText(offline);
                         textViewOnline.setTextColor(Color.parseColor("#B72616"));
                         textViewOnline.setTypeface(null, Typeface.BOLD_ITALIC);
                         // manages response to profile update request
@@ -193,14 +177,29 @@ public class SettingsActivity extends AppCompatActivity implements Communication
         });
     }
 
-    // Resets the current activity connected to the WebSocket upon terminating child activities
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 1) {
-            if (resultCode == Activity.RESULT_OK) {
-                WebSocketClient.getClient().setActivity(this);
-            }
+    /* Sends JSON request for latest information of user */
+    private void getInfo() {
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("action", getResources().getInteger(R.integer.PROFILE_ACTION));
+            //System.out.println("SentInfo->" + obj.toString(4));
+        } catch(Exception e) {
+            e.printStackTrace();
         }
+        WebSocketClient.getClient().send(obj.toString());
+    }
+
+    /* Sends request to see if user is online */
+    private void getOnline(String user) {
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("username", user);
+            obj.put("action", getResources().getInteger(R.integer.FRIEND_CHECK));
+            //System.out.println("SentOnline->" + obj.toString(4));
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        WebSocketClient.getClient().send(obj.toString());
     }
 
     // Displays a toast message
@@ -209,5 +208,3 @@ public class SettingsActivity extends AppCompatActivity implements Communication
     }
 
 }
-
-

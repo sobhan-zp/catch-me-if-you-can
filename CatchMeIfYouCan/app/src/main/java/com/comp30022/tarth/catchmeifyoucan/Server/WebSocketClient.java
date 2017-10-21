@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 
+import java.net.ConnectException;
+
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -44,7 +46,9 @@ public class WebSocketClient extends OkHttpClient {
             public void onOpen(WebSocket webSocket, Response response) {
             }
 
-            /** Invoked when a text (type {@code 0x1}) message has been received. */
+            /**
+             * Invoked when a text (type {@code 0x1}) message has been received.
+             */
             @Override
             public void onMessage(WebSocket webSocket, String text) {
                 String filteredText = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1).replace("\\", "");
@@ -58,7 +62,9 @@ public class WebSocketClient extends OkHttpClient {
                 }
             }
 
-            /** Invoked when a binary (type {@code 0x2}) message has been received. */
+            /**
+             * Invoked when a binary (type {@code 0x2}) message has been received.
+             */
             @Override
             public void onMessage(WebSocket webSocket, ByteString bytes) {
             }
@@ -87,6 +93,7 @@ public class WebSocketClient extends OkHttpClient {
              */
             @Override
             public void onFailure(WebSocket webSocket, Throwable t, Response response) {
+                System.out.println("Connection failed");
                 t.printStackTrace();
             }
         };
@@ -115,4 +122,3 @@ public class WebSocketClient extends OkHttpClient {
     }
 
 }
-
