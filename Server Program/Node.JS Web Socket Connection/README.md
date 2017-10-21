@@ -1,6 +1,6 @@
-#House Tatch WebSocket Server
+# House Tatch WebSocket Server
 
-##Environments Requirements:
+## Environments Requirements:
 
     1. node version 8.5.0 or above
 
@@ -8,13 +8,13 @@
 
     3. Port 80 accessible
     
-##To run the test (mocha has installed locally):
+## To run the test (mocha has installed locally):
 
     1. Install Mocha globally and run 'mocha' in ht folder
 
     2. Install Mocha locally and run 'npm test' in ht folder
 
-##Node JS Modules Requirements for Server:
+## Node JS Modules Requirements for Server:
 
     1. async
 
@@ -24,7 +24,7 @@
 
     4. ws
 
-##Node JS Modules Requirements:
+## Node JS Modules Requirements:
 
     1. chai
 
@@ -32,15 +32,15 @@
 
     3. assert
 
-##To run the program:
+## To run the program:
 
     Run 'node server.js' or 'sudo node server.js'
 
-##To install Node.JS
+## To install Node.JS
 
     - Download && install latest Node.JS from https://nodejs.org/
 
-##To install MariaDB
+## To install MariaDB
 
     - for CentOS 7
 
