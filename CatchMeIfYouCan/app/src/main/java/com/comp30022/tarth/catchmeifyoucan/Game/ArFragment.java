@@ -185,6 +185,40 @@ public class ArFragment extends Fragment implements SensorEventListener, View.On
         startRepeatingTask();
     }
 
+    /*
+    @Override
+    protected void onResume(){
+        super.onResume();
+        sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, magneticField, SensorManager.SENSOR_DELAY_NORMAL);
+
+        //Set update timing
+        graphicUpdateHandler = Executors.newScheduledThreadPool(0);
+        locationUpdateHandler = Executors.newScheduledThreadPool(0);
+        startRepeatingTask();
+    }
+
+    @Override
+    protected void onPause(){
+        super.onPause();
+        // Don't receive any more updates from either sensor.
+        sensorManager.unregisterListener(this);
+        stopRepeatingTask();
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent returnIntent = new Intent();
+        setResult(Activity.RESULT_OK, returnIntent);
+        finish();
+    }
+
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+    }
+    */
+
     public boolean checkCameraPermission(){
         if (ContextCompat.checkSelfPermission(getActivity(),
                 Manifest.permission.CAMERA)
