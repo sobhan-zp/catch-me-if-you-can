@@ -148,6 +148,43 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
     }
 
     /**
+     * Called when the activity is becoming visible to the user
+     */
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
+    /**
+     * Called when the activity will start interacting with the user
+     */
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    /**
+     * Called when the activity will start interacting with the user
+     */
+    @Override
+    protected void onPause() {
+        super.onPause();
+        //stopLocationUpdates();
+    }
+
+    /**
+     * Called when the activity is no longer visible to the user
+     */
+    @Override
+    protected void onStop() {
+        super.onStop();
+        // disconnect when user leaves the interface
+        if( mGoogleApiClient != null && mGoogleApiClient.isConnected() ) {
+            mGoogleApiClient.disconnect();
+        }
+    }
+
+    /**
      * This hook is called whenever an item in your options menu is selected
      * @param item
      * @return
@@ -239,6 +276,9 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
         });
     }
 
+    /**
+     * User exits the game
+     */
     @Override
     public void onExit() {
         JSONObject obj = new JSONObject();
@@ -261,29 +301,195 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
         finish();
     }
 
+    /**
+     * Sends a message to the server
+     * @param obj
+     */
     @Override
     public void onSend(JSONObject obj) {
         WebSocketClient.getClient().send(obj.toString());
     }
 
-    private void sendLocation() {
-        JSONObject loc = new JSONObject();
-        try {
-            loc.put("x", curr_latitude);
-            loc.put("y", curr_longitude);
-        } catch(Exception e) {
-            e.printStackTrace();
+    /**
+     * Manipulates the map once available.
+     * This callback is triggered when the map is ready to be used.
+     * This is where we can add markers or lines, add listeners or move the camera. In this case,
+     * we just add a marker near Sydney, Australia.
+     * If Google Play services is not installed on the device, the user will be prompted to install
+     * it inside the SupportMapFragment. This method will only be triggered once the user has
+     * installed Google Play services and returned to the app.
+     * @param googleMap
+     */
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+
+        //Initialize Google Play Services
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)
+                    == PackageManager.PERMISSION_GRANTED) {
+                buildGoogleApiClient();
+                mMap.setMyLocationEnabled(true);
+            }
+        } else {
+            buildGoogleApiClient();
+            mMap.setMyLocationEnabled(true);
         }
-        JSONObject obj = new JSONObject();
-        try {
-            obj.put("action", getResources().getInteger(R.integer.LOCATION_SEND));
-            obj.put("location", loc);
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
-        WebSocketClient.getClient().send(obj.toString());
+
+        // set map options
+        mMap.getUiSettings().setZoomControlsEnabled(true);
+        mMap.setOnMarkerClickListener(this);
+        mMap.setOnMapClickListener(this);
     }
 
+    /**
+     * This interface is the contract for receiving the results for permission requests
+     * @param requestCode
+     * @param permissions
+     * @param grantResults
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_LOCATION_CODE: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted. Do the
+                    // contacts-related task you need to do.
+                    if (ContextCompat.checkSelfPermission(this,
+                            Manifest.permission.ACCESS_FINE_LOCATION)
+                            == PackageManager.PERMISSION_GRANTED) {
+
+                        if (mGoogleApiClient == null) {
+                            buildGoogleApiClient();
+                        }
+                        mMap.setMyLocationEnabled(true);
+                    }
+
+                } else {
+
+                    // Permission denied, Disable the functionality that depends on this permission.
+                    toast("Permission denied");
+                }
+                break;
+            }
+        }
+    }
+
+    /**
+     * Called when the location has changed
+     * @param location
+     */
+    @Override
+    public void onLocationChanged(Location location) {
+        JSONObject obj = new JSONObject();
+        try {
+            //obj.put("action", MESSAGE_COMMAND_SEND);
+            //obj.put("message", "test");
+            // TESTING
+            obj.put("action", getResources().getInteger(R.integer.LOCATION_GET));
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        //onSend(obj);
+
+        // only need the marker indicating current user's location when the user enter the map at the 1st time
+        if (mCurrLocationMarker != null) {
+            mCurrLocationMarker.remove();
+        }
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        // get the user's current location
+        mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        if (mCurrentLocation != null) {
+            curr_latitude = mCurrentLocation.getLatitude();
+            curr_longitude = mCurrentLocation.getLongitude();
+        }
+
+        LatLng latLng = new LatLng(curr_latitude, curr_longitude);
+        // add a marker when the user enter the map at the first time
+        if(mCurrLocationMarker == null){
+            MarkerOptions markerOptions = new MarkerOptions();
+            markerOptions.position(latLng);
+            markerOptions.draggable(true);
+            markerOptions.title("Original Position");
+            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+            mCurrLocationMarker = mMap.addMarker(markerOptions);
+
+            //move map camera
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+            mMap.animateCamera(CameraUpdateFactory.zoomTo(12));
+
+            toast("Your Current Location");
+        }
+    }
+
+    /**
+     * Provides callbacks for scenarios that result in a failed attempt to connect the client to the service
+     * @param connectionResult
+     */
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+    }
+
+    /**
+     * Called when the client is temporarily in a disconnected state
+     * @param i
+     */
+    @Override
+    public void onConnectionSuspended(int i) {
+        Log.d("onConnectionSuspended", "Connection suspended");
+        mGoogleApiClient.connect();
+    }
+
+    /**
+     * Defines signatures for methods that are called when a marker is clicked or tapped
+     * @param marker
+     * @return
+     */
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        return true;
+    }
+
+    /**
+     * Called when the user makes a tap gesture on the map,
+     * but only if none of the overlays of the map handled the gesture
+     * @param latLng
+     */
+    @Override
+    public void onMapClick(LatLng latLng) {
+        if(addWaypoints){
+            Marker waypoint = mMap.addMarker(new MarkerOptions()
+                    .position(latLng)
+                    .title("waypoint")
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE))
+                    .snippet(latLng.toString()));
+
+            cWaypoints.add(latLng.latitude);
+            cWaypoints.add(latLng.longitude);
+            System.out.println("Waypoint added: " + latLng.latitude + ", " + latLng.longitude);
+            mMarkers.add(waypoint);
+        }
+    }
+
+    /**
+     * Displays a toast message
+     * @param message : Message to be displayed
+     */
+    private void toast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * Switches fragments based on bottom navigation menu state
+     * @param item
+     */
     private void switchFragment(MenuItem item) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         switch (item.getItemId()) {
@@ -334,6 +540,10 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
         transaction.commit();
     }
 
+    /**
+     * Checks whether Google Play Services have been enabled
+     * @return
+     */
     private boolean checkGooglePlayServices() {
         GoogleApiAvailability googleAPI = GoogleApiAvailability.getInstance();
         int result = googleAPI.isGooglePlayServicesAvailable(this);
@@ -347,6 +557,10 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
         return true;
     }
 
+    /**
+     * Checks whether location permissions have been enabled
+     * @return
+     */
     public boolean checkLocationPermission(){
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
@@ -374,37 +588,8 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
     }
 
     /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
+     * Builder to configure a GoogleApiClient
      */
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-
-        //Initialize Google Play Services
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(this,
-                    Manifest.permission.ACCESS_FINE_LOCATION)
-                    == PackageManager.PERMISSION_GRANTED) {
-                buildGoogleApiClient();
-                mMap.setMyLocationEnabled(true);
-            }
-        } else {
-            buildGoogleApiClient();
-            mMap.setMyLocationEnabled(true);
-        }
-
-        // set map options
-        mMap.getUiSettings().setZoomControlsEnabled(true);
-        mMap.setOnMarkerClickListener(this);
-        mMap.setOnMapClickListener(this);
-    }
-
     protected synchronized void buildGoogleApiClient() {
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
@@ -414,53 +599,9 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
         mGoogleApiClient.connect();
     }
 
-    @Override
-    public void onLocationChanged(Location location) {
-        JSONObject obj = new JSONObject();
-        try {
-            //obj.put("action", MESSAGE_COMMAND_SEND);
-            //obj.put("message", "test");
-            // TESTING
-            obj.put("action", getResources().getInteger(R.integer.LOCATION_GET));
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
-        //onSend(obj);
-
-        // only need the marker indicating current user's location when the user enter the map at the 1st time
-        if (mCurrLocationMarker != null) {
-            mCurrLocationMarker.remove();
-        }
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        // get the user's current location
-        mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-        if (mCurrentLocation != null) {
-            curr_latitude = mCurrentLocation.getLatitude();
-            curr_longitude = mCurrentLocation.getLongitude();
-        }
-
-        LatLng latLng = new LatLng(curr_latitude, curr_longitude);
-        // add a marker when the user enter the map at the first time
-        if(mCurrLocationMarker == null){
-            MarkerOptions markerOptions = new MarkerOptions();
-            markerOptions.position(latLng);
-            markerOptions.draggable(true);
-            markerOptions.title("Original Position");
-            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-            mCurrLocationMarker = mMap.addMarker(markerOptions);
-
-            //move map camera
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-            mMap.animateCamera(CameraUpdateFactory.zoomTo(12));
-
-            toast("Your Current Location");
-        }
-    }
-
+    /**
+     * Receives location updates
+     */
     protected void startLocationUpdates() {
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
@@ -469,6 +610,10 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
         }
     }
 
+    /**
+     * Provides callbacks that are called when the client is connected or disconnected from the service
+     * @param bundle
+     */
     public void onConnected(Bundle bundle) {
         mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(UPDATE_INTERVAL);
@@ -479,38 +624,11 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
         startLocationUpdates();
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[],
-                                           int[] grantResults) {
-        switch (requestCode) {
-            case REQUEST_LOCATION_CODE: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                    // permission was granted. Do the
-                    // contacts-related task you need to do.
-                    if (ContextCompat.checkSelfPermission(this,
-                            Manifest.permission.ACCESS_FINE_LOCATION)
-                            == PackageManager.PERMISSION_GRANTED) {
-
-                        if (mGoogleApiClient == null) {
-                            buildGoogleApiClient();
-                        }
-                        mMap.setMyLocationEnabled(true);
-                    }
-
-                } else {
-
-                    // Permission denied, Disable the functionality that depends on this permission.
-                    toast("Permission denied");
-                }
-                break;
-            }
-        }
-    }
-
-    // give reaction to the user according to user's behavior (tapping different button)
+    /**
+     * Gives a reaction to the user according to user's behavior
+     * Eg: Tapping different buttons
+     * @param v
+     */
     public void onClick(View v) {
         switch(v.getId()) {
             case R.id.B_addWaypoints:
@@ -524,71 +642,10 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
         }
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
-    @Override
-    protected void onResume() {
-        super.onResume();
-        //checkGooglePlayServices();
-    }
-    @Override
-    protected void onPause() {
-        super.onPause();
-        //stopLocationUpdates();
-    }
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-    }
-    @Override
-    public void onConnectionSuspended(int i) {
-        Log.d("onConnectionSuspended", "Connection suspended");
-        mGoogleApiClient.connect();
-    }
-    @Override
-    protected void onStop() {
-        super.onStop();
-        // disconnect when user leaves the interface
-        if( mGoogleApiClient != null && mGoogleApiClient.isConnected() ) {
-            mGoogleApiClient.disconnect();
-        }
-    }
-
-    // where display google map tools when a marker is clicked, returning true means not
-    @Override
-    public boolean onMarkerClick(Marker marker) {
-        return true;
-    }
-
-    // add waypoints to the location where user taps on the map
-    @Override
-    public void onMapClick(LatLng latLng) {
-        if(addWaypoints){
-            Marker waypoint = mMap.addMarker(new MarkerOptions()
-                    .position(latLng)
-                    .title("waypoint")
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE))
-                    .snippet(latLng.toString()));
-            //waypoint.showInfoWindow();
-
-            cWaypoints.add(latLng.latitude);
-            cWaypoints.add(latLng.longitude);
-            System.out.println("Waypoint added: " + latLng.latitude + ", " + latLng.longitude);
-            mMarkers.add(waypoint);
-        }
-    }
-
     /**
-     * Displays a toast message
-     * @param message : Message to be displayed
+     * Update markers indicating other users on the map
+     * @param othersLocation
      */
-    private void toast(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-    }
-
-
-    // update markers indicating other users on the map
     public void updateOthers(List<Double> othersLocation){
         // clear old markers
         for(int j=othersMarker.size()-1; j>=0; j--){
@@ -610,7 +667,30 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
         }
     }
 
-    // request location data to the server
+    /**
+     * Sends location details to the server
+     */
+    private void sendLocation() {
+        JSONObject loc = new JSONObject();
+        try {
+            loc.put("x", curr_latitude);
+            loc.put("y", curr_longitude);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("action", getResources().getInteger(R.integer.LOCATION_SEND));
+            obj.put("location", loc);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        WebSocketClient.getClient().send(obj.toString());
+    }
+
+    /**
+     * Requests user location data from the server
+     */
     protected void getLocation() {
         // Queries server for location updates
         JSONObject obj = new JSONObject();
@@ -622,7 +702,9 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
         onSend(obj);
     }
 
-    // continuous requests for getting other users location data to the server
+    /**
+     * Continuous requests for getting other users location data to the server
+     */
     private void continuousUpdate() {
         int delay = 0; // 0 seconds
         int period = 3000; // 3 seconds
@@ -636,7 +718,9 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
         }, delay, period);
     }
 
-    // send location data of waypoints to server, only being called once
+    /**
+     * Sends location data of waypoints to server, only called once
+     */
     void sendWaypoints() {
         for (int i = 0; i < (cWaypoints.size() - 1); i +=2) {
             System.out.println("WP: " + cWaypoints.get(i) + ", " + cWaypoints.get(i + 1));

@@ -166,6 +166,44 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
     }
 
     /**
+     * Called when the activity is becoming visible to the user
+     */
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
+    /**
+     * Called when the activity will start interacting with the user
+     */
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //checkGooglePlayServices();
+    }
+
+    /**
+     * Called when the activity will start interacting with the user
+     */
+    @Override
+    protected void onPause() {
+        super.onPause();
+        //stopLocationUpdates();
+    }
+
+    /**
+     * Called when the activity is no longer visible to the user
+     */
+    @Override
+    protected void onStop() {
+        super.onStop();
+        // disconnect when user leaves the interface
+        if( mGoogleApiClient != null && mGoogleApiClient.isConnected() ) {
+            mGoogleApiClient.disconnect();
+        }
+    }
+
+    /**
      * This hook is called whenever an item in your options menu is selected
      * @param item
      * @return
@@ -283,6 +321,9 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
         });
     }
 
+    /**
+     * User exits the game
+     */
     @Override
     public void onExit() {
         JSONObject obj = new JSONObject();
@@ -312,108 +353,13 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
         finish();
     }
 
+    /**
+     * Sends a message to the server
+     * @param obj
+     */
     @Override
     public void onSend(JSONObject obj) {
         WebSocketClient.getClient().send(obj.toString());
-    }
-
-    private void switchFragment(MenuItem item) {
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        switch (item.getItemId()) {
-            case R.id.navigationChat:
-                if (!arFragment.isAdded()) {
-                    if (optionsFragment.isAdded()) {
-                        transaction.remove(optionsFragment);
-                    }
-                    transaction.hide(mapFragment);
-                    transaction.add(R.id.fragment_container, arFragment);
-                    transaction.addToBackStack("map");
-                    //transaction.replace(R.id.fragment_container, chatFragment);
-                    if (this.getActionBar() != null) {
-                        this.getActionBar().setTitle("Game Chat");
-                    }
-                }
-                break;
-            case R.id.navigationMap:
-                if (arFragment.isAdded()) {
-                    transaction.remove(arFragment);
-                }
-                if (optionsFragment.isAdded()) {
-                    transaction.remove(optionsFragment);
-                }
-                if (!mapFragment.isAdded()) {
-                    transaction.replace(R.id.fragment_container, mapFragment);
-                } else {
-                    transaction.show(mapFragment);
-                }
-                mapFragment.getMapAsync(this);
-
-                /*
-                if (mapFragment.isAdded()) {
-                    // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-                    SupportMapFragment mapViewFragment = (SupportMapFragment) mapFragment.getChildFragmentManager().findFragmentById(R.id.map);
-                    mapViewFragment.getMapAsync((OnMapReadyCallback) this);
-                }
-                */
-                if (this.getActionBar() != null) {
-                    this.getActionBar().setTitle("Game Map");
-                }
-                break;
-            case R.id.navigationOptions:
-                if (!optionsFragment.isAdded()) {
-                    if (arFragment.isAdded()) {
-                        transaction.remove(arFragment);
-                    }
-                    transaction.hide(mapFragment);
-                    transaction.add(R.id.fragment_container, optionsFragment);
-                    transaction.addToBackStack("map");
-                    //transaction.replace(R.id.fragment_container, optionsFragment);
-                    if (this.getActionBar() != null) {
-                        this.getActionBar().setTitle("Game Options");
-                    }
-                }
-                break;
-        }
-        transaction.commit();
-    }
-
-    private boolean checkGooglePlayServices() {
-        GoogleApiAvailability googleAPI = GoogleApiAvailability.getInstance();
-        int result = googleAPI.isGooglePlayServicesAvailable(this);
-        if (result != ConnectionResult.SUCCESS) {
-            if (googleAPI.isUserResolvableError(result)) {
-                googleAPI.getErrorDialog(this, result,
-                        0).show();
-            }
-            return false;
-        }
-        return true;
-    }
-
-    public boolean checkLocationPermission(){
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            // Asking user if explanation is needed
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.ACCESS_FINE_LOCATION)) {
-
-                //Prompt the user once explanation has been shown
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                        REQUEST_LOCATION_CODE);
-
-            } else {
-                // No explanation needed, we can request the permission.
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                        REQUEST_LOCATION_CODE);
-            }
-            return false;
-        } else {
-            return true;
-        }
     }
 
     /**
@@ -424,6 +370,7 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
      * If Google Play services is not installed on the device, the user will be prompted to install
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
+     * @param googleMap
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -456,6 +403,45 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
         mGoogleApiClient.connect();
     }
 
+    /**
+     * This interface is the contract for receiving the results for permission requests
+     * @param requestCode
+     * @param permissions
+     * @param grantResults
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_LOCATION_CODE: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted. Do the
+                    // contacts-related task you need to do.
+                    if (ContextCompat.checkSelfPermission(this,
+                            Manifest.permission.ACCESS_FINE_LOCATION)
+                            == PackageManager.PERMISSION_GRANTED) {
+
+                        if (mGoogleApiClient == null) {
+                            buildGoogleApiClient();
+                        }
+                        mMap.setMyLocationEnabled(true);
+                    }
+
+                } else {
+
+                    // Permission denied, Disable the functionality that depends on this permission.
+                    toast("Permission denied");
+                }
+                break;
+            }
+        }
+    }
+
+    /**
+     * Called when the location has changed
+     * @param location
+     */
     @Override
     public void onLocationChanged(Location location) {
         // only need the marker indicating current user's location when the user enter the map at the 1st time
@@ -495,7 +481,158 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
         checkNearWaypoint();
     }
 
-    // check whether the user is near a waypoint
+    /**
+     * Provides callbacks for scenarios that result in a failed attempt to connect the client to the service
+     * @param connectionResult
+     */
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+    }
+
+    /**
+     * Called when the client is temporarily in a disconnected state
+     * @param i
+     */
+    @Override
+    public void onConnectionSuspended(int i) {
+        Log.d("onConnectionSuspended", "Connection suspended");
+        mGoogleApiClient.connect();
+    }
+
+    /**
+     * Defines signatures for methods that are called when a marker is clicked or tapped
+     * @param marker
+     * @return
+     */
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        if(marker.getId().equals(theWpId)){
+
+            // ADD AR FRAGMENT HERE
+            MenuItem item = navigation.getMenu().getItem(CHAT_ITEM_ID);
+            switchFragment(item);
+
+            // remoce the way point from the wp list
+            mMarkers.remove(marker);
+            // remove the way point from the map
+            marker.remove();
+            nearWp = false;
+        }
+        return true;
+    }
+
+    /**
+     * Displays a toast message
+     * @param message : Message to be displayed
+     */
+    private void toast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * Switches fragments based on bottom navigation menu state
+     * @param item
+     */
+    private void switchFragment(MenuItem item) {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        switch (item.getItemId()) {
+            case R.id.navigationChat:
+                if (!arFragment.isAdded()) {
+                    if (optionsFragment.isAdded()) {
+                        transaction.remove(optionsFragment);
+                    }
+                    transaction.hide(mapFragment);
+                    transaction.add(R.id.fragment_container, arFragment);
+                    transaction.addToBackStack("map");
+                    if (this.getActionBar() != null) {
+                        this.getActionBar().setTitle("Game Chat");
+                    }
+                }
+                break;
+            case R.id.navigationMap:
+                if (arFragment.isAdded()) {
+                    transaction.remove(arFragment);
+                }
+                if (optionsFragment.isAdded()) {
+                    transaction.remove(optionsFragment);
+                }
+                if (!mapFragment.isAdded()) {
+                    transaction.replace(R.id.fragment_container, mapFragment);
+                } else {
+                    transaction.show(mapFragment);
+                }
+                mapFragment.getMapAsync(this);
+                if (this.getActionBar() != null) {
+                    this.getActionBar().setTitle("Game Map");
+                }
+                break;
+            case R.id.navigationOptions:
+                if (!optionsFragment.isAdded()) {
+                    if (arFragment.isAdded()) {
+                        transaction.remove(arFragment);
+                    }
+                    transaction.hide(mapFragment);
+                    transaction.add(R.id.fragment_container, optionsFragment);
+                    transaction.addToBackStack("map");
+                    if (this.getActionBar() != null) {
+                        this.getActionBar().setTitle("Game Options");
+                    }
+                }
+                break;
+        }
+        transaction.commit();
+    }
+
+    /**
+     * Checks whether Google Play Services have been enabled
+     * @return
+     */
+    private boolean checkGooglePlayServices() {
+        GoogleApiAvailability googleAPI = GoogleApiAvailability.getInstance();
+        int result = googleAPI.isGooglePlayServicesAvailable(this);
+        if (result != ConnectionResult.SUCCESS) {
+            if (googleAPI.isUserResolvableError(result)) {
+                googleAPI.getErrorDialog(this, result,
+                        0).show();
+            }
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Checks whether location permissions have been enabled
+     * @return
+     */
+    public boolean checkLocationPermission(){
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Asking user if explanation is needed
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+
+                //Prompt the user once explanation has been shown
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        REQUEST_LOCATION_CODE);
+
+            } else {
+                // No explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        REQUEST_LOCATION_CODE);
+            }
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    /**
+     * Checks whether the user is near a waypoint
+     */
     protected void checkNearWaypoint(){
         if(mMarkers.size() > 0) {
             int nearestWp = -1;
@@ -520,6 +657,9 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
         }
     }
 
+    /**
+     * Receives location updates
+     */
     protected void startLocationUpdates() {
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
@@ -528,6 +668,9 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
         }
     }
 
+    /**
+     * Stops receiving location updates
+     */
     protected void stopLocationUpdates() {
         if (mGoogleApiClient != null) {
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
@@ -535,7 +678,10 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
         }
     }
 
-
+    /**
+     * Provides callbacks that are called when the client is connected or disconnected from the service
+     * @param bundle
+     */
     public void onConnected(Bundle bundle) {
         mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(UPDATE_INTERVAL);
@@ -546,46 +692,11 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
         startLocationUpdates();
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[],
-                                           int[] grantResults) {
-        switch (requestCode) {
-            case REQUEST_LOCATION_CODE: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                    // permission was granted. Do the
-                    // contacts-related task you need to do.
-                    if (ContextCompat.checkSelfPermission(this,
-                            Manifest.permission.ACCESS_FINE_LOCATION)
-                            == PackageManager.PERMISSION_GRANTED) {
-
-                        if (mGoogleApiClient == null) {
-                            buildGoogleApiClient();
-                        }
-                        mMap.setMyLocationEnabled(true);
-                    }
-
-                } else {
-
-                    // Permission denied, Disable the functionality that depends on this permission.
-                    toast("Permission denied");
-                }
-                break;
-            }
-        }
-    }
-
     /**
-     * Displays a toast message
-     * @param message : Message to be displayed
+     * Gives a reaction to the user according to user's behavior
+     * Eg: Tapping different buttons
+     * @param v
      */
-    private void toast(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-    }
-
-    // give reaction to the user according to user's behavior (tapping different button)
     public void onClick(View v) {
         Object dataTransfer[] = new Object[3];
 
@@ -603,7 +714,10 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
         }
     }
 
-    // generate a route by applying the service of google direction api
+    /**
+     * Generate a route by applying the service of google direction api
+     * @return
+     */
     private String getDirectionsUrl() {
         StringBuilder googleDirectionsUrl = new StringBuilder("https://maps.googleapis.com/maps/api/directions/json?");
         googleDirectionsUrl.append("origin="+curr_latitude+","+curr_longitude);
@@ -615,56 +729,10 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
         return googleDirectionsUrl.toString();
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
-    @Override
-    protected void onResume() {
-        super.onResume();
-        //checkGooglePlayServices();
-    }
-    @Override
-    protected void onPause() {
-        super.onPause();
-        //stopLocationUpdates();
-    }
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-    }
-    @Override
-    public void onConnectionSuspended(int i) {
-        Log.d("onConnectionSuspended", "Connection suspended");
-        mGoogleApiClient.connect();
-    }
-    @Override
-    protected void onStop() {
-        super.onStop();
-        // disconnect when user leaves the interface
-        if( mGoogleApiClient != null && mGoogleApiClient.isConnected() ) {
-            mGoogleApiClient.disconnect();
-        }
-    }
-
-    // intended to open ar when a nearby waypoint is clicked
-    @Override
-    public boolean onMarkerClick(Marker marker) {
-        if(marker.getId().equals(theWpId)){
-
-            // ADD AR FRAGMENT HERE
-            MenuItem item = navigation.getMenu().getItem(CHAT_ITEM_ID);
-            switchFragment(item);
-
-            // remoce the way point from the wp list
-            mMarkers.remove(marker);
-            // remove the way point from the map
-            marker.remove();
-            nearWp = false;
-        }
-        return true;
-    }
-
-    // update markers indicating other users on the map
+    /**
+     * Update markers indicating other users on the map
+     * @param othersLocation
+     */
     public void updateOthers(List<Double> othersLocation){
         // clear old markers
         for(int j=othersMarker.size()-1; j>=0; j--){
@@ -686,7 +754,9 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
         }
     }
 
-    // updates the marker of the game creator (the target)
+    /**
+     * Updates the marker of the game creator (Target)
+     */
     public void updateTarget(){
         if(tMarker != null){
             tMarker.remove();
@@ -703,6 +773,9 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
         }
     }
 
+    /**
+     * Sends location details to the server
+     */
     private void sendLocation() {
         JSONObject loc = new JSONObject();
         try {
@@ -721,7 +794,9 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
         WebSocketClient.getClient().send(obj.toString());
     }
 
-    // request location data of the game creator
+    /**
+     * Requests target location data from the server
+     */
     void getTargetLocation() {
         // Queries server for location updates
         JSONObject obj = new JSONObject();
@@ -733,7 +808,10 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
         onSend(obj);
     }
 
-    // add waypoints to the map
+    /**
+     * Adds waypoints to the map
+     * @param waypoints
+     */
     private void addWp(List<Waypoint> waypoints){
         if(waypoints.size() > 0) {
             int count = waypoints.size() - 1;
@@ -751,7 +829,9 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
         }
     }
 
-    // continuous requests for getting other users location data to the server
+    /**
+     * Continuous requests for getting other users location data to the server
+     */
     private void continuousUpdate() {
         int delay = 0; // 0 seconds
         int period = 3000; // 3 seconds
@@ -773,6 +853,9 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
 
     }
 
+    /**
+     * Checks if the game still exists
+     */
     private void checkGameExist() {
         JSONObject obj = new JSONObject();
         try {
@@ -783,7 +866,9 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
         onSend(obj);
     }
 
-    // request location data od waypoints made by the game creator
+    /**
+     * Requests location data od waypoints made by the game creator
+     */
     void getWaypoints() {
         JSONObject obj = new JSONObject();
         try {
