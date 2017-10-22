@@ -4,6 +4,9 @@
 // Following users should not in database:
 // aas4a4sd4651fwe
 
+// Delay multiples, e.g. default delay is 5ms, now becomes 5*500 = 500ms
+TEST_DELAY_TIMES = 100;
+
 require("../constant");
 var db = require("../database");
 var accounts = require("../account");
@@ -81,7 +84,7 @@ describe('Simulate Client Message Send Test', function() {
             ws.on('open', function open() {
                 setTimeout(function () {
                     ws.send('{"username":"admin","password":"abcd","action":101}');
-                }, 10);
+                }, 1*TEST_DELAY_TIMES);
                 ws.send('{"username":"admin","password":"abcd","action":101}');
             });
             ws.on('message', function incoming(data) {
@@ -101,7 +104,7 @@ describe('Simulate Client Message Send Test', function() {
             ws2.on('open', function open() {
                 setTimeout(function () {
                     ws2.send('{"username":"admin","password":"abcd","action":101}');
-                }, 10);
+                }, 1*TEST_DELAY_TIMES);
             });
             ws2.on('message', function incoming(data) {
                 var fm = JSON.parse(JSON.parse(data));
@@ -142,7 +145,7 @@ describe('Simulate Client Message Send Test', function() {
                 ws.send('{"username":"admin","password":"abcd","action":101}');
                 setTimeout(function () {
                     ws.send('{"username":"", "action":503}');
-                }, 10);
+                }, 1*TEST_DELAY_TIMES);
             });
             ws.on('message', function incoming(data) {
                 var fm = JSON.parse(JSON.parse(data));
@@ -160,7 +163,7 @@ describe('Simulate Client Message Send Test', function() {
                 ws.send('{"username":"admin","password":"abcd","action":101}');
                 setTimeout(function () {
                     ws.send('{"username":"aas4a4sd4651fwe", "action":503}');
-                }, 10);
+                }, 1*TEST_DELAY_TIMES);
             });
             ws.on('message', function incoming(data) {
                 var fm = JSON.parse(JSON.parse(data));
@@ -179,7 +182,7 @@ describe('Simulate Client Message Send Test', function() {
                 setTimeout(function () {
                     ws.send('{"username":"admin", "action":503}');
                     ws.send('{"username":"1", "action":503}');
-                }, 10);
+                }, 1*TEST_DELAY_TIMES);
             });
             ws.on('message', function incoming(data) {
                 var fm = JSON.parse(JSON.parse(data));
@@ -199,7 +202,7 @@ describe('Simulate Client Message Send Test', function() {
                 ws.send('{"username":"admin","password":"abcd","action":101}');
                 setTimeout(function () {
                     ws.send('{"action":500}');
-                }, 10);
+                }, 1*TEST_DELAY_TIMES);
             });
             ws.on('message', function incoming(data) {
                 var fm = JSON.parse(JSON.parse(data));
@@ -219,13 +222,13 @@ describe('Simulate Client Message Send Test', function() {
                 setTimeout(function () {
                     // Exit current all game
                     ws.send('{"action":706}');
-                }, 10);
+                }, 1*TEST_DELAY_TIMES);
                 setTimeout(function () {
                     ws.send('{"action":700,"name":"hello??"}');
-                }, 20);
+                }, 2*TEST_DELAY_TIMES);
                 setTimeout(function () {
                     ws.send('{"action":700,"name":"hello??"}');
-                }, 30);
+                }, 3*TEST_DELAY_TIMES);
             });
             ws.on('message', function incoming(data) {
                 var fm = JSON.parse(JSON.parse(data));
@@ -250,10 +253,10 @@ describe('Simulate Client Message Send Test', function() {
                 setTimeout(function () {
                     // Exit current all game
                     ws.send('{"action":706}');
-                }, 10);
+                }, 1*TEST_DELAY_TIMES);
                 setTimeout(function () {
                     ws.send('{"action":718}');
-                }, 20);
+                }, 2*TEST_DELAY_TIMES);
             });
             ws.on('message', function incoming(data) {
                 var fm = JSON.parse(JSON.parse(data));
@@ -270,7 +273,7 @@ describe('Simulate Client Message Send Test', function() {
                 ws.send('{"username":"admin","password":"abcd","action":101}');
                 setTimeout(function () {
                     ws.send('{"action":709}');
-                }, 10);
+                }, 1*TEST_DELAY_TIMES);
             });
             ws.on('message', function incoming(data) {
                 var fm = JSON.parse(JSON.parse(data));
@@ -288,7 +291,7 @@ describe('Simulate Client Message Send Test', function() {
                 ws.send('{"username":"admin","password":"abcd","action":101}');
                 setTimeout(function () {
                     ws.send('{"action":723}');
-                }, 10);
+                }, 1*TEST_DELAY_TIMES);
             });
             ws.on('message', function incoming(data) {
                 var fm = JSON.parse(JSON.parse(data));
@@ -306,13 +309,13 @@ describe('Simulate Client Message Send Test', function() {
                 ws.send('{"username":"admin","password":"abcd","action":101}');
                 setTimeout(function () {
                     ws.send('{"action":706}');
-                }, 10);
+                }, 1*TEST_DELAY_TIMES);
                 setTimeout(function () {
                     ws.send('{"action":700,"name":"hello??"}');
-                }, 20);
+                }, 2*TEST_DELAY_TIMES);
                 setTimeout(function () {
                     ws.send('{"action":706}');
-                }, 30);
+                }, 3*TEST_DELAY_TIMES);
             });
             ws.on('message', function incoming(data) {
                 var fm = JSON.parse(JSON.parse(data));
@@ -329,7 +332,7 @@ describe('Simulate Client Message Send Test', function() {
                 ws.send('{"username":"admin","password":"abcd","action":101}');
                 setTimeout(function () {
                     ws.send('{"action":610, "location":{"x":1.0,"y":2.0}}');
-                }, 10);
+                }, 1*TEST_DELAY_TIMES);
             });
             ws.on('message', function incoming(data) {
                 var fm = JSON.parse(JSON.parse(data));
@@ -346,18 +349,18 @@ describe('Simulate Client Message Send Test', function() {
                 ws.send('{"username":"admin","password":"abcd","action":101}');
                 setTimeout(function () {
                     ws.send('{"action":706}');
-                }, 10);
+                }, 1*TEST_DELAY_TIMES);
                 setTimeout(function () {
                     // no joined game return nothing in result
                     ws.send('{"action":613}');
-                }, 20);
+                }, 2*TEST_DELAY_TIMES);
                 setTimeout(function () {
                     // create a game
                     ws.send('{"action":700,"name":"hello??"}');
-                }, 30);
+                }, 3*TEST_DELAY_TIMES);
                 setTimeout(function () {
                     ws.send('{"action":613}');
-                }, 40);
+                }, 4*TEST_DELAY_TIMES);
             });
             ws.on('message', function incoming(data) {
                 var fm = JSON.parse(JSON.parse(data));
@@ -382,7 +385,7 @@ describe('Simulate Client Message Send Test', function() {
                 ws.send('{"username":"admin","password":"abcd","action":101}');
                 setTimeout(function () {
                     ws.send('{"username":"1","message":"abcd","action":600}');
-                }, 10);
+                }, 1*TEST_DELAY_TIMES);
             });
             ws.on('message', function incoming(data) {
                 var fm = JSON.parse(JSON.parse(data));
@@ -399,7 +402,7 @@ describe('Simulate Client Message Send Test', function() {
                 ws.send('{"username":"admin","password":"abcd","action":101}');
                 setTimeout(function () {
                     ws.send('{"username":"1","message":"abcd","action":600}');
-                }, 10);
+                }, 1*TEST_DELAY_TIMES);
             });
             ws2.on('open', function open() {
                 ws2.send('{"username":"1","password":"2","action":101}');
