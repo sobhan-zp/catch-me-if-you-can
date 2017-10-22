@@ -12,9 +12,15 @@
     
 ## To run the unit test (mocha has installed locally):
 
-    1. Install Mocha globally and run 'mocha' in ht folder
+    1. Install Mocha globally (-g), then run 'mocha' in ht folder
 
-    2. Install Mocha locally and run 'npm test' in ht folder
+    2. Install Mocha locally, then run 'npm test' in ht folder
+    
+    3. Note On Server Testing: 
+    
+        there may sometimes be few fail test, because of the delay of the
+        
+        program and database, in this case, try one (few) more time(s).
     
 ## To run the manual test
     
