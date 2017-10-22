@@ -119,7 +119,7 @@ public class ArFragment extends Fragment implements SensorEventListener, View.On
             preview.addView(cameraView);
 
             //Set graphics
-            arGraphics = new ArGraphics(getContext(), parent);
+            arGraphics = new ArGraphics(getContext());
             arGraphics.setLayoutParams(new ActionBar.LayoutParams(ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT));
             graphicsView = (FrameLayout) getActivity().findViewById(R.id.graphicsFrame);
             graphicsView.addView(arGraphics);
@@ -142,27 +142,7 @@ public class ArFragment extends Fragment implements SensorEventListener, View.On
             wrongAnswers = res.getStringArray(R.array.wrong_answers);
         }
 
-        sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-        sensorManager.registerListener(this, magneticField, SensorManager.SENSOR_DELAY_NORMAL);
-
-        //Set update timing
-        graphicUpdateHandler = Executors.newScheduledThreadPool(0);
-        locationUpdateHandler = Executors.newScheduledThreadPool(0);
-        startRepeatingTask();
-        /*
-        Intent intent = getIntent();
-        Bundle bd = intent.getExtras();
-        System.out.println(bd.get("SearcherLatitude"));
-        System.out.println(bd.get("SearcherLongitude"));
-        System.out.println(bd.get("TargetLatitude"));
-        System.out.println(bd.get("TargetLongitude"));
-        */
-    }
-
-    /*
-    @Override
-    protected void onResume(){
-        super.onResume();
+        //Initialize sensor listeners
         sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
         sensorManager.registerListener(this, magneticField, SensorManager.SENSOR_DELAY_NORMAL);
 
@@ -171,27 +151,6 @@ public class ArFragment extends Fragment implements SensorEventListener, View.On
         locationUpdateHandler = Executors.newScheduledThreadPool(0);
         startRepeatingTask();
     }
-
-    @Override
-    protected void onPause(){
-        super.onPause();
-        // Don't receive any more updates from either sensor.
-        sensorManager.unregisterListener(this);
-        stopRepeatingTask();
-    }
-
-    @Override
-    public void onBackPressed() {
-        Intent returnIntent = new Intent();
-        setResult(Activity.RESULT_OK, returnIntent);
-        finish();
-    }
-
-    @Override
-    protected void onDestroy(){
-        super.onDestroy();
-    }
-    */
 
     public boolean checkCameraPermission(){
         if (ContextCompat.checkSelfPermission(getActivity(),
@@ -390,4 +349,15 @@ public class ArFragment extends Fragment implements SensorEventListener, View.On
     public void onResponse(final Message message) {
     }
 
+    public float[] getOrientationAngles(){
+        return this.mOrientationAngles;
+    }
+
+    public void setLastTime(long time){
+        this.lastTime = time;
+    }
+
+    public void setTouchPause(long time){
+        this.touchPause = time;
+    }
 }

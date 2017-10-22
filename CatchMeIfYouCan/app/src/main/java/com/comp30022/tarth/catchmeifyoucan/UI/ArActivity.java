@@ -96,7 +96,7 @@ public class ArActivity extends Activity implements SensorEventListener, View.On
             preview.addView(cameraView);
 
             //Set graphics
-            arGraphics = new ArGraphics(this, this);
+            arGraphics = new ArGraphics(this);
             arGraphics.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
             FrameLayout graphicsView = (FrameLayout) findViewById(R.id.graphicsFrame);
             graphicsView.addView(arGraphics);
