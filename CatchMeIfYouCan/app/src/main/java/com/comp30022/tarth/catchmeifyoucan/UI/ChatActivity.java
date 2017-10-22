@@ -41,7 +41,7 @@ public class ChatActivity extends Activity implements Communication {
 
     private String friend;
 
-    String dateFormat;
+    SimpleDateFormat dateFormat;
     TextView textViewName;
 
     /**
@@ -58,7 +58,7 @@ public class ChatActivity extends Activity implements Communication {
         setFriend();
 
         // Set date format
-        dateFormat = SimpleDateFormat.getDateTimeInstance().format("HH:mm:ss, dd/MM/yy");
+        dateFormat = new SimpleDateFormat("HH:mm:ss, dd/MM/yy");
 
         textViewName = (TextView) findViewById(R.id.Name);
         textViewName.setText(friend);

@@ -17,15 +17,18 @@ import android.view.View;
 import android.widget.Button;
 
 import com.comp30022.tarth.catchmeifyoucan.R;
+import com.comp30022.tarth.catchmeifyoucan.Server.Communication;
+import com.comp30022.tarth.catchmeifyoucan.Server.Message;
+import com.comp30022.tarth.catchmeifyoucan.Server.WebSocketClient;
 
 /**
  * EndActivity.java
  * Game ending screen
  */
-public class EndActivity extends Activity {
+public class EndActivity extends Activity implements Communication {
 
-    Button buttonReturn;
-    Button buttonExit;
+    private Button buttonReturn;
+    private Button buttonExit;
 
     /**
      * Called when the activity is starting
@@ -34,8 +37,8 @@ public class EndActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_end);
+        WebSocketClient.getClient().setActivity(this);
 
         buttonReturn = (Button) findViewById(R.id.buttonReturn);
         buttonReturn.setOnClickListener(new Button.OnClickListener() {
@@ -62,6 +65,30 @@ public class EndActivity extends Activity {
         Intent returnIntent = new Intent();
         setResult(Activity.RESULT_OK, returnIntent);
         finish();
+    }
+
+    /**
+     * Called when an activity you launched exits, giving you the requestCode you started it with,
+     * the resultCode it returned, and any additional data from it
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1) {
+            if (resultCode == Activity.RESULT_OK) {
+                WebSocketClient.getClient().setActivity(this);
+            }
+        }
+    }
+
+    /**
+     * Method invoked when the WebSocketClient receives a message
+     * @param message : Message received from server
+     */
+    @Override
+    public void onResponse(final Message message) {
     }
 
     /**

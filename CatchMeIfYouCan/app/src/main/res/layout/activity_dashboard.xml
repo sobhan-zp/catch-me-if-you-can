@@ -57,16 +57,6 @@
         android:text="Join a Game" />
 
     <Button
-        android:id="@+id/buttonSettings"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:theme="@style/PrimaryButton"
-        android:layout_below="@+id/buttonFriendlist"
-        android:layout_marginTop="4dp"
-        android:layout_centerHorizontal="true"
-        android:text="Settings" />
-
-    <Button
         android:id="@+id/buttonFriendlist"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
@@ -75,6 +65,16 @@
         android:layout_centerHorizontal="true"
         android:theme="@style/PrimaryButton"
         android:text="Friends" />
+
+    <Button
+        android:id="@+id/buttonSettings"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:theme="@style/PrimaryButton"
+        android:layout_below="@+id/buttonFriendlist"
+        android:layout_marginTop="4dp"
+        android:layout_centerHorizontal="true"
+        android:text="Settings" />
 
     <Button
         android:id="@+id/buttonLogout"

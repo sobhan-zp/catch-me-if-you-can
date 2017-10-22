@@ -50,8 +50,8 @@ public class DashboardActivity extends Activity implements Communication {
         Button buttonLogout = (Button) findViewById(R.id.buttonLogout);
         Button buttonSettings = (Button) findViewById(R.id.buttonSettings);
         ImageView imageViewTest = (ImageView) findViewById(R.id.imageViewTest);
-
         TextView textViewUsername = (TextView) findViewById(R.id.Username);
+
         Intent intent = getIntent();
         Bundle bd = intent.getExtras();
         if(bd != null) {
