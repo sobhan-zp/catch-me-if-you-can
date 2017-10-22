@@ -1,3 +1,11 @@
+// COMP30022 IT Project - Semester 2 2017
+// House Tarth - William Voor Thursday 16.15
+// | Ivan Ken Weng Chee         eyeonechi  ichee@student.unimelb.edu.au
+// | Jussi Eemeli Silventoinen  JussiSil   jsilventoine@student.unimelb.edu.au
+// | Minghao Wang               minghaooo  minghaow1@student.unimelb.edu.au
+// | Vikram Gopalan-Krishnan    vikramgk   vgopalan@student.unimelb.edu.au
+// | Ziren Xiao                 zirenxiao  zirenx@student.unimelb.edu.au
+
 package com.comp30022.tarth.catchmeifyoucan.Game;
 
 import android.app.Activity;
@@ -9,11 +17,17 @@ import android.graphics.drawable.ShapeDrawable;
 import android.location.Location;
 import android.view.View;
 
-import com.comp30022.tarth.catchmeifyoucan.UI.ArActivity;
-
 import static java.lang.Math.toRadians;
 
+/**
+ * ArGraphics.java
+ * Draws objects on top of ArCamera
+ */
 public class ArGraphics extends View{
+
+    //UI Update timing handler
+    public static long GRAPHIC_UPDATE_RATE = 50;
+    public static long LOCATION_UPDATE_RATE = 250;
 
     //View width and height
     private int width;
@@ -25,8 +39,7 @@ public class ArGraphics extends View{
     private float velocityX;
     private float velocityY;
     private float shapeRad;
-    private static int NUM_UPDATES = (int)(ArFragment.LOCATION_UPDATE_RATE/
-            ArFragment.GRAPHIC_UPDATE_RATE);
+    private static int NUM_UPDATES = (int)(LOCATION_UPDATE_RATE/GRAPHIC_UPDATE_RATE);
     private int timesMoved = 0;
 
     //Shape Constructors
@@ -44,7 +57,6 @@ public class ArGraphics extends View{
     //Phone orientation information
     private float[] preOrientationAngles = new float[3];
     private float[] mOrientationAngles = new float[3];
-
 
     //private SurfaceHolder surfaceHolder;
     //private Bitmap bitmap;
@@ -169,4 +181,5 @@ public class ArGraphics extends View{
     public float[] getOrientationAngles(){
         return mOrientationAngles;
     }
+
 }

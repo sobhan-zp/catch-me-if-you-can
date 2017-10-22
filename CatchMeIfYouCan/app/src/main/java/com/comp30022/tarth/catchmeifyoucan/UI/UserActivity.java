@@ -1,3 +1,11 @@
+// COMP30022 IT Project - Semester 2 2017
+// House Tarth - William Voor Thursday 16.15
+// | Ivan Ken Weng Chee         eyeonechi  ichee@student.unimelb.edu.au
+// | Jussi Eemeli Silventoinen  JussiSil   jsilventoine@student.unimelb.edu.au
+// | Minghao Wang               minghaooo  minghaow1@student.unimelb.edu.au
+// | Vikram Gopalan-Krishnan    vikramgk   vgopalan@student.unimelb.edu.au
+// | Ziren Xiao                 zirenxiao  zirenx@student.unimelb.edu.au
+
 package com.comp30022.tarth.catchmeifyoucan.UI;
 
 import android.app.Activity;
@@ -19,21 +27,29 @@ import com.comp30022.tarth.catchmeifyoucan.Server.WebSocketClient;
 
 import org.json.JSONObject;
 
-/* Opens a detailed view of a user by querying the server */
+/**
+ * UserActivity.java
+ * Opens a detailed view of a user by querying the server
+ */
 public class UserActivity extends Activity implements Communication {
 
-    TextView textViewName;
-    TextView textViewUsername;
-    TextView textViewLocation;
-    TextView textViewStatus;
-    TextView textViewOnline;
+    private TextView textViewName;
+    private TextView textViewUsername;
+    private TextView textViewLocation;
+    private TextView textViewStatus;
+    private TextView textViewOnline;
 
     private String getUsername;
 
+    /**
+     * Called when the activity is starting
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user);
+
         // Set server to send responses back to this class
         WebSocketClient.getClient().setActivity(this);
 
@@ -67,6 +83,9 @@ public class UserActivity extends Activity implements Communication {
         });
     }
 
+    /**
+     * Called when the activity has detected the user's press of the back key
+     */
     @Override
     public void onBackPressed() {
         Intent returnIntent = new Intent();
@@ -74,7 +93,13 @@ public class UserActivity extends Activity implements Communication {
         finish();
     }
 
-    // Resets the current activity connected to the WebSocket upon terminating child activities
+    /**
+     * Called when an activity you launched exits, giving you the requestCode you started it with,
+     * the resultCode it returned, and any additional data from it
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1) {
@@ -84,7 +109,10 @@ public class UserActivity extends Activity implements Communication {
         }
     }
 
-    /* Grabs response from server */
+    /**
+     * Method invoked when the WebSocketClient receives a message
+     * @param message : Message received from server
+     */
     @Override
     public void onResponse(final Message message) {
         runOnUiThread(new Runnable() {
@@ -126,29 +154,45 @@ public class UserActivity extends Activity implements Communication {
         });
     }
 
-    // Redirects to user to chat
+    /**
+     * Displays a toast message
+     * @param message : Message to be displayed
+     */
+    private void toast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * Redirects to user to chat
+     * @param friend
+     */
     private void openChat(String friend) {
         Intent intent = new Intent(this, ChatActivity.class);
         intent.putExtra("friend", friend);
         startActivityForResult(intent, 1);
     }
 
-    /* Sends server a JSON request for the information of a user, takes in unique username as string */
+    /**
+     * Sends server a JSON request for the information of a user,
+     * takes in a unique username as string
+     * @param uname
+     */
     private void getInfo(String uname) {
         JSONObject obj = new JSONObject();
         System.out.println("uname" + uname);
         try {
             obj.put("username", uname);
             obj.put("action", getResources().getInteger(R.integer.FRIEND_SEARCH));
-            //System.out.println("SentInfo->" + obj.toString(4));
         } catch(Exception e) {
             e.printStackTrace();
         }
-        // send to server
+        // Send to server
         WebSocketClient.getClient().send(obj.toString());
     }
 
-    /* Sends server a JSON request to check if user is online*/
+    /**
+     * Sends server a JSON request to check if user is online
+     */
     private void getOnline() {
         JSONObject obj = new JSONObject();
         try {
@@ -158,11 +202,6 @@ public class UserActivity extends Activity implements Communication {
             e.printStackTrace();
         }
         WebSocketClient.getClient().send(obj.toString());
-    }
-
-    // Displays a toast message
-    private void toast(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
 }

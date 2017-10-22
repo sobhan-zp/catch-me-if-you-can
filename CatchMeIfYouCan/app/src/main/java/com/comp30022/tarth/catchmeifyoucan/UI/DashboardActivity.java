@@ -1,3 +1,11 @@
+// COMP30022 IT Project - Semester 2 2017
+// House Tarth - William Voor Thursday 16.15
+// | Ivan Ken Weng Chee         eyeonechi  ichee@student.unimelb.edu.au
+// | Jussi Eemeli Silventoinen  JussiSil   jsilventoine@student.unimelb.edu.au
+// | Minghao Wang               minghaooo  minghaow1@student.unimelb.edu.au
+// | Vikram Gopalan-Krishnan    vikramgk   vgopalan@student.unimelb.edu.au
+// | Ziren Xiao                 zirenxiao  zirenx@student.unimelb.edu.au
+
 package com.comp30022.tarth.catchmeifyoucan.UI;
 
 import android.app.Activity;
@@ -18,10 +26,18 @@ import com.comp30022.tarth.catchmeifyoucan.Server.WebSocketClient;
 
 import org.json.JSONObject;
 
+/**
+ * DashboardActivity.java
+ * Application main interface
+ */
 public class DashboardActivity extends Activity implements Communication {
 
     private String getName;
 
+    /**
+     * Called when the activity is starting
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,13 +114,21 @@ public class DashboardActivity extends Activity implements Communication {
         });
     }
 
-    // Disables back button -- you need to click logout to exit
+    /**
+     * Called when the activity has detected the user's press of the back key
+     */
     @Override
     public void onBackPressed() {
         logoutWarning();
     }
 
-    // Resets the current activity connected to the WebSocket upon terminating child activities
+    /**
+     * Called when an activity you launched exits, giving you the requestCode you started it with,
+     * the resultCode it returned, and any additional data from it
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1) {
@@ -114,6 +138,10 @@ public class DashboardActivity extends Activity implements Communication {
         }
     }
 
+    /**
+     * Method invoked when the WebSocketClient receives a message
+     * @param message : Message received from server
+     */
     @Override
     public void onResponse(final Message message) {
         runOnUiThread(new Runnable() {
@@ -151,7 +179,17 @@ public class DashboardActivity extends Activity implements Communication {
         });
     }
 
-    // Reveals pop up asking if user really wants to exit
+    /**
+     * Displays a toast message
+     * @param message : Message to be displayed
+     */
+    private void toast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * Reveals pop up asking if user really wants to exit
+     */
     public void logoutWarning() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.MyAlertDialogStyle);
         builder.setTitle(getResources().getString(R.string.exit_dashboard_title));
@@ -165,7 +203,9 @@ public class DashboardActivity extends Activity implements Communication {
         builder.show();
     }
 
-    // Disconnects from server and returns to main menu
+    /**
+     * Disconnects from server and returns to main menu
+     */
     public void logout() {
         WebSocketClient.getClient().disconnect();
         Intent returnIntent = new Intent();
@@ -173,19 +213,18 @@ public class DashboardActivity extends Activity implements Communication {
         finish();
     }
 
-    // Navigates to Settings
+    /**
+     * Navigates to Settings Activity
+     */
     public void settings() {
         Intent intent = new Intent(this, SettingsActivity.class);
         startActivityForResult(intent, 1);
     }
 
-    // Navigates to Settings
-    public void test() {
-        Intent intent = new Intent(this, UserDetailActivity.class);
-        startActivity(intent);
-    }
-
-    // Navigates to User Activity
+    /**
+     * Navigates to User Activity
+     * @param username : Username of user to be loaded
+     */
     private void openUser(String username) {
         Intent intent = new Intent(this, UserActivity.class);
         intent.putExtra("username", username);
@@ -194,32 +233,37 @@ public class DashboardActivity extends Activity implements Communication {
         startActivityForResult(intent, 1);
     }
 
-    // Displays a toast message
-    private void toast(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-    }
-
-    // Navigates to Target activity
+    /**
+     * Navigates to Target Activity
+     * @param message : Message received from the server
+     */
     private void openTarget(Message message) {
         Intent intent = new Intent(this, TargetActivity.class);
         intent.putExtra("game_id", message.getGame_id());
         startActivityForResult(intent, 1);
     }
 
-    // Navigates to Searcher activity
+    /**
+     * Navigates to Searcher Activity
+     * @param message : Message received from the server
+     */
     private void openSearcher(Message message) {
         Intent intent = new Intent(this, SearcherActivity.class);
         intent.putExtra("game_id", message.getGame_id());
         startActivityForResult(intent, 1);
     }
 
-    // Navigates to Gamelist Activity
+    /**
+     * Navigates to Gamelist Activity
+     */
     private void openGamelist() {
         Intent intent = new Intent(this, GamelistActivity.class);
         startActivityForResult(intent, 1);
     }
 
-    // Navigates to Friendlist Activity
+    /**
+     * Navigates to Friendlist Activity
+     */
     private void openFriendlist() {
         Intent intent = new Intent(this, FriendlistActivity.class);
         startActivityForResult(intent, 1);

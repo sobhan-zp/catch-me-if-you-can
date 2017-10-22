@@ -1,3 +1,11 @@
+// COMP30022 IT Project - Semester 2 2017
+// House Tarth - William Voor Thursday 16.15
+// | Ivan Ken Weng Chee         eyeonechi  ichee@student.unimelb.edu.au
+// | Jussi Eemeli Silventoinen  JussiSil   jsilventoine@student.unimelb.edu.au
+// | Minghao Wang               minghaooo  minghaow1@student.unimelb.edu.au
+// | Vikram Gopalan-Krishnan    vikramgk   vgopalan@student.unimelb.edu.au
+// | Ziren Xiao                 zirenxiao  zirenx@student.unimelb.edu.au
+
 package com.comp30022.tarth.catchmeifyoucan.UI;
 
 import android.Manifest;
@@ -50,6 +58,10 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+/**
+ * SearcherActivity.java
+ * Searcher game interface
+ */
 public class SearcherActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
         LocationListener, GoogleMap.OnMarkerClickListener,
@@ -109,6 +121,10 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
     // trace the run time of continuous requests of updating others locations
     static int i = 0;
 
+    /**
+     * Called when the activity is starting
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -149,7 +165,11 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
         continuousUpdate();
     }
 
-    // Set back button on action bar
+    /**
+     * This hook is called whenever an item in your options menu is selected
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -160,6 +180,9 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Called when the activity has detected the user's press of the back key
+     */
     @Override
     public void onBackPressed() {
         timer.scheduleAtFixedRate(new TimerTask() {
@@ -181,7 +204,13 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
         finish();
     }
 
-    // Resets the current activity connected to the WebSocket upon terminating child activities
+    /**
+     * Called when an activity you launched exits, giving you the requestCode you started it with,
+     * the resultCode it returned, and any additional data from it
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1) {
@@ -191,6 +220,10 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
         }
     }
 
+    /**
+     * Method invoked when the WebSocketClient receives a message
+     * @param message : Message received from server
+     */
     @Override
     public void onResponse(final Message message) {
         runOnUiThread(new Runnable() {
@@ -544,6 +577,14 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
         }
     }
 
+    /**
+     * Displays a toast message
+     * @param message : Message to be displayed
+     */
+    private void toast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
     // give reaction to the user according to user's behavior (tapping different button)
     public void onClick(View v) {
         Object dataTransfer[] = new Object[3];
@@ -611,7 +652,8 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
         if(marker.getId().equals(theWpId)){
 
             // ADD AR FRAGMENT HERE
-            openAR();
+            MenuItem item = navigation.getMenu().getItem(CHAT_ITEM_ID);
+            switchFragment(item);
 
             // remoce the way point from the wp list
             mMarkers.remove(marker);
@@ -620,11 +662,6 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
             nearWp = false;
         }
         return true;
-    }
-
-    // Displays a toast message
-    private void toast(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
     // update markers indicating other users on the map
@@ -755,16 +792,6 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
             e.printStackTrace();
         }
         onSend(obj);
-    }
-
-    // Navigates to AR Activity
-    void openAR() {
-        Intent intent = new Intent(this, ArActivity.class);
-        intent.putExtra("SearcherLatitude", curr_latitude);
-        intent.putExtra("SearcherLongitude", curr_longitude);
-        intent.putExtra("TargetLatitude", end_latitude);
-        intent.putExtra("TargetLongitude", end_longitude);
-        startActivityForResult(intent, 1);
     }
 
 }

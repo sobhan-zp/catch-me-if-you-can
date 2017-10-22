@@ -1,3 +1,11 @@
+// COMP30022 IT Project - Semester 2 2017
+// House Tarth - William Voor Thursday 16.15
+// | Ivan Ken Weng Chee         eyeonechi  ichee@student.unimelb.edu.au
+// | Jussi Eemeli Silventoinen  JussiSil   jsilventoine@student.unimelb.edu.au
+// | Minghao Wang               minghaooo  minghaow1@student.unimelb.edu.au
+// | Vikram Gopalan-Krishnan    vikramgk   vgopalan@student.unimelb.edu.au
+// | Ziren Xiao                 zirenxiao  zirenx@student.unimelb.edu.au
+
 package com.comp30022.tarth.catchmeifyoucan.UI;
 
 import android.app.Activity;
@@ -25,8 +33,16 @@ import com.comp30022.tarth.catchmeifyoucan.R;
 
 import org.json.JSONObject;
 
+/**
+ * LoginActivity.java
+ * Login screen
+ */
 public class LoginActivity extends AppCompatActivity implements Communication {
 
+    /**
+     * Called when the activity is starting
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,6 +78,9 @@ public class LoginActivity extends AppCompatActivity implements Communication {
         });
     }
 
+    /**
+     * Called when the activity has detected the user's press of the back key
+     */
     @Override
     public void onBackPressed() {
         WebSocketClient.getClient().disconnect();
@@ -70,7 +89,11 @@ public class LoginActivity extends AppCompatActivity implements Communication {
         finish();
     }
 
-    // Set back button on action bar
+    /**
+     * This hook is called whenever an item in your options menu is selected
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -81,7 +104,13 @@ public class LoginActivity extends AppCompatActivity implements Communication {
         return super.onOptionsItemSelected(item);
     }
 
-    // Resets the current activity connected to the WebSocket upon terminating child activities
+    /**
+     * Called when an activity you launched exits, giving you the requestCode you started it with,
+     * the resultCode it returned, and any additional data from it
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1) {
@@ -94,6 +123,10 @@ public class LoginActivity extends AppCompatActivity implements Communication {
         WebSocketClient.getClient().connect();
     }
 
+    /**
+     * Method invoked when the WebSocketClient receives a message
+     * @param message : Message received from server
+     */
     @Override
     public void onResponse(final Message message) {
         runOnUiThread(new Runnable() {
@@ -146,22 +179,27 @@ public class LoginActivity extends AppCompatActivity implements Communication {
         }
     }
 
-    // Navigates to Dashboard Activity
+    /**
+     * Displays a toast message
+     * @param message : Message to be displayed
+     */
+    private void toast(String message) {
+        Spannable centeredText = new SpannableString(message);
+        centeredText.setSpan(new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER),
+                0, message.length() - 1,
+                Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+
+        Toast.makeText(this, centeredText, Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * Navigates to Dashboard Activity
+     */
     private void openDashboard() {
         EditText etName1 = (EditText) findViewById(R.id.editTextUsername);
         Intent intent = new Intent(LoginActivity.this, DashboardActivity.class);
         intent.putExtra("username", etName1.getText().toString());
         startActivityForResult(intent, 1);
-    }
-
-    // Displays a toast message
-    private void toast(String text) {
-        Spannable centeredText = new SpannableString(text);
-        centeredText.setSpan(new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER),
-                0, text.length() - 1,
-                Spannable.SPAN_INCLUSIVE_INCLUSIVE);
-
-        Toast.makeText(this, centeredText, Toast.LENGTH_SHORT).show();
     }
 
 }
