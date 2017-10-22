@@ -114,16 +114,22 @@ describe('Simulate Client Message Send Test', function() {
         it('Send invalid register information', function(done) {
             var count = 0;
             ws.on('open', function open() {
+                // no name
                 ws.send('{"username":"!@#","password":"!@#fasd","name":"","email":"t@t.com","action":100}');
+                // no password
                 ws.send('{"username":"!@#","password":"","name":"haha","email":"t@t.com","action":100}');
+                // no username
                 ws.send('{"username":"","password":"!@#fasd","name":"haha","email":"","action":100}');
+                // no all
                 ws.send('{"username":"","password":"","name":"","email":"","action":100}');
+                // missing property
+                ws.send('{"name":"","email":"","action":100}');
             });
             ws.on('message', function incoming(data) {
                 var fm = JSON.parse(JSON.parse(data));
                 expect(fm).to.have.a.property('code', REGISTER_FAIL);
                 count = count + 1;
-                if (count>=4){
+                if (count>=5){
                     done();
                 }
             });
@@ -142,7 +148,7 @@ describe('Simulate Client Message Send Test', function() {
                 var fm = JSON.parse(JSON.parse(data));
                 count = count + 1;
                 if (count>=2){
-                    expect(fm).to.have.a.property('code', FRIEND_SEARCH_FAIL);
+                    expect(fm).to.have.a.property('code', FRIEND_SEARCH_SUCCESS);
                     done();
                 }
             });
@@ -242,15 +248,18 @@ describe('Simulate Client Message Send Test', function() {
             ws.on('open', function open() {
                 ws.send('{"username":"admin","password":"abcd","action":101}');
                 setTimeout(function () {
-                    ws.send('{"action":718}');
+                    // Exit current all game
+                    ws.send('{"action":706}');
                 }, 10);
+                setTimeout(function () {
+                    ws.send('{"action":718}');
+                }, 20);
             });
             ws.on('message', function incoming(data) {
                 var fm = JSON.parse(JSON.parse(data));
                 count = count + 1;
-                if (count>=2){
-                    expect(fm).to.have.a.property('result');
-                    expect(fm).to.have.a.property('code', GAME_GET_CURRENT_SUCCESS);
+                if (count>=3){
+                    expect(fm).to.have.a.property('code', GAME_GET_CURRENT_FAIL);
                     done();
                 }
             });

@@ -1,7 +1,7 @@
 {
-  "name": "Catch Me If You Can",
+  "name": "Catch_Me_If_You_Can",
   "version": "0.0.1",
-  "description": "House Tarth Team IT Project",
+  "description": "House_Tarth_Team_IT_Project",
   "main": "server.js",
   "scripts": {
     "test": "mocha"
@@ -10,6 +10,8 @@
   "license": "ISC",
   "dependencies": {
     "async": "^2.5.0",
+    "chai": "^4.1.2",
+    "mocha": "^4.0.1",
     "mysql": "^2.15.0",
     "node-uuid": "^1.4.8",
     "ws": "^3.2.0"

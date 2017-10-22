@@ -14,7 +14,7 @@ exports.to_id = function(id, message, clients){
 exports.to_sock = function(sock, message){
     if (sock.readyState === WebSocket.OPEN) {
         sock.send(JSON.stringify(message)); // i dont know why it needs twice
-        //console.log('Message has been delivered');
+        //console.log(message);
      }
      //else{
     //     console.log('Client socket status: %s', sock.readyState);
@@ -40,13 +40,23 @@ exports.to_name = function(userinfo, to_name, message, clients){
             break;
         }
     }
-    var sql = "INSERT INTO user_chatlog (content, from_user, to_user, read_status) VALUES ('" + message + "','" + userinfo.username + "', (SELECT id FROM account WHERE username = '" + to_name + "'), " + found + ")";
-    db.execute(sql, MESSAGE_SEND_SUCCESS_OFFLINE, MESSAGE_SEND_FAIL, function(result) {
-        if (result.code == MESSAGE_SEND_FAIL) {
-            feedback_from = {
-                "code": MESSAGE_SEND_FAIL
-            };
-        }
+    var data = {
+        username: to_name
+    };
+    db.select(data, "id", "account", 1, 0, function(result){
+        var data1 = {
+            content: message,
+            from_user: userinfo.username,
+            to_user: result.result[0].id,
+            read_status: found
+        };
+        db.insert(data1, "user_chatlog", MESSAGE_SEND_SUCCESS_OFFLINE, MESSAGE_SEND_FAIL, function(result) {
+            if (result.code == MESSAGE_SEND_FAIL) {
+                feedback_from = {
+                    "code": MESSAGE_SEND_FAIL
+                };
+            }
+        });
     });
     if (found == MESSAGE_UNREAD){
         feedback_from = {
@@ -82,27 +92,27 @@ exports.user_command = function(userinfo, to_name, message, clients){
     this.to_sock(userinfo.ws, JSON.stringify(feedback_from));
 }
 
-exports.offline_msg_check = function(userinfo){
-    var sql = "SELECT * FROM user_chatlog WHERE to_user = " + userinfo.db_id + " and read_status = 0";
-    var msg;
-    var that = this;
-    db.execute(sql, 1, 0, function (result) {
-        if (result.result.length>0){
-            for (var i=0; i<result.result.length; i++){
-                msg = {
-                    "action": MESSAGE_RECEIVE,
-                    "message": result.result[i].content,
-                    "from": result.result[i].from_user
+exports.offline_msg_check = function(userinfo, username){
+    if (username != "" || username != undefined){
+        var sql = "SELECT * FROM user_chatlog WHERE to_user = " + userinfo.db_id + " and from_user = '" + username + "'";
+        var msg;
+        var that = this;
+        db.execute(sql, 1, 0, function (result) {
+            if (result.result.length>0){
+                //console.log(result);
+                for (var i=0; i<result.result.length; i++){
+                    msg = {
+                        "action": MESSAGE_RECEIVE,
+                        "message": result.result[i].content,
+                        "from": result.result[i].from_user
+                    }
+                    msg_set_read(result.result[i].id);
+                    that.to_sock(userinfo.ws, JSON.stringify(msg));
                 }
-                //msg_set_read(result.result[i].id);
-                //this.to_sock(userinfo.ws, JSON.stringify(msg));
             }
-        }else{
-            msg = {};
-        }
-        that.to_sock(userinfo.ws, JSON.stringify(msg));
-    });
-
+            //that.to_sock(userinfo.ws, JSON.stringify(msg));
+        });
+    }
 }
 
 function msg_set_read(msg_id){
