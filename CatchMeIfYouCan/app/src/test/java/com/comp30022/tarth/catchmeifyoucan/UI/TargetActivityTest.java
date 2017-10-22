@@ -1,0 +1,75 @@
+package com.comp30022.tarth.catchmeifyoucan.UI;
+
+import android.view.View;
+
+import com.comp30022.tarth.catchmeifyoucan.R;
+
+import org.json.JSONObject;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+
+import java.util.ArrayList;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(TargetActivity.class)
+public class TargetActivityTest {
+
+    TargetActivity targetActivity = new TargetActivity();
+
+    @Test
+    public void onClick() throws Exception {
+        View vMock = Mockito.mock(View.class);
+
+        Mockito.when(vMock.getId()).thenReturn(R.id.B_addWaypoints);
+        targetActivity.onClick(vMock);
+        assertEquals(true, targetActivity.addWaypoints);
+
+        Mockito.when(vMock.getId()).thenReturn(R.id.B_finishAddWP);
+        targetActivity.onClick(vMock);
+        assertEquals(false, targetActivity.addWaypoints);
+    }
+
+    @Test
+    public void getLocation() throws Exception {
+        JSONObject jsonObjectMock = Mockito.mock(JSONObject.class);
+
+        PowerMockito.whenNew(JSONObject.class).withNoArguments().thenReturn(jsonObjectMock);
+        Mockito.when(jsonObjectMock.put(Mockito.anyString(), Mockito.anyDouble())).thenReturn(jsonObjectMock);
+
+        TargetActivity spy = Mockito.spy(targetActivity);
+        Mockito.doNothing().when(spy).onSend(jsonObjectMock);
+
+        spy.getLocation();
+        verify(spy).onSend(jsonObjectMock);
+    }
+
+
+    @Test
+    public void sendWaypoints() throws Exception {
+        JSONObject jsonObjectMock = Mockito.mock(JSONObject.class);
+        targetActivity.cWaypoints = new ArrayList<Double>();
+        targetActivity.cWaypoints.add(1.1);
+        targetActivity.cWaypoints.add(1.1);
+
+        PowerMockito.whenNew(JSONObject.class).withNoArguments().thenReturn(jsonObjectMock);
+        Mockito.when(jsonObjectMock.put(Mockito.anyString(), Mockito.anyDouble())).thenReturn(jsonObjectMock);
+        Mockito.when(jsonObjectMock.put(Mockito.anyString(), Mockito.anyString())).thenReturn(jsonObjectMock);
+        Mockito.when(jsonObjectMock.put(Mockito.anyString(), eq(jsonObjectMock))).thenReturn(jsonObjectMock);
+
+        TargetActivity spy = Mockito.spy(targetActivity);
+        Mockito.doNothing().when(spy).onSend(jsonObjectMock);
+
+        spy.sendWaypoints();
+        verify(spy).onSend(jsonObjectMock);
+    }
+
+
+}

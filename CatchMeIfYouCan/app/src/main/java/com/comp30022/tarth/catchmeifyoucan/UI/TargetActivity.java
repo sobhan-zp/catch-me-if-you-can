@@ -54,30 +54,39 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
         Communication, OptionsFragment.FragmentCommunication,
         ChatFragment.FragmentCommunication {
 
-    private GoogleMap mMap;
+    protected GoogleMap mMap;
     // Google client to interact with Google API
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
+    // user's current location data
     private Location mCurrentLocation;
+    // the marker indicating user's current location
     private Marker mCurrLocationMarker = null;
+    // hardcoded number for requesting location permission
     public static final int REQUEST_LOCATION_CODE = 999;
+    // time intervals for requesting location updates
     private static int UPDATE_INTERVAL = 5000; //SEC
     private static int FATEST_INTERVAL = 3000; //SEC
     private static int DISPLACEMENT = 10; // METERS
+
+    // user's current geocoordinates - latitude and longitude
     double curr_latitude, curr_longitude;
 
+    // indicates whther waypoints have been created by user
     boolean addWaypoints = false;
+    // timer used for continuous updating locations of other users
     Timer timer;
 
-    List<Double> cWaypoints = new ArrayList<Double>();//coordinates of way points
-    List<Marker> mMarkers = new ArrayList<Marker>();//markers of  way points
+    //coordinates of way points
+    List<Double> cWaypoints = new ArrayList<Double>();
+    //markers of  way points
+    List<Marker> mMarkers = new ArrayList<Marker>();
+    //markers of other users
+    private List<Marker> othersMarker = new ArrayList<Marker>();
 
-    private List<Marker> othersMarker = new ArrayList<Marker>();//markers of other users
-
-    private final static int CHAT_ITEM_ID = 0;
     private final static int MAP_ITEM_ID = 1;
-    private final static int OPTIONS_ITEM_ID = 2;
 
+    // fragment switching related variables
     SupportMapFragment mapFragment;
     Fragment chatFragment;
     Fragment optionsFragment;
@@ -297,6 +306,8 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
             e.printStackTrace();
         }
         //onSend(obj);
+
+        // only need the marker indicating current user's location when the user enter the map at the 1st time
         if (mCurrLocationMarker != null) {
             mCurrLocationMarker.remove();
         }
@@ -305,14 +316,15 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
                 Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
+        // get the user's current location
         mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-
         if (mCurrentLocation != null) {
             curr_latitude = mCurrentLocation.getLatitude();
             curr_longitude = mCurrentLocation.getLongitude();
         }
 
         LatLng latLng = new LatLng(curr_latitude, curr_longitude);
+        // add a marker when the user enter the map at the first time
         if(mCurrLocationMarker == null){
             MarkerOptions markerOptions = new MarkerOptions();
             markerOptions.position(latLng);
@@ -327,11 +339,6 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
 
             toast("Your Current Location");
         }
-
-        if(mCurrLocationMarker != null){
-            String currLocation = curr_latitude+","+curr_longitude;
-            toast(currLocation);
-        }
     }
 
     protected void startLocationUpdates() {
@@ -341,14 +348,6 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
         }
     }
-
-    protected void stopLocationUpdates() {
-        if (mGoogleApiClient != null) {
-            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
-            Log.d("onLocationChanged", "Removing Location Updates");
-        }
-    }
-
 
     public void onConnected(Bundle bundle) {
         mLocationRequest = new LocationRequest();
@@ -391,11 +390,9 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
         }
     }
 
+    // give reaction to the user according to user's behavior (tapping different button)
     public void onClick(View v) {
-        Object dataTransfer[] = new Object[3];
-
         switch(v.getId()) {
-
             case R.id.B_addWaypoints:
                 addWaypoints = true;
                 break;
@@ -438,11 +435,13 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
         }
     }
 
+    // where display google map tools when a marker is clicked, returning true means not
     @Override
     public boolean onMarkerClick(Marker marker) {
         return true;
     }
 
+    // add waypoints to the location where user taps on the map
     @Override
     public void onMapClick(LatLng latLng) {
         if(addWaypoints){
@@ -461,15 +460,18 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
     }
 
     // Displays a toast message
-    private void toast(String message) {
+    protected void toast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
 
+    // update markers indicating other users on the map
     public void updateOthers(List<Double> othersLocation){
+        // clear old markers
         for(int j=othersMarker.size()-1; j>=0; j--){
             othersMarker.get(j).remove();
         }
+        // add new markers
         int count = othersLocation.size()-1;
         for(int i=0; i<count; i+=2){
             LatLng latLng = new LatLng(othersLocation.get(i), othersLocation.get(i+1));
@@ -553,7 +555,8 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
         WebSocketClient.getClient().send(obj.toString());
     }
 
-    private void sendLocation() {
+    // send the location data of myself to server
+    protected void sendLocation() {
         JSONObject loc = new JSONObject();
         try {
             loc.put("x", curr_latitude);
@@ -571,7 +574,8 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
         WebSocketClient.getClient().send(obj.toString());
     }
 
-    private void getLocation() {
+    // request location data to the server
+    protected void getLocation() {
         // Queries server for location updates
         JSONObject obj = new JSONObject();
         try {
@@ -582,6 +586,7 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
         onSend(obj);
     }
 
+    // continuous requests for getting other users location data to the server
     private void continuousUpdate() {
         int delay = 0; // 0 seconds
         int period = 3000; // 3 seconds
@@ -595,7 +600,8 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
         }, delay, period);
     }
 
-    private void sendWaypoints() {
+    // send location data of waypoints to server, only being called once
+    void sendWaypoints() {
         for (int i = 0; i < (cWaypoints.size() - 1); i +=2) {
             System.out.println("WP: " + cWaypoints.get(i) + ", " + cWaypoints.get(i + 1));
             JSONObject loc = new JSONObject();
