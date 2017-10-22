@@ -9,14 +9,15 @@ import org.junit.runner.RunWith;
 
 import static org.junit.Assert.*;
 
+/**
+ * ApplicationInstrumentedTest.java
+ */
 @RunWith(AndroidJUnit4.class)
-public class ExampleInstrumentedTest {
+public class ApplicationInstrumentedTest {
 
     @Test
     public void useAppContext() throws Exception {
-        // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
-
         assertEquals("com.comp30022.tarth.catchmeifyoucan", appContext.getPackageName());
     }
 

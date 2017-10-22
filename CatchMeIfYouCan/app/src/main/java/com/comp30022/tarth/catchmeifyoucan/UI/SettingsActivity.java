@@ -151,11 +151,11 @@ public class SettingsActivity extends AppCompatActivity implements Communication
                         EditTextName.setText(message.getName());
                         EditTextEmail.setText(message.getEmail());
 
-                        if (message.getLocation().equals("")) {
+                        if (message.getLocation() != null && message.getLocation().equals("")) {
                             String location = "Enter Location Here";
                             EditTextLocation.setText(location);
                         }
-                        if (message.getStatus().equals("")) {
+                        if (message.getStatus() != null && message.getStatus().equals("")) {
                             String status = "Enter Custom Status Here";
                             EditTextStatus.setText(status);
                         }

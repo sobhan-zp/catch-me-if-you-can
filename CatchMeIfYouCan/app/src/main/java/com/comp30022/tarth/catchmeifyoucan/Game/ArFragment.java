@@ -57,6 +57,7 @@ public class ArFragment extends Fragment implements SensorEventListener, View.On
     //UI Update timing handler
     private ScheduledExecutorService graphicUpdateHandler;
     public static long GRAPHIC_UPDATE_RATE = 50;
+
     private ScheduledExecutorService locationUpdateHandler;
     public static long LOCATION_UPDATE_RATE = 250;
 
@@ -185,155 +186,12 @@ public class ArFragment extends Fragment implements SensorEventListener, View.On
         startRepeatingTask();
     }
 
-    /*
-    @Override
-    protected void onResume(){
-        super.onResume();
-        sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-        sensorManager.registerListener(this, magneticField, SensorManager.SENSOR_DELAY_NORMAL);
-
-        //Set update timing
-        graphicUpdateHandler = Executors.newScheduledThreadPool(0);
-        locationUpdateHandler = Executors.newScheduledThreadPool(0);
-        startRepeatingTask();
-    }
-
-    @Override
-    protected void onPause(){
-        super.onPause();
-        // Don't receive any more updates from either sensor.
-        sensorManager.unregisterListener(this);
-        stopRepeatingTask();
-    }
-
-    @Override
-    public void onBackPressed() {
-        Intent returnIntent = new Intent();
-        setResult(Activity.RESULT_OK, returnIntent);
-        finish();
-    }
-
-    @Override
-    protected void onDestroy(){
-        super.onDestroy();
-    }
-    */
-
-    public boolean checkCameraPermission(){
-        if (ContextCompat.checkSelfPermission(getActivity(),
-                Manifest.permission.CAMERA)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            // Asking user if explanation is needed
-            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
-                    Manifest.permission.CAMERA)) {
-
-                //Prompt the user once explanation has been shown
-                ActivityCompat.requestPermissions(getActivity(),
-                        new String[]{Manifest.permission.CAMERA},
-                        REQUEST_CAMERA_PERMISSION);
-
-            } else {
-                // No explanation needed, we can request the permission.
-                ActivityCompat.requestPermissions(getActivity(),
-                        new String[]{Manifest.permission.CAMERA},
-                        REQUEST_CAMERA_PERMISSION);
-            }
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    //Required for sensors
-    @Override
-    public void onSensorChanged(SensorEvent event) {
-        if (event.sensor == accelerometer) {
-            System.arraycopy(event.values, 0, mAccelerometerReading,
-                    0, mAccelerometerReading.length);
-        }
-        else if (event.sensor == magneticField) {
-            System.arraycopy(event.values, 0, mMagnetometerReading,
-                    0, mMagnetometerReading.length);
-        }
-        updateOrientationAngles();
-        //Log.d("debug", "mAzimuth :" + Float.toString(mOrientationAngles[0]));
-        //arGraphics.setOrientationAngles(mOrientationAngles);
-    }
-
-    //Required for Sensors
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int i) {
-    }
-
-    // Compute the three orientation angles based on the most recent readings from
-    // the device's accelerometer and magnetometer.
-    public void updateOrientationAngles() {
-        // Update rotation matrix, which is needed to update orientation angles.
-        float[] newRotationMatrix = mRotationMatrix.clone();
-        sensorManager.getRotationMatrix(mRotationMatrix, null,
-                mAccelerometerReading, mMagnetometerReading);
-        sensorManager.remapCoordinateSystem(mRotationMatrix, SensorManager.AXIS_X,
-                SensorManager.AXIS_Z, newRotationMatrix);
-        // "mRotationMatrix" now has up-to-date information.
-
-        sensorManager.getOrientation(newRotationMatrix, mOrientationAngles);
-    }
-
-
-    /** Check if this device has a camera */
-    private boolean checkCameraHardware(Context context) {
-        if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)){
-            // this device has a camera
-            return true;
-        } else {
-            // no camera on this device
-            return false;
-        }
-    }
-
-    /** A safe way to get an instance of the Camera object. */
-    public static Camera getCameraInstance(){
-        Camera c = null;
-        try {
-            c = Camera.open(); // attempt to get a Camera instance
-        }
-        catch (Exception e){
-            // Camera is not available (in use or does not exist)
-        }
-        return c; // returns null if camera is unavailable
-    }
-
-
-    private void startRepeatingTask(){
-        graphicUpdateHandler.scheduleAtFixedRate(new Runnable() {
-            @Override
-            public void run(){
-                parent.runOnUiThread(new Runnable(){
-                    @Override
-                    public void run(){
-                        arGraphics.invalidate();
-                        //Log.d("debug", "invalidate");
-                    }
-                });
-            }
-        }, 0, GRAPHIC_UPDATE_RATE, TimeUnit.MILLISECONDS);
-
-        locationUpdateHandler.scheduleAtFixedRate(new Runnable() {
-            @Override
-            public void run(){
-                arGraphics.setOrientationAngles(mOrientationAngles);
-                System.out.println("AR CIRCLE POSITION  " + arGraphics.getX() + "," + arGraphics.getY());
-                //Log.d("debug", "set angles");
-            }
-        }, 0, LOCATION_UPDATE_RATE, TimeUnit.MILLISECONDS);
-    }
-
-    private void stopRepeatingTask(){
-        locationUpdateHandler.shutdown();
-        graphicUpdateHandler.shutdown();
-    }
-
+    /**
+     * Called when a touch event is dispatched to a view
+     * @param v
+     * @param event
+     * @return
+     */
     @Override
     public boolean onTouch(View v, MotionEvent event){
         if(arGraphics.checkInCircle(event.getX(), event.getY())){
@@ -393,6 +251,153 @@ public class ArFragment extends Fragment implements SensorEventListener, View.On
         return true;
     }
 
+    /**
+     * Called when there is a new sensor event
+     * @param event
+     */
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        if (event.sensor == accelerometer) {
+            System.arraycopy(event.values, 0, mAccelerometerReading,
+                    0, mAccelerometerReading.length);
+        }
+        else if (event.sensor == magneticField) {
+            System.arraycopy(event.values, 0, mMagnetometerReading,
+                    0, mMagnetometerReading.length);
+        }
+        updateOrientationAngles();
+        //Log.d("debug", "mAzimuth :" + Float.toString(mOrientationAngles[0]));
+        //arGraphics.setOrientationAngles(mOrientationAngles);
+    }
+
+    /**
+     * Called when the accuracy of the registered sensor has changed
+     * @param sensor
+     * @param i
+     */
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int i) {
+    }
+
+    /**
+     * Computes the three orientation angles based on the most recent readings from
+     * the device's accelerometer and magnetometer
+     */
+    public void updateOrientationAngles() {
+        // Update rotation matrix, which is needed to update orientation angles.
+        float[] newRotationMatrix = mRotationMatrix.clone();
+        sensorManager.getRotationMatrix(mRotationMatrix, null,
+                mAccelerometerReading, mMagnetometerReading);
+        sensorManager.remapCoordinateSystem(mRotationMatrix, SensorManager.AXIS_X,
+                SensorManager.AXIS_Z, newRotationMatrix);
+
+        // "mRotationMatrix" now has up-to-date information.
+        sensorManager.getOrientation(newRotationMatrix, mOrientationAngles);
+    }
+
+    /**
+     * Checks whether camera permissions have been enabled
+     * @return
+     */
+    public boolean checkCameraPermission(){
+        if (ContextCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Asking user if explanation is needed
+            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+                    Manifest.permission.CAMERA)) {
+
+                //Prompt the user once explanation has been shown
+                ActivityCompat.requestPermissions(getActivity(),
+                        new String[]{Manifest.permission.CAMERA},
+                        REQUEST_CAMERA_PERMISSION);
+
+            } else {
+                // No explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions(getActivity(),
+                        new String[]{Manifest.permission.CAMERA},
+                        REQUEST_CAMERA_PERMISSION);
+            }
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    /**
+     * Check if this device has a camera
+     * @param context
+     * @return
+     */
+    private boolean checkCameraHardware(Context context) {
+        if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)){
+            // this device has a camera
+            return true;
+        } else {
+            // no camera on this device
+            return false;
+        }
+    }
+
+    /**
+     * A safe way to get an instance of the Camera object
+     * @return
+     */
+    public static Camera getCameraInstance(){
+        Camera c = null;
+        try {
+            c = Camera.open(); // attempt to get a Camera instance
+        }
+        catch (Exception e){
+            // Camera is not available (in use or does not exist)
+        }
+        return c; // returns null if camera is unavailable
+    }
+
+
+    /**
+     * Starts graphics and location updates
+     */
+    public void startRepeatingTask(){
+        graphicUpdateHandler.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run(){
+                parent.runOnUiThread(new Runnable(){
+                    @Override
+                    public void run(){
+                        arGraphics.invalidate();
+                        //Log.d("debug", "invalidate");
+                    }
+                });
+            }
+        }, 0, GRAPHIC_UPDATE_RATE, TimeUnit.MILLISECONDS);
+
+        locationUpdateHandler.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run(){
+                arGraphics.setOrientationAngles(mOrientationAngles);
+                System.out.println("AR CIRCLE POSITION  " + arGraphics.getX() + "," + arGraphics.getY());
+                //Log.d("debug", "set angles");
+            }
+        }, 0, LOCATION_UPDATE_RATE, TimeUnit.MILLISECONDS);
+    }
+
+    /**
+     * Stops graphics and location updates
+     */
+    public void stopRepeatingTask(){
+        locationUpdateHandler.shutdown();
+        graphicUpdateHandler.shutdown();
+    }
+
+    /**
+     * Combines arrays
+     * @param a
+     * @param b
+     * @param ansPos
+     * @return
+     */
     public String[] arrayCombine(String a, String[] b, int ansPos){
         String[] result = new String[1 + b.length];
         result[ansPos] = a;
@@ -406,6 +411,13 @@ public class ArFragment extends Fragment implements SensorEventListener, View.On
         return result;
     }
 
+    /**
+     * Called by parent activity
+     * @param latSearcher
+     * @param lonSearcher
+     * @param latTarget
+     * @param lonTarget
+     */
     public void onUpdate(Double latSearcher, Double lonSearcher, Double latTarget, Double lonTarget) {
         if (arGraphics != null) {
             arGraphics.setCurrentLocation(latSearcher, lonSearcher);
@@ -413,6 +425,10 @@ public class ArFragment extends Fragment implements SensorEventListener, View.On
         }
     }
 
+    /**
+     * Method invoked when the WebSocketClient receives a message
+     * @param message : Message received from server
+     */
     public void onResponse(final Message message) {
     }
 
@@ -426,6 +442,26 @@ public class ArFragment extends Fragment implements SensorEventListener, View.On
 
     public void setTouchPause(long time){
         this.touchPause = time;
+    }
+
+    public SensorManager getSensorManager() {
+        return sensorManager;
+    }
+
+    public Sensor getAccelerometer() {
+        return accelerometer;
+    }
+
+    public Sensor getMagneticField() {
+        return magneticField;
+    }
+
+    public void setGraphicUpdateHandler(ScheduledExecutorService graphicUpdateHandler) {
+        this.graphicUpdateHandler = graphicUpdateHandler;
+    }
+
+    public void setLocationUpdateHandler(ScheduledExecutorService locationUpdateHandler) {
+        this.locationUpdateHandler = locationUpdateHandler;
     }
 
 }

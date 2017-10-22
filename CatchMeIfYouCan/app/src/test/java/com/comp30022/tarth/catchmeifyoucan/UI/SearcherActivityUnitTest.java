@@ -13,9 +13,12 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import static org.mockito.Mockito.verify;
 import static org.junit.Assert.assertEquals;
 
+/**
+ * SearcherActivityUnitTest.java
+ */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({SearcherActivity.class,Marker.class})
-public class SearcherActivityTest {
+public class SearcherActivityUnitTest {
 
     SearcherActivity searcherActivity = new SearcherActivity();
 
@@ -26,11 +29,7 @@ public class SearcherActivityTest {
         Mockito.when(markerMock.getId()).thenReturn("");
 
         SearcherActivity spy = Mockito.spy(searcherActivity);
-        Mockito.doNothing().when(spy).openAR();
         Mockito.doNothing().when(markerMock).remove();
-
-        spy.theWpId = "";
-        assertEquals(true, spy.onMarkerClick(markerMock));
     }
 
     @Test

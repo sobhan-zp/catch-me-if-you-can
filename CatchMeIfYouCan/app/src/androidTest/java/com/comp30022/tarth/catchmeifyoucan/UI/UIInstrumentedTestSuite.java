@@ -3,6 +3,9 @@ package com.comp30022.tarth.catchmeifyoucan.UI;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
+/**
+ * UIInstrumentedTestSuite.java
+ */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
         AddActivityInstrumentedTest.class,
@@ -19,5 +22,5 @@ import org.junit.runners.Suite;
         TargetActivityInstrumentedTest.class,
         UserActivityInstrumentedTest.class
 })
-public class ActivityInstrumentedTestSuite {
+public class UIInstrumentedTestSuite {
 }

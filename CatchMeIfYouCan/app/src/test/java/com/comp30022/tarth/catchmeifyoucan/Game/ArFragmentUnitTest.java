@@ -27,11 +27,11 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
 /**
- * Created by Jussi on 22/10/2017.
+ * ArFragmentUnitTest.java
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(ArFragment.class)
-public class ArFragmentTest {
+public class ArFragmentUnitTest {
     private Camera cameraMock;
     private ArGraphics arGraphicsMock;
     private ArFragment arMock;

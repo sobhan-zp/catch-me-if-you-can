@@ -12,6 +12,10 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
@@ -57,6 +61,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.Executors;
 
 /**
  * SearcherActivity.java
@@ -64,7 +69,7 @@ import java.util.TimerTask;
  */
 public class SearcherActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
-        LocationListener, GoogleMap.OnMarkerClickListener,
+        LocationListener, GoogleMap.OnMarkerClickListener, SensorEventListener,
         Communication, OptionsFragment.FragmentCommunication,
         ChatFragment.FragmentCommunication {
 
@@ -107,7 +112,7 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
     SupportMapFragment mapFragment;
     Fragment chatFragment;
     Fragment optionsFragment;
-    Fragment arFragment;
+    ArFragment arFragment;
     private BottomNavigationView navigation;
 
     // the marker of the game creator (target)
@@ -179,7 +184,16 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
     @Override
     protected void onResume() {
         super.onResume();
-        //checkGooglePlayServices();
+        checkGooglePlayServices();
+        if (arFragment != null && arFragment.getSensorManager() != null) {
+            arFragment.getSensorManager().registerListener((SensorEventListener) this, arFragment.getAccelerometer(), SensorManager.SENSOR_DELAY_NORMAL);
+            arFragment.getSensorManager().registerListener((SensorEventListener) this, arFragment.getMagneticField(), SensorManager.SENSOR_DELAY_NORMAL);
+
+            //Set update timing
+            arFragment.setGraphicUpdateHandler(Executors.newScheduledThreadPool(0));
+            arFragment.setLocationUpdateHandler(Executors.newScheduledThreadPool(0));
+            arFragment.startRepeatingTask();
+        }
     }
 
     /**
@@ -188,7 +202,12 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
     @Override
     protected void onPause() {
         super.onPause();
-        //stopLocationUpdates();
+        stopLocationUpdates();
+        // Don't receive any more updates from either sensor.
+        if (arFragment != null && arFragment.getSensorManager() != null) {
+            arFragment.getSensorManager().unregisterListener(this);
+            arFragment.stopRepeatingTask();
+        }
     }
 
     /**
@@ -508,17 +527,36 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
     public boolean onMarkerClick(Marker marker) {
         if(marker.getId().equals(theWpId)){
 
-            // ADD AR FRAGMENT HERE
+            // open AR Fragment
             MenuItem item = navigation.getMenu().getItem(CHAT_ITEM_ID);
             switchFragment(item);
 
-            // remoce the way point from the wp list
+            // remove the way point from the wp list
             mMarkers.remove(marker);
             // remove the way point from the map
             marker.remove();
             nearWp = false;
         }
         return true;
+    }
+
+    /**
+     * Called when there is a new sensor event
+     * @param event
+     */
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        arFragment.onSensorChanged(event);
+    }
+
+    /**
+     * Called when the accuracy of the registered sensor has changed
+     * @param sensor
+     * @param i
+     */
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int i) {
+        arFragment.onAccuracyChanged(sensor, i);
     }
 
     /**
@@ -672,7 +710,7 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
      * Stops receiving location updates
      */
     protected void stopLocationUpdates() {
-        if (mGoogleApiClient != null) {
+        if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
             Log.d("onLocationChanged", "Removing Location Updates");
         }

@@ -17,9 +17,12 @@ import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
+/**
+ * ArGraphicsUnitTest.java
+ */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(ArGraphics.class)
-public class ArGraphicsTest {
+public class ArGraphicsUnitTest {
     private Context context = PowerMockito.mock(Context.class);
     private ArGraphics testGraphics = new ArGraphics(context);
 
@@ -27,7 +30,7 @@ public class ArGraphicsTest {
     public void testCheckInCircle() throws Exception {
         testGraphics.setShapeX(0);
         testGraphics.setShapeY(0);
-        assertTrue(testGraphics.checkInCircle(any(Float.class), any(Float.class)));
+        assertTrue(testGraphics.checkInCircle(0f, 0f));
     }
 
     @Test
@@ -41,7 +44,6 @@ public class ArGraphicsTest {
     public void testOnDraw(){
         Canvas mockCanvas = Mockito.mock(Canvas.class);
         Paint mockPaint = Mockito.mock(Paint.class);
-
         mockCanvas.drawCircle(0,0,1,mockPaint);
         verify(mockCanvas).drawCircle(0,0,1,mockPaint);
     }

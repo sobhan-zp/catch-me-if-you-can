@@ -16,9 +16,12 @@ import java.util.List;
 
 import static org.mockito.Mockito.verify;
 
+/**
+ * MapDirectionsDataUnitTest.java
+ */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({GoogleMap.class, PolylineOptions.class, Polyline.class})
-public class MapDirectionsDataTest {
+public class MapDirectionsDataUnitTest {
 
     GoogleMap mapMock = PowerMockito.mock(GoogleMap.class);
     List<Polyline> mPolylines = new ArrayList<Polyline>();

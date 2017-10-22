@@ -18,9 +18,12 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
+/**
+ * TargetActivityUnitTest.java
+ */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(TargetActivity.class)
-public class TargetActivityTest {
+public class TargetActivityUnitTest {
 
     TargetActivity targetActivity = new TargetActivity();
 

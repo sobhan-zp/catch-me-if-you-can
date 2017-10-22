@@ -12,9 +12,12 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
+/**
+ * MapDataParserUnitTest.java
+ */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(MapDataParser.class)
-public class MapDataParserTest {
+public class MapDataParserUnitTest {
 
     private MapDataParser mapDataParser = new MapDataParser();
 

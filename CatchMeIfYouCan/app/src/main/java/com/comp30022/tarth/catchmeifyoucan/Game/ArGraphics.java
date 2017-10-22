@@ -58,10 +58,6 @@ public class ArGraphics extends View{
     private float[] preOrientationAngles = new float[3];
     private float[] mOrientationAngles = new float[3];
 
-    //private SurfaceHolder surfaceHolder;
-    //private Bitmap bitmap;
-    //private Canvas canvas;
-
     public ArGraphics(Context context){
         super(context);
 
@@ -79,6 +75,10 @@ public class ArGraphics extends View{
         paint.setAlpha(200);
     }
 
+    /**
+     * Implement this to do your drawing
+     * @param canvas : The canvas on which the background will be drawn
+     */
     @Override
     protected void onDraw(Canvas canvas){
 
@@ -92,6 +92,25 @@ public class ArGraphics extends View{
         }
     }
 
+    /**
+     * Called when the size of this view has changed
+     * @param w
+     * @param h
+     * @param oldw
+     * @param oldh
+     */
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh){
+        width = w;
+        height = h;
+    }
+
+    /**
+     * Checks if selection is in circle radius
+     * @param x
+     * @param y
+     * @return
+     */
     public boolean checkInCircle(float x, float y){
         boolean inCircle = false;
         if(x >= (this.shapeX - this.shapeRad) && x <= (this.shapeX + this.shapeRad)){
@@ -104,13 +123,11 @@ public class ArGraphics extends View{
         return inCircle;
     }
 
-    @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh){
-        width = w;
-        height = h;
-    }
-
-    //Calculates x-coordinate of the AR circle
+    /**
+     * Calculates x-coordinate of the AR circle
+     * @param orientationAngles
+     * @return
+     */
     private float calculateGraphicXPos(float[] orientationAngles){
         float x;
         float bearingAngle = (float)toRadians(mCurrentLocation.bearingTo(mCurrLocationMarker));
@@ -122,15 +139,18 @@ public class ArGraphics extends View{
         if(orientationAngles[0] < 0  && bearingAngle < 0 ||
                 orientationAngles[0] > 0  && bearingAngle > 0){
             x = width / 2 - (float) ((orientationAngles[0] - bearingAngle) / xViewingAngle * width);
-        }
-        else {
+        } else {
             x = width / 2 - (float) ((orientationAngles[0] + bearingAngle) / xViewingAngle * width);
         }
 
         return x;
     }
 
-    //Calculates y-coordinate of the AR circle
+    /**
+     * Calculates y-coordinate of the AR circle
+     * @param orientationAngles
+     * @return
+     */
     private float calculateGraphicYPos(float[] orientationAngles){
         float y;
         y = height/2 - (int) ((orientationAngles[1])/yViewingAngle * height);
@@ -138,6 +158,10 @@ public class ArGraphics extends View{
         return y;
     }
 
+    /**
+     * Calculates the size of the graphic to be drawn
+     * @return
+     */
     private float calculateGraphicSize(){
         float s;
         s = (0.6F*width)/(mCurrentLocation.distanceTo(mCurrLocationMarker));
@@ -148,7 +172,10 @@ public class ArGraphics extends View{
         return s;
     }
 
-    //Used to set the orientationAngles array from ArFragment
+    /**
+     * Used to set the orientationAngles array from ArFragment
+     * @param orientationAngles
+     */
     public void setOrientationAngles(float[] orientationAngles){
         //Log.d("debug", "setAngles");
         timesMoved = 0;
@@ -160,11 +187,21 @@ public class ArGraphics extends View{
                 - calculateGraphicYPos(preOrientationAngles))/NUM_UPDATES;
     }
 
+    /**
+     * Sets destination location
+     * @param x
+     * @param y
+     */
     public void setWaypointLocation(double x, double y){
         mCurrLocationMarker.setLatitude(y);
         mCurrLocationMarker.setLongitude(x);
     }
 
+    /**
+     * Sets current location
+     * @param x
+     * @param y
+     */
     public void setCurrentLocation(double x, double y){
         mCurrentLocation.setLatitude(y);
         mCurrentLocation.setLongitude(x);

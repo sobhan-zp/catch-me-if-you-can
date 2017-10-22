@@ -48,17 +48,47 @@ public class ArCamera extends SurfaceView implements SurfaceHolder.Callback{
         mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
     }
 
+    /**
+     * Called to determine the size requrements for this view and all of its children
+     * @param widthMeasureSpec
+     * @param heightMeasureSpec
+     */
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        final int width = resolveSize(getSuggestedMinimumWidth(), widthMeasureSpec);
+        final int height = resolveSize(getSuggestedMinimumHeight(), heightMeasureSpec);
+        setMeasuredDimension(width, height);
+
+        if (mSupportedPreviewSizes != null) {
+            mPreviewSize = getOptimalPreviewSize(mSupportedPreviewSizes, width, height);
+        }
+    }
+
+    /**
+     * surfaceChanged will take care of stuff
+     * @param holder
+     */
     public void surfaceCreated(SurfaceHolder holder) {
-        // empty. surfaceChanged will take care of stuff
+        // empty
     }
 
+    /**
+     * Take care of releasing the Camera preview in your activity
+     * @param holder
+     */
     public void surfaceDestroyed(SurfaceHolder holder) {
-        // empty. Take care of releasing the Camera preview in your activity.
+        // empty
     }
 
+    /**
+     * Takes care of preview changes or rotations
+     * @param holder
+     * @param format
+     * @param w
+     * @param h
+     */
     public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
         Log.e(TAG, "surfaceChanged => w=" + w + ", h=" + h);
-        // If your preview can change or rotate, take care of those events here.
         // Make sure to stop the preview before resizing or reformatting it.
         if (mHolder.getSurface() == null){
             // preview surface does not exist
@@ -87,17 +117,13 @@ public class ArCamera extends SurfaceView implements SurfaceHolder.Callback{
         }
     }
 
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        final int width = resolveSize(getSuggestedMinimumWidth(), widthMeasureSpec);
-        final int height = resolveSize(getSuggestedMinimumHeight(), heightMeasureSpec);
-        setMeasuredDimension(width, height);
-
-        if (mSupportedPreviewSizes != null) {
-            mPreviewSize = getOptimalPreviewSize(mSupportedPreviewSizes, width, height);
-        }
-    }
-
+    /**
+     * Returns the optimal preview size
+     * @param sizes
+     * @param w
+     * @param h
+     * @return
+     */
     private Camera.Size getOptimalPreviewSize(List<Camera.Size> sizes, int w, int h) {
         final double ASPECT_TOLERANCE = 0.1;
         double targetRatio=(double)h / w;
@@ -129,4 +155,5 @@ public class ArCamera extends SurfaceView implements SurfaceHolder.Callback{
         }
         return optimalSize;
     }
+
 }

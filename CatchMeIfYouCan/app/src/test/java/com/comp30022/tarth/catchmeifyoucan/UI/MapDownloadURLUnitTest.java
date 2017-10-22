@@ -15,9 +15,12 @@ import java.net.URL;
 
 import static org.junit.Assert.assertEquals;
 
+/**
+ * MapDownloadURLUnitTest.java
+ */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(MapDownloadURL.class)
-public class MapDownloadURLTest {
+public class MapDownloadURLUnitTest {
 
     MapDownloadURL mapDownloadURL = new MapDownloadURL();
 

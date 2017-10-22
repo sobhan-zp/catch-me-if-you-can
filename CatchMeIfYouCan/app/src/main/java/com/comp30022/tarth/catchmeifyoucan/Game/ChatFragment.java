@@ -28,6 +28,10 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * OptionsFragment.java
+ * Enables target to send messages to all searchers in the game
+ */
 public class ChatFragment extends Fragment {
 
     private Activity parent;
@@ -35,6 +39,10 @@ public class ChatFragment extends Fragment {
     private ArrayAdapter<String> adapter;
     private List<String> array;
 
+    /**
+     * Called once the fragment is associated with its activity
+     * @param context
+     */
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -45,16 +53,33 @@ public class ChatFragment extends Fragment {
         }
     }
 
+    /**
+     * Tells the fragment that its activity has completed its own Activity.onCreate()
+     * @param savedInstanceState
+     */
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
     }
 
+    /**
+     * Creates and returns the view hierarchy associated with the fragment
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_chat, container, false);
     }
 
+    /**
+     * Called immediately after onCreateView(LayoutInflater, ViewGroup, Bundle) has returned,
+     * but before any saved state has been restored in to the view
+     * @param view
+     * @param savedInstanceState
+     */
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -67,10 +92,12 @@ public class ChatFragment extends Fragment {
                 array
         );
         listViewMessages.setAdapter(adapter);
-
-        updateLocation();
     }
 
+    /**
+     * Method invoked when the WebSocketClient receives a message
+     * @param message
+     */
     public void onResponse(final Message message) {
         Result[] results = message.getResult();
         for (Result result : results) {
@@ -79,24 +106,15 @@ public class ChatFragment extends Fragment {
         adapter.notifyDataSetChanged();
     }
 
-    private void updateLocation() {
-        /*
-        // Queries server for location updates
-        JSONObject obj = new JSONObject();
-        try {
-            //obj.put("action", MESSAGE_COMMAND_SEND);
-            //obj.put("message", "test");
-            // TESTING
-            obj.put("action", getResources().getInteger(R.integer.LOCATION_GET));
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
-        ((FragmentCommunication) parent).onSend(obj);
-        */
-    }
-
+    /**
+     * Callback interface for communicating with parent activity
+     */
     public interface FragmentCommunication {
 
+        /**
+         * Sends a message to the server
+         * @param obj
+         */
         void onSend(JSONObject obj);
 
     }

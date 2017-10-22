@@ -20,9 +20,16 @@ import java.net.URL;
 
 /**
  * MapDownloadURL.java
+ * Handles map URL parsing
  */
 public class MapDownloadURL {
 
+    /**
+     * Reads a URL
+     * @param myUrl
+     * @return
+     * @throws IOException
+     */
     public String readUrl(String myUrl) throws IOException {
         String data = "";
         InputStream inputStream = null;
@@ -48,8 +55,7 @@ public class MapDownloadURL {
 
         } catch (MalformedURLException e) {
             e.printStackTrace();
-        }
-        finally {
+        } finally {
             if(inputStream != null)
                 inputStream.close();
             if (urlConnection != null) {
