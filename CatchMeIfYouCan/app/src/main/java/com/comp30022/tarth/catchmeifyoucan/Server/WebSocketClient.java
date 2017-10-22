@@ -1,3 +1,11 @@
+// COMP30022 IT Project - Semester 2 2017
+// House Tarth - William Voor Thursday 16.15
+// | Ivan Ken Weng Chee         eyeonechi  ichee@student.unimelb.edu.au
+// | Jussi Eemeli Silventoinen  JussiSil   jsilventoine@student.unimelb.edu.au
+// | Minghao Wang               minghaooo  minghaow1@student.unimelb.edu.au
+// | Vikram Gopalan-Krishnan    vikramgk   vgopalan@student.unimelb.edu.au
+// | Ziren Xiao                 zirenxiao  zirenx@student.unimelb.edu.au
+
 package com.comp30022.tarth.catchmeifyoucan.Server;
 
 import com.google.gson.Gson;
@@ -11,11 +19,17 @@ import okhttp3.WebSocket;
 import okhttp3.WebSocketListener;
 import okio.ByteString;
 
+/**
+ * WebSocketClient.java
+ * Singleton class designed to send and receive responses to the WebSocket server
+ */
 public class WebSocketClient extends OkHttpClient {
 
     private static final WebSocketClient instance = new WebSocketClient();
 
-    // Private constructor to avoid reinitializing
+    /**
+     * Private constructor to avoid reinitializing
+     */
     private WebSocketClient() {
     }
 
@@ -23,15 +37,19 @@ public class WebSocketClient extends OkHttpClient {
         return instance;
     }
 
-    //private static final String SERVER2_IP = "ws://35.197.172.195";  // CentOS 6 Server
-    private static final String SERVER_IP = "ws://45.77.49.3";       // CentOS 7 Server
-
+    // CentOS 6 Server
+    //private static final String SERVER2_IP = "ws://35.197.172.195";
+    // CentOS 7 Server
+    private static final String SERVER_IP = "ws://45.77.49.3";
     private static final int NORMAL_CLOSURE_STATUS = 1000;
 
     private Communication activity;
     private OkHttpClient client;
     private WebSocket webSocket;
 
+    /**
+     * Connects to the server
+     */
     public void connect() {
         client = new OkHttpClient();
         Request request = new Request.Builder().url(SERVER_IP).build();
@@ -44,7 +62,9 @@ public class WebSocketClient extends OkHttpClient {
             public void onOpen(WebSocket webSocket, Response response) {
             }
 
-            /** Invoked when a text (type {@code 0x1}) message has been received. */
+            /**
+             * Invoked when a text (type {@code 0x1}) message has been received.
+             */
             @Override
             public void onMessage(WebSocket webSocket, String text) {
                 String filteredText = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1).replace("\\", "");
@@ -58,7 +78,9 @@ public class WebSocketClient extends OkHttpClient {
                 }
             }
 
-            /** Invoked when a binary (type {@code 0x2}) message has been received. */
+            /**
+             * Invoked when a binary (type {@code 0x2}) message has been received.
+             */
             @Override
             public void onMessage(WebSocket webSocket, ByteString bytes) {
             }
@@ -87,32 +109,43 @@ public class WebSocketClient extends OkHttpClient {
              */
             @Override
             public void onFailure(WebSocket webSocket, Throwable t, Response response) {
+                System.out.println("Connection failed");
                 t.printStackTrace();
             }
         };
         webSocket = client.newWebSocket(request, listener);
     }
 
-    // Closes the WebSocket connection with the server
+    /**
+     * Closes the WebSocket connection with the server
+     */
     public void disconnect() {
         webSocket.close(NORMAL_CLOSURE_STATUS, null);
         client.dispatcher().executorService().shutdown();
     }
 
-    // Sends a message to the WebSocket server
+    /**
+     * Sends a message to the WebSocket server
+     * @param message : Message to be sent
+     */
     public void send(String message) {
         webSocket.send(message);
     }
 
-    // Updates the current running activity
+    /**
+     * Updates the current running activity
+     * @param activity : Current running activity
+     */
     public void setActivity(Communication activity) {
         this.activity = activity;
     }
 
-    // Returns the current running activity
+    /**
+     * Returns the current running activity
+     * @return : Current running activity
+     */
     public Communication getActivity() {
         return activity;
     }
 
 }
-

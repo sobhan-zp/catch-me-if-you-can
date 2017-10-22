@@ -1,3 +1,11 @@
+// COMP30022 IT Project - Semester 2 2017
+// House Tarth - William Voor Thursday 16.15
+// | Ivan Ken Weng Chee         eyeonechi  ichee@student.unimelb.edu.au
+// | Jussi Eemeli Silventoinen  JussiSil   jsilventoine@student.unimelb.edu.au
+// | Minghao Wang               minghaooo  minghaow1@student.unimelb.edu.au
+// | Vikram Gopalan-Krishnan    vikramgk   vgopalan@student.unimelb.edu.au
+// | Ziren Xiao                 zirenxiao  zirenx@student.unimelb.edu.au
+
 package com.comp30022.tarth.catchmeifyoucan.UI;
 
 import android.app.Activity;
@@ -17,11 +25,18 @@ import com.comp30022.tarth.catchmeifyoucan.Server.WebSocketClient;
 
 import org.json.JSONObject;
 
+/**
+ * AddActivity.java
+ * Adding friends
+ */
 public class AddActivity extends AppCompatActivity implements Communication {
 
-    private Button buttonAdd;
     private EditText editTextAdd;
 
+    /**
+     * Called when the activity is starting
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,7 +48,7 @@ public class AddActivity extends AppCompatActivity implements Communication {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        buttonAdd = (Button) findViewById(R.id.buttonAdd);
+        Button buttonAdd = (Button) findViewById(R.id.buttonAdd);
         editTextAdd = (EditText) findViewById(R.id.editTextAdd);
 
         buttonAdd.setOnClickListener(new View.OnClickListener() {
@@ -45,19 +60,11 @@ public class AddActivity extends AppCompatActivity implements Communication {
         });
     }
 
-    // Adds a new friend
-    private void addFriend(String username) {
-        JSONObject obj = new JSONObject();
-        try {
-            obj.put("action", getResources().getInteger(R.integer.FRIEND_ADD));
-            obj.put("username", username);
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
-        WebSocketClient.getClient().send(obj.toString());
-    }
-
-    // Set back button on action bar
+    /**
+     * This hook is called whenever an item in your options menu is selected
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -68,7 +75,9 @@ public class AddActivity extends AppCompatActivity implements Communication {
         return super.onOptionsItemSelected(item);
     }
 
-    // Returns to the previous activity
+    /**
+     * Called when the activity has detected the user's press of the back key
+     */
     @Override
     public void onBackPressed() {
         Intent returnIntent = new Intent();
@@ -76,7 +85,26 @@ public class AddActivity extends AppCompatActivity implements Communication {
         finish();
     }
 
-    // Called by the WebSocket upon receiving a message
+    /**
+     * Called when an activity you launched exits, giving you the requestCode you started it with,
+     * the resultCode it returned, and any additional data from it
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1) {
+            if (resultCode == Activity.RESULT_OK) {
+                WebSocketClient.getClient().setActivity(this);
+            }
+        }
+    }
+
+    /**
+     * Method invoked when the WebSocketClient receives a message
+     * @param message : Message received from server
+     */
     @Override
     public void onResponse(final Message message) {
         runOnUiThread(new Runnable() {
@@ -95,19 +123,27 @@ public class AddActivity extends AppCompatActivity implements Communication {
         });
     }
 
-    // Resets the current activity connected to the WebSocket upon terminating child activities
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 1) {
-            if (resultCode == Activity.RESULT_OK) {
-                WebSocketClient.getClient().setActivity(this);
-            }
-        }
-    }
-
-    // Displays a toast message
+    /**
+     * Displays a toast message
+     * @param message : Message to be displayed
+     */
     private void toast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
-}
 
+    /**
+     * Adds a new friend
+     * @param username : Username of the friend to be added
+     */
+    private void addFriend(String username) {
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("action", getResources().getInteger(R.integer.FRIEND_ADD));
+            obj.put("username", username);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        WebSocketClient.getClient().send(obj.toString());
+    }
+
+}

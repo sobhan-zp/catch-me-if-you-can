@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- COMP30022 IT Project - Semester 2 2017
+     House Tarth - William Voor Thursday 16.15
+     | Ivan Ken Weng Chee         eyeonechi  ichee@student.unimelb.edu.au
+     | Jussi Eemeli Silventoinen  JussiSil   jsilventoine@student.unimelb.edu.au
+     | Minghao Wang               minghaooo  minghaow1@student.unimelb.edu.au
+     | Vikram Gopalan-Krishnan    vikramgk   vgopalan@student.unimelb.edu.au
+     | Ziren Xiao                 zirenxiao  zirenx@student.unimelb.edu.au -->
 
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -50,16 +57,6 @@
         android:text="Join a Game" />
 
     <Button
-        android:id="@+id/buttonSettings"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:theme="@style/PrimaryButton"
-        android:layout_below="@+id/buttonFriendlist"
-        android:layout_marginTop="4dp"
-        android:layout_centerHorizontal="true"
-        android:text="Settings" />
-
-    <Button
         android:id="@+id/buttonFriendlist"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
@@ -70,6 +67,16 @@
         android:text="Friends" />
 
     <Button
+        android:id="@+id/buttonSettings"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:theme="@style/PrimaryButton"
+        android:layout_below="@+id/buttonFriendlist"
+        android:layout_marginTop="4dp"
+        android:layout_centerHorizontal="true"
+        android:text="Settings" />
+
+    <Button
         android:id="@+id/buttonLogout"
         android:theme="@style/ExitButton"
         android:layout_width="300dp"
@@ -78,7 +85,5 @@
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="20dp"
         android:text="Logout" />
-
-
 
 </RelativeLayout>

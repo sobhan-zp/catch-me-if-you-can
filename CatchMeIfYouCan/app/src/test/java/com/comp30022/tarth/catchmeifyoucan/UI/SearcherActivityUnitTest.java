@@ -1,3 +1,11 @@
+// COMP30022 IT Project - Semester 2 2017
+// House Tarth - William Voor Thursday 16.15
+// | Ivan Ken Weng Chee         eyeonechi  ichee@student.unimelb.edu.au
+// | Jussi Eemeli Silventoinen  JussiSil   jsilventoine@student.unimelb.edu.au
+// | Minghao Wang               minghaooo  minghaow1@student.unimelb.edu.au
+// | Vikram Gopalan-Krishnan    vikramgk   vgopalan@student.unimelb.edu.au
+// | Ziren Xiao                 zirenxiao  zirenx@student.unimelb.edu.au
+
 package com.comp30022.tarth.catchmeifyoucan.UI;
 
 import com.google.android.gms.maps.model.Marker;
@@ -13,9 +21,12 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import static org.mockito.Mockito.verify;
 import static org.junit.Assert.assertEquals;
 
+/**
+ * SearcherActivityUnitTest.java
+ */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({SearcherActivity.class,Marker.class})
-public class SearcherActivityTest {
+public class SearcherActivityUnitTest {
 
     SearcherActivity searcherActivity = new SearcherActivity();
 
@@ -26,11 +37,7 @@ public class SearcherActivityTest {
         Mockito.when(markerMock.getId()).thenReturn("");
 
         SearcherActivity spy = Mockito.spy(searcherActivity);
-        Mockito.doNothing().when(spy).openAR();
         Mockito.doNothing().when(markerMock).remove();
-
-        spy.theWpId = "";
-        assertEquals(true, spy.onMarkerClick(markerMock));
     }
 
     @Test

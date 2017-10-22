@@ -1,3 +1,11 @@
+// COMP30022 IT Project - Semester 2 2017
+// House Tarth - William Voor Thursday 16.15
+// | Ivan Ken Weng Chee         eyeonechi  ichee@student.unimelb.edu.au
+// | Jussi Eemeli Silventoinen  JussiSil   jsilventoine@student.unimelb.edu.au
+// | Minghao Wang               minghaooo  minghaow1@student.unimelb.edu.au
+// | Vikram Gopalan-Krishnan    vikramgk   vgopalan@student.unimelb.edu.au
+// | Ziren Xiao                 zirenxiao  zirenx@student.unimelb.edu.au
+
 package com.comp30022.tarth.catchmeifyoucan.Game;
 
 import android.hardware.Camera;
@@ -27,11 +35,11 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
 /**
- * Created by Jussi on 22/10/2017.
+ * ArFragmentUnitTest.java
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(ArFragment.class)
-public class ArFragmentTest {
+public class ArFragmentUnitTest {
     private Camera cameraMock;
     private ArGraphics arGraphicsMock;
     private ArFragment arMock;

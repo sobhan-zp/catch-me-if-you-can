@@ -1,3 +1,11 @@
+// COMP30022 IT Project - Semester 2 2017
+// House Tarth - William Voor Thursday 16.15
+// | Ivan Ken Weng Chee         eyeonechi  ichee@student.unimelb.edu.au
+// | Jussi Eemeli Silventoinen  JussiSil   jsilventoine@student.unimelb.edu.au
+// | Minghao Wang               minghaooo  minghaow1@student.unimelb.edu.au
+// | Vikram Gopalan-Krishnan    vikramgk   vgopalan@student.unimelb.edu.au
+// | Ziren Xiao                 zirenxiao  zirenx@student.unimelb.edu.au
+
 package com.comp30022.tarth.catchmeifyoucan.Game;
 
 import android.content.Context;
@@ -17,9 +25,12 @@ import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
+/**
+ * ArGraphicsUnitTest.java
+ */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(ArGraphics.class)
-public class ArGraphicsTest {
+public class ArGraphicsUnitTest {
     private Context context = PowerMockito.mock(Context.class);
     private ArGraphics testGraphics = new ArGraphics(context);
 
@@ -27,7 +38,7 @@ public class ArGraphicsTest {
     public void testCheckInCircle() throws Exception {
         testGraphics.setShapeX(0);
         testGraphics.setShapeY(0);
-        assertTrue(testGraphics.checkInCircle(any(Float.class), any(Float.class)));
+        assertTrue(testGraphics.checkInCircle(0f, 0f));
     }
 
     @Test
@@ -41,7 +52,6 @@ public class ArGraphicsTest {
     public void testOnDraw(){
         Canvas mockCanvas = Mockito.mock(Canvas.class);
         Paint mockPaint = Mockito.mock(Paint.class);
-
         mockCanvas.drawCircle(0,0,1,mockPaint);
         verify(mockCanvas).drawCircle(0,0,1,mockPaint);
     }

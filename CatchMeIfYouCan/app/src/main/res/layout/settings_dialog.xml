@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- COMP30022 IT Project - Semester 2 2017
+     House Tarth - William Voor Thursday 16.15
+     | Ivan Ken Weng Chee         eyeonechi  ichee@student.unimelb.edu.au
+     | Jussi Eemeli Silventoinen  JussiSil   jsilventoine@student.unimelb.edu.au
+     | Minghao Wang               minghaooo  minghaow1@student.unimelb.edu.au
+     | Vikram Gopalan-Krishnan    vikramgk   vgopalan@student.unimelb.edu.au
+     | Ziren Xiao                 zirenxiao  zirenx@student.unimelb.edu.au -->
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/settings_dialog">
-
-
 
     <EditText
         android:layout_centerHorizontal="true"
@@ -41,4 +47,5 @@
         android:layout_centerHorizontal="true"
         android:id="@+id/editStatus"
         android:layout_gravity="center_horizontal"/>
+
 </LinearLayout>

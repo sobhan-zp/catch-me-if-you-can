@@ -1,3 +1,11 @@
+// COMP30022 IT Project - Semester 2 2017
+// House Tarth - William Voor Thursday 16.15
+// | Ivan Ken Weng Chee         eyeonechi  ichee@student.unimelb.edu.au
+// | Jussi Eemeli Silventoinen  JussiSil   jsilventoine@student.unimelb.edu.au
+// | Minghao Wang               minghaooo  minghaow1@student.unimelb.edu.au
+// | Vikram Gopalan-Krishnan    vikramgk   vgopalan@student.unimelb.edu.au
+// | Ziren Xiao                 zirenxiao  zirenx@student.unimelb.edu.au
+
 package com.comp30022.tarth.catchmeifyoucan.UI;
 
 import android.Manifest;
@@ -48,6 +56,10 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+/**
+ * TargetActivity.java
+ * Target game interface
+ */
 public class TargetActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
         LocationListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener,
@@ -92,14 +104,15 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
     Fragment optionsFragment;
     private BottomNavigationView navigation;
 
+    /**
+     * Called when the activity is starting
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_target);
         WebSocketClient.getClient().setActivity(this);
-
-        // Add back button
-        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         //Check if Google Play Services available
         if (!checkGooglePlayServices()) {
@@ -115,7 +128,6 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
         }
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        //mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment = new SupportMapFragment();
         chatFragment = new ChatFragment();
         optionsFragment = new OptionsFragment();
@@ -135,67 +147,48 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
         continuousUpdate();
     }
 
-    private void switchFragment(MenuItem item) {
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        switch (item.getItemId()) {
-            case R.id.navigationChat:
-                if (!chatFragment.isAdded()) {
-                    if (optionsFragment.isAdded()) {
-                        transaction.remove(optionsFragment);
-                    }
-                    transaction.hide(mapFragment);
-                    transaction.add(R.id.fragment_container, chatFragment);
-                    transaction.addToBackStack("map");
-                    //transaction.replace(R.id.fragment_container, chatFragment);
-                    if (this.getActionBar() != null) {
-                        this.getActionBar().setTitle("Game Chat");
-                    }
-                }
-                break;
-            case R.id.navigationMap:
-                if (chatFragment.isAdded()) {
-                    transaction.remove(chatFragment);
-                }
-                if (optionsFragment.isAdded()) {
-                    transaction.remove(optionsFragment);
-                }
-                if (!mapFragment.isAdded()) {
-                    transaction.replace(R.id.fragment_container, mapFragment);
-                } else {
-                    transaction.show(mapFragment);
-                }
-                mapFragment.getMapAsync(this);
-
-                /*
-                if (mapFragment.isAdded()) {
-                    // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-                    SupportMapFragment mapViewFragment = (SupportMapFragment) mapFragment.getChildFragmentManager().findFragmentById(R.id.map);
-                    mapViewFragment.getMapAsync((OnMapReadyCallback) this);
-                }
-                */
-                if (this.getActionBar() != null) {
-                    this.getActionBar().setTitle("Game Map");
-                }
-                break;
-            case R.id.navigationOptions:
-                if (!optionsFragment.isAdded()) {
-                    if (chatFragment.isAdded()) {
-                        transaction.remove(chatFragment);
-                    }
-                    transaction.hide(mapFragment);
-                    transaction.add(R.id.fragment_container, optionsFragment);
-                    transaction.addToBackStack("map");
-                    //transaction.replace(R.id.fragment_container, optionsFragment);
-                    if (this.getActionBar() != null) {
-                        this.getActionBar().setTitle("Game Options");
-                    }
-                }
-                break;
-        }
-        transaction.commit();
+    /**
+     * Called when the activity is becoming visible to the user
+     */
+    @Override
+    protected void onStart() {
+        super.onStart();
     }
 
-    // Set back button on action bar
+    /**
+     * Called when the activity will start interacting with the user
+     */
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    /**
+     * Called when the activity will start interacting with the user
+     */
+    @Override
+    protected void onPause() {
+        super.onPause();
+        //stopLocationUpdates();
+    }
+
+    /**
+     * Called when the activity is no longer visible to the user
+     */
+    @Override
+    protected void onStop() {
+        super.onStop();
+        // disconnect when user leaves the interface
+        if( mGoogleApiClient != null && mGoogleApiClient.isConnected() ) {
+            mGoogleApiClient.disconnect();
+        }
+    }
+
+    /**
+     * This hook is called whenever an item in your options menu is selected
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -206,51 +199,115 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Called when the activity has detected the user's press of the back key
+     */
     @Override
     public void onBackPressed() {
-        timer.scheduleAtFixedRate(null, 0, 0);
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                getLocation();
+                sendLocation();
+            }
+        }, 0, 0);
         Intent returnIntent = new Intent();
         setResult(Activity.RESULT_OK, returnIntent);
         finish();
     }
 
-    private boolean checkGooglePlayServices() {
-        GoogleApiAvailability googleAPI = GoogleApiAvailability.getInstance();
-        int result = googleAPI.isGooglePlayServicesAvailable(this);
-        if (result != ConnectionResult.SUCCESS) {
-            if (googleAPI.isUserResolvableError(result)) {
-                googleAPI.getErrorDialog(this, result,
-                        0).show();
+    /**
+     * Called when an activity you launched exits, giving you the requestCode you started it with,
+     * the resultCode it returned, and any additional data from it
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1) {
+            if (resultCode == Activity.RESULT_OK) {
+                WebSocketClient.getClient().setActivity(this);
             }
-            return false;
         }
-        return true;
     }
 
-    public boolean checkLocationPermission(){
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            // Asking user if explanation is needed
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.ACCESS_FINE_LOCATION)) {
-
-                //Prompt the user once explanation has been shown
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                        REQUEST_LOCATION_CODE);
-
-            } else {
-                // No explanation needed, we can request the permission.
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                        REQUEST_LOCATION_CODE);
+    /**
+     * Method invoked when the WebSocketClient receives a message
+     * @param message : Message received from server
+     */
+    @Override
+    public void onResponse(final Message message) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (message.getAction() != null) {
+                    toast("New message from " + message.getFrom() + ": " + message.getMessage());
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_USER_SUCCESS))) {
+                    toast("Game get users successful");
+                    ((OptionsFragment) optionsFragment).onResponse(message);
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_USER_FAIL))) {
+                    toast("Game get users failure");
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.LOCATION_GET_SUCCESS))) {
+                    toast("Location get successful");
+                    List<Double> locations = new ArrayList<>();
+                    Result[] results = message.getResult();
+                    for (Result result : results) {
+                        locations.add(result.getX());
+                        locations.add(result.getY());
+                    }
+                    updateOthers(locations);
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.LOCATION_GET_FAIL))) {
+                    toast("Location get failure");
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_EXIT_SUCCESS))) {
+                    toast("Game exit successful");
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_EXIT_FAIL))) {
+                    toast("Game exit failure");
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_DELETE_SUCCESS))) {
+                    toast("Game delete successful");
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_DELETE_FAIL))) {
+                    toast("Game delete failure");
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_ADD_WAYPOINT_SUCCESS))) {
+                    toast("Waypoint add success");
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_ADD_WAYPOINT_FAIL))) {
+                    toast("Waypoint add failure");
+                }
             }
-            return false;
-        } else {
-            return true;
+        });
+    }
+
+    /**
+     * User exits the game
+     */
+    @Override
+    public void onExit() {
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("action", getResources().getInteger(R.integer.GAME_EXIT));
+        } catch(Exception e) {
+            e.printStackTrace();
         }
+        WebSocketClient.getClient().send(obj.toString());
+
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                getLocation();
+                sendLocation();
+            }
+        }, 0, 0);
+        Intent returnIntent = new Intent();
+        setResult(Activity.RESULT_OK, returnIntent);
+        finish();
+    }
+
+    /**
+     * Sends a message to the server
+     * @param obj
+     */
+    @Override
+    public void onSend(JSONObject obj) {
+        WebSocketClient.getClient().send(obj.toString());
     }
 
     /**
@@ -261,6 +318,7 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
      * If Google Play services is not installed on the device, the user will be prompted to install
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
+     * @param googleMap
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -285,15 +343,45 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
         mMap.setOnMapClickListener(this);
     }
 
-    protected synchronized void buildGoogleApiClient() {
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
-        mGoogleApiClient.connect();
+    /**
+     * This interface is the contract for receiving the results for permission requests
+     * @param requestCode
+     * @param permissions
+     * @param grantResults
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_LOCATION_CODE: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted. Do the
+                    // contacts-related task you need to do.
+                    if (ContextCompat.checkSelfPermission(this,
+                            Manifest.permission.ACCESS_FINE_LOCATION)
+                            == PackageManager.PERMISSION_GRANTED) {
+
+                        if (mGoogleApiClient == null) {
+                            buildGoogleApiClient();
+                        }
+                        mMap.setMyLocationEnabled(true);
+                    }
+
+                } else {
+
+                    // Permission denied, Disable the functionality that depends on this permission.
+                    toast("Permission denied");
+                }
+                break;
+            }
+        }
     }
 
+    /**
+     * Called when the location has changed
+     * @param location
+     */
     @Override
     public void onLocationChanged(Location location) {
         JSONObject obj = new JSONObject();
@@ -341,6 +429,179 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
         }
     }
 
+    /**
+     * Provides callbacks for scenarios that result in a failed attempt to connect the client to the service
+     * @param connectionResult
+     */
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+    }
+
+    /**
+     * Called when the client is temporarily in a disconnected state
+     * @param i
+     */
+    @Override
+    public void onConnectionSuspended(int i) {
+        Log.d("onConnectionSuspended", "Connection suspended");
+        mGoogleApiClient.connect();
+    }
+
+    /**
+     * Defines signatures for methods that are called when a marker is clicked or tapped
+     * @param marker
+     * @return
+     */
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        return true;
+    }
+
+    /**
+     * Called when the user makes a tap gesture on the map,
+     * but only if none of the overlays of the map handled the gesture
+     * @param latLng
+     */
+    @Override
+    public void onMapClick(LatLng latLng) {
+        if(addWaypoints){
+            Marker waypoint = mMap.addMarker(new MarkerOptions()
+                    .position(latLng)
+                    .title("waypoint")
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE))
+                    .snippet(latLng.toString()));
+
+            cWaypoints.add(latLng.latitude);
+            cWaypoints.add(latLng.longitude);
+            System.out.println("Waypoint added: " + latLng.latitude + ", " + latLng.longitude);
+            mMarkers.add(waypoint);
+        }
+    }
+
+    /**
+     * Displays a toast message
+     * @param message : Message to be displayed
+     */
+    private void toast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * Switches fragments based on bottom navigation menu state
+     * @param item
+     */
+    private void switchFragment(MenuItem item) {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        switch (item.getItemId()) {
+            case R.id.navigationChat:
+                if (!chatFragment.isAdded()) {
+                    if (optionsFragment.isAdded()) {
+                        transaction.remove(optionsFragment);
+                    }
+                    transaction.hide(mapFragment);
+                    transaction.add(R.id.fragment_container, chatFragment);
+                    transaction.addToBackStack("map");
+                    if (this.getActionBar() != null) {
+                        this.getActionBar().setTitle("Game Chat");
+                    }
+                }
+                break;
+            case R.id.navigationMap:
+                if (chatFragment.isAdded()) {
+                    transaction.remove(chatFragment);
+                }
+                if (optionsFragment.isAdded()) {
+                    transaction.remove(optionsFragment);
+                }
+                if (!mapFragment.isAdded()) {
+                    transaction.replace(R.id.fragment_container, mapFragment);
+                } else {
+                    transaction.show(mapFragment);
+                }
+                mapFragment.getMapAsync(this);
+                if (this.getActionBar() != null) {
+                    this.getActionBar().setTitle("Game Map");
+                }
+                break;
+            case R.id.navigationOptions:
+                if (!optionsFragment.isAdded()) {
+                    if (chatFragment.isAdded()) {
+                        transaction.remove(chatFragment);
+                    }
+                    transaction.hide(mapFragment);
+                    transaction.add(R.id.fragment_container, optionsFragment);
+                    transaction.addToBackStack("map");
+                    if (this.getActionBar() != null) {
+                        this.getActionBar().setTitle("Game Options");
+                    }
+                }
+                break;
+        }
+        transaction.commit();
+    }
+
+    /**
+     * Checks whether Google Play Services have been enabled
+     * @return
+     */
+    private boolean checkGooglePlayServices() {
+        GoogleApiAvailability googleAPI = GoogleApiAvailability.getInstance();
+        int result = googleAPI.isGooglePlayServicesAvailable(this);
+        if (result != ConnectionResult.SUCCESS) {
+            if (googleAPI.isUserResolvableError(result)) {
+                googleAPI.getErrorDialog(this, result,
+                        0).show();
+            }
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Checks whether location permissions have been enabled
+     * @return
+     */
+    public boolean checkLocationPermission(){
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Asking user if explanation is needed
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+
+                //Prompt the user once explanation has been shown
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        REQUEST_LOCATION_CODE);
+
+            } else {
+                // No explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        REQUEST_LOCATION_CODE);
+            }
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    /**
+     * Builder to configure a GoogleApiClient
+     */
+    protected synchronized void buildGoogleApiClient() {
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+        mGoogleApiClient.connect();
+    }
+
+    /**
+     * Receives location updates
+     */
     protected void startLocationUpdates() {
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
@@ -349,6 +610,10 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
         }
     }
 
+    /**
+     * Provides callbacks that are called when the client is connected or disconnected from the service
+     * @param bundle
+     */
     public void onConnected(Bundle bundle) {
         mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(UPDATE_INTERVAL);
@@ -359,38 +624,11 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
         startLocationUpdates();
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[],
-                                           int[] grantResults) {
-        switch (requestCode) {
-            case REQUEST_LOCATION_CODE: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                    // permission was granted. Do the
-                    // contacts-related task you need to do.
-                    if (ContextCompat.checkSelfPermission(this,
-                            Manifest.permission.ACCESS_FINE_LOCATION)
-                            == PackageManager.PERMISSION_GRANTED) {
-
-                        if (mGoogleApiClient == null) {
-                            buildGoogleApiClient();
-                        }
-                        mMap.setMyLocationEnabled(true);
-                    }
-
-                } else {
-
-                    // Permission denied, Disable the functionality that depends on this permission.
-                    toast("Permission denied");
-                }
-                break;
-            }
-        }
-    }
-
-    // give reaction to the user according to user's behavior (tapping different button)
+    /**
+     * Gives a reaction to the user according to user's behavior
+     * Eg: Tapping different buttons
+     * @param v
+     */
     public void onClick(View v) {
         switch(v.getId()) {
             case R.id.B_addWaypoints:
@@ -404,68 +642,10 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
         }
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
-    @Override
-    protected void onResume() {
-        super.onResume();
-        //checkGooglePlayServices();
-    }
-    @Override
-    protected void onPause() {
-        super.onPause();
-        //stopLocationUpdates();
-    }
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-    }
-    @Override
-    public void onConnectionSuspended(int i) {
-        Log.d("onConnectionSuspended", "Connection suspended");
-        mGoogleApiClient.connect();
-    }
-    @Override
-    protected void onStop() {
-        super.onStop();
-        // disconnect when user leaves the interface
-        if( mGoogleApiClient != null && mGoogleApiClient.isConnected() ) {
-            mGoogleApiClient.disconnect();
-        }
-    }
-
-    // where display google map tools when a marker is clicked, returning true means not
-    @Override
-    public boolean onMarkerClick(Marker marker) {
-        return true;
-    }
-
-    // add waypoints to the location where user taps on the map
-    @Override
-    public void onMapClick(LatLng latLng) {
-        if(addWaypoints){
-            Marker waypoint = mMap.addMarker(new MarkerOptions()
-                    .position(latLng)
-                    .title("waypoint")
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE))
-                    .snippet(latLng.toString()));
-            //waypoint.showInfoWindow();
-
-            cWaypoints.add(latLng.latitude);
-            cWaypoints.add(latLng.longitude);
-            System.out.println("Waypoint added: " + latLng.latitude + ", " + latLng.longitude);
-            mMarkers.add(waypoint);
-        }
-    }
-
-    // Displays a toast message
-    protected void toast(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-    }
-
-
-    // update markers indicating other users on the map
+    /**
+     * Update markers indicating other users on the map
+     * @param othersLocation
+     */
     public void updateOthers(List<Double> othersLocation){
         // clear old markers
         for(int j=othersMarker.size()-1; j>=0; j--){
@@ -487,76 +667,10 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
         }
     }
 
-    @Override
-    public void onResponse(final Message message) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                System.out.println("CODE" + message.getCode());
-
-                if (message.getAction() != null) {
-                    toast("New message from " + message.getFrom() + ": " + message.getMessage());
-                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_USER_SUCCESS))) {
-                    toast("Game get users successful");
-                    ((OptionsFragment) optionsFragment).onResponse(message);
-                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_USER_FAIL))) {
-                    toast("Game get users failure");
-                } else if (message.getCode().equals(614)) {
-                    // TESTING TESTING
-                    toast("Location get successful");
-                    //((ChatFragment) chatFragment).onResponse(message);
-                    // TESTING
-                    List<Double> locations = new ArrayList<>();
-                    Result[] results = message.getResult();
-                    for (Result result : results) {
-                        //array.add(Double.toString(result.getX()) + ", " + Double.toString(result.getY()));
-                        locations.add(result.getX());
-                        locations.add(result.getY());
-                    }
-                    updateOthers(locations);
-                    //adapter.notifyDataSetChanged();
-                } else if (message.getCode().equals(615)) {
-                    toast("Location get failure");
-                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_EXIT_SUCCESS))) {
-                    toast("Game exit successful");
-                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_EXIT_FAIL))) {
-                    toast("Game exit failure");
-                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_DELETE_SUCCESS))) {
-                    toast("Game delete successful");
-                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_DELETE_FAIL))) {
-                    toast("Game delete failure");
-                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_ADD_WAYPOINT_SUCCESS))) {
-                    toast("Waypoint add success");
-                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_ADD_WAYPOINT_FAIL))) {
-                    toast("Waypoint add failure");
-                }
-            }
-        });
-    }
-
-    @Override
-    public void onExit() {
-        JSONObject obj = new JSONObject();
-        try {
-            obj.put("action", getResources().getInteger(R.integer.GAME_EXIT));
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
-        WebSocketClient.getClient().send(obj.toString());
-
-        timer.scheduleAtFixedRate(null, 0, 0);
-        Intent returnIntent = new Intent();
-        setResult(Activity.RESULT_OK, returnIntent);
-        finish();
-    }
-
-    @Override
-    public void onSend(JSONObject obj) {
-        WebSocketClient.getClient().send(obj.toString());
-    }
-
-    // send the location data of myself to server
-    protected void sendLocation() {
+    /**
+     * Sends location details to the server
+     */
+    private void sendLocation() {
         JSONObject loc = new JSONObject();
         try {
             loc.put("x", curr_latitude);
@@ -574,7 +688,9 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
         WebSocketClient.getClient().send(obj.toString());
     }
 
-    // request location data to the server
+    /**
+     * Requests user location data from the server
+     */
     protected void getLocation() {
         // Queries server for location updates
         JSONObject obj = new JSONObject();
@@ -586,7 +702,9 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
         onSend(obj);
     }
 
-    // continuous requests for getting other users location data to the server
+    /**
+     * Continuous requests for getting other users location data to the server
+     */
     private void continuousUpdate() {
         int delay = 0; // 0 seconds
         int period = 3000; // 3 seconds
@@ -600,7 +718,9 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
         }, delay, period);
     }
 
-    // send location data of waypoints to server, only being called once
+    /**
+     * Sends location data of waypoints to server, only called once
+     */
     void sendWaypoints() {
         for (int i = 0; i < (cWaypoints.size() - 1); i +=2) {
             System.out.println("WP: " + cWaypoints.get(i) + ", " + cWaypoints.get(i + 1));
@@ -620,16 +740,6 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
                 e.printStackTrace();
             }
             onSend(obj);
-        }
-    }
-
-    // Resets the current activity connected to the WebSocket upon terminating child activities
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 1) {
-            if (resultCode == Activity.RESULT_OK) {
-                WebSocketClient.getClient().setActivity(this);
-            }
         }
     }
 

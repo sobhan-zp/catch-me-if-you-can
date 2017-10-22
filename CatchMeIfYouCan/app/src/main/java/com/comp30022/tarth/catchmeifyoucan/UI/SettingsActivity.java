@@ -1,3 +1,11 @@
+// COMP30022 IT Project - Semester 2 2017
+// House Tarth - William Voor Thursday 16.15
+// | Ivan Ken Weng Chee         eyeonechi  ichee@student.unimelb.edu.au
+// | Jussi Eemeli Silventoinen  JussiSil   jsilventoine@student.unimelb.edu.au
+// | Minghao Wang               minghaooo  minghaow1@student.unimelb.edu.au
+// | Vikram Gopalan-Krishnan    vikramgk   vgopalan@student.unimelb.edu.au
+// | Ziren Xiao                 zirenxiao  zirenx@student.unimelb.edu.au
+
 package com.comp30022.tarth.catchmeifyoucan.UI;
 
 import android.app.Activity;
@@ -20,7 +28,10 @@ import com.comp30022.tarth.catchmeifyoucan.Server.WebSocketClient;
 
 import org.json.JSONObject;
 
-/* Opens a detailed view of a user and letting them make changes */
+/**
+ * SettingsActivity.java
+ * Opens a detailed view of a user and letting them make changes
+ */
 public class SettingsActivity extends AppCompatActivity implements Communication{
 
     EditText EditTextName;
@@ -30,10 +41,12 @@ public class SettingsActivity extends AppCompatActivity implements Communication
     TextView textViewUsername;
     TextView textViewOnline;
 
-    private Button buttonUpdate;
-
     String getUsername;
 
+    /**
+     * Called when the activity is starting
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,7 +58,7 @@ public class SettingsActivity extends AppCompatActivity implements Communication
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        buttonUpdate = (Button) findViewById(R.id.buttonUpdate);
+        Button buttonUpdate = (Button) findViewById(R.id.buttonUpdate);
 
         // Set unchangable fields
         textViewUsername = (TextView) findViewById(R.id.Username);
@@ -74,7 +87,11 @@ public class SettingsActivity extends AppCompatActivity implements Communication
         });
     }
 
-    // Set back button on action bar
+    /**
+     * This hook is called whenever an item in your options menu is selected
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -85,6 +102,103 @@ public class SettingsActivity extends AppCompatActivity implements Communication
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Called when the activity has detected the user's press of the back key
+     */
+    @Override
+    public void onBackPressed() {
+        Intent returnIntent = new Intent();
+        setResult(Activity.RESULT_OK, returnIntent);
+        finish();
+    }
+
+    /**
+     * Called when an activity you launched exits, giving you the requestCode you started it with,
+     * the resultCode it returned, and any additional data from it
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1) {
+            if (resultCode == Activity.RESULT_OK) {
+                WebSocketClient.getClient().setActivity(this);
+            }
+        }
+    }
+
+    /**
+     * Method invoked when the WebSocketClient receives a message
+     * @param message : Message received from server
+     */
+    @Override
+    public void onResponse(final Message message) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (message.getAction() != null && message.getAction() == R.integer.MESSAGE_RECEIVE) {
+                    toast("New message from " + message.getFrom() + ": " + message.getMessage());
+                } else if (message.getAction() != null) {
+                    // Update fields with latest information before user is allowed to change
+                    if (message.getAction().equals(getResources().getInteger(R.integer.PROFILE_GET))) {
+                        String username = "@" + message.getUsername();
+                        textViewUsername.setText(username);
+                        getOnline(message.getUsername());
+
+                        EditTextLocation.setText(message.getLocation());
+                        EditTextStatus.setText(message.getStatus());
+                        EditTextName.setText(message.getName());
+                        EditTextEmail.setText(message.getEmail());
+
+                        if (message.getLocation() != null && message.getLocation().equals("")) {
+                            String location = "Enter Location Here";
+                            EditTextLocation.setText(location);
+                        }
+                        if (message.getStatus() != null && message.getStatus().equals("")) {
+                            String status = "Enter Custom Status Here";
+                            EditTextStatus.setText(status);
+                        }
+                    }
+                } else if (message.getCode() != null) {
+                    // Update UI to show Online
+                    if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_CHECK_SUCCESS))) {
+                        textViewOnline.setTextColor(Color.parseColor("#16B72E"));
+                        String online = "ONLINE";
+                        textViewOnline.setText(online);
+                        textViewOnline.setTypeface(null, Typeface.BOLD_ITALIC);
+                        // Update UI to show Offline
+                    } else if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_CHECK_FAIL))) {
+                        String offline = "OFFLINE";
+                        textViewOnline.setText(offline);
+                        textViewOnline.setTextColor(Color.parseColor("#B72616"));
+                        textViewOnline.setTypeface(null, Typeface.BOLD_ITALIC);
+                        // manages response to profile update request
+                    } else if (message.getCode().equals(getResources().getInteger(R.integer.PROFILE_UPDATE_SUCCESS))) {
+                        getInfo();
+                        toast("Profile Update Successful");
+                    } else if (message.getCode().equals(getResources().getInteger(R.integer.PROFILE_UPDATE_FAIL))) {
+                        //getInfo();
+                        toast("Profile Update Failure. Try again later.");
+                    }
+                } else {
+                    System.out.println("User Error: Unknown response received");
+                }
+            }
+        });
+    }
+
+    /**
+     * Displays a toast message
+     * @param message : Message to be displayed
+     */
+    private void toast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * Updates user details
+     */
     private void changeSettings() {
         JSONObject obj = new JSONObject();
 
@@ -105,109 +219,32 @@ public class SettingsActivity extends AppCompatActivity implements Communication
         WebSocketClient.getClient().send(obj.toString());
     }
 
-    @Override
-    public void onBackPressed() {
-        Intent returnIntent = new Intent();
-        setResult(Activity.RESULT_OK, returnIntent);
-        finish();
-    }
-
-    /* Sends JSON request for latest information of user */
+    /**
+     * Sends JSON request for latest information of user
+     */
     private void getInfo() {
         JSONObject obj = new JSONObject();
-
         try {
             obj.put("action", getResources().getInteger(R.integer.PROFILE_ACTION));
-            //System.out.println("SentInfo->" + obj.toString(4));
         } catch(Exception e) {
             e.printStackTrace();
         }
         WebSocketClient.getClient().send(obj.toString());
     }
 
-    /* Sends request to see if user is online */
+    /**
+     * Sends request to see if user is online
+     * @param user
+     */
     private void getOnline(String user) {
         JSONObject obj = new JSONObject();
-
         try {
             obj.put("username", user);
             obj.put("action", getResources().getInteger(R.integer.FRIEND_CHECK));
-            //System.out.println("SentOnline->" + obj.toString(4));
         } catch(Exception e) {
             e.printStackTrace();
         }
         WebSocketClient.getClient().send(obj.toString());
     }
 
-    /* Grabs response from server */
-    @Override
-    public void onResponse(final Message message) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-
-                if (message.getAction() != null && message.getAction() == R.integer.MESSAGE_RECEIVE) {
-                    toast("New message from " + message.getFrom() + ": " + message.getMessage());
-                } else if (message.getAction() != null) {
-                    // Update fields with latest information before user is allowed to change
-                    if (message.getAction().equals(getResources().getInteger(R.integer.PROFILE_GET))) {
-                        textViewUsername.setText("@" + message.getUsername());
-                        getOnline(message.getUsername());
-
-                        EditTextLocation.setText(message.getLocation());
-                        EditTextStatus.setText(message.getStatus());
-                        EditTextName.setText(message.getName());
-                        EditTextEmail.setText(message.getEmail());
-
-                        if (message.getLocation().equals("")) {
-                            EditTextLocation.setText("Enter Location Here");
-                        }
-                        if (message.getStatus().equals("")) {
-                            EditTextStatus.setText("Enter Custom Status Here");
-                        }
-                        // System.out.println("Profile get success");
-                    }
-                } else if (message.getCode() != null) {
-                    // Update UI to show Online
-                    if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_CHECK_SUCCESS))) {
-                        textViewOnline.setTextColor(Color.parseColor("#16B72E"));
-                        textViewOnline.setText("ONLINE");
-                        textViewOnline.setTypeface(null, Typeface.BOLD_ITALIC);
-                        // Update UI to show Offline
-                    } else if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_CHECK_FAIL))) {
-                        textViewOnline.setText("OFFLINE");
-                        textViewOnline.setTextColor(Color.parseColor("#B72616"));
-                        textViewOnline.setTypeface(null, Typeface.BOLD_ITALIC);
-                        // manages response to profile update request
-                    } else if (message.getCode().equals(getResources().getInteger(R.integer.PROFILE_UPDATE_SUCCESS))) {
-                        getInfo();
-                        toast("Profile Update Successful");
-                    } else if (message.getCode().equals(getResources().getInteger(R.integer.PROFILE_UPDATE_FAIL))) {
-                        //getInfo();
-                        toast("Profile Update Failure. Try again later.");
-                    }
-                } else {
-                    System.out.println("User Error: Unknown response received");
-                }
-            }
-        });
-    }
-
-    // Resets the current activity connected to the WebSocket upon terminating child activities
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 1) {
-            if (resultCode == Activity.RESULT_OK) {
-                WebSocketClient.getClient().setActivity(this);
-            }
-        }
-    }
-
-    // Displays a toast message
-    private void toast(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-    }
-
 }
-
-

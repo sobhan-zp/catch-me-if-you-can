@@ -1,3 +1,11 @@
+// COMP30022 IT Project - Semester 2 2017
+// House Tarth - William Voor Thursday 16.15
+// | Ivan Ken Weng Chee         eyeonechi  ichee@student.unimelb.edu.au
+// | Jussi Eemeli Silventoinen  JussiSil   jsilventoine@student.unimelb.edu.au
+// | Minghao Wang               minghaooo  minghaow1@student.unimelb.edu.au
+// | Vikram Gopalan-Krishnan    vikramgk   vgopalan@student.unimelb.edu.au
+// | Ziren Xiao                 zirenxiao  zirenx@student.unimelb.edu.au
+
 package com.comp30022.tarth.catchmeifyoucan.UI;
 
 import android.util.Log;
@@ -10,8 +18,18 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+/**
+ * MapDownloadURL.java
+ * Handles map URL parsing
+ */
 public class MapDownloadURL {
 
+    /**
+     * Reads a URL
+     * @param myUrl
+     * @return
+     * @throws IOException
+     */
     public String readUrl(String myUrl) throws IOException {
         String data = "";
         InputStream inputStream = null;
@@ -37,8 +55,7 @@ public class MapDownloadURL {
 
         } catch (MalformedURLException e) {
             e.printStackTrace();
-        }
-        finally {
+        } finally {
             if(inputStream != null)
                 inputStream.close();
             if (urlConnection != null) {

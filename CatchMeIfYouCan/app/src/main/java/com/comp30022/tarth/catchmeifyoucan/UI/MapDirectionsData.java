@@ -1,3 +1,11 @@
+// COMP30022 IT Project - Semester 2 2017
+// House Tarth - William Voor Thursday 16.15
+// | Ivan Ken Weng Chee         eyeonechi  ichee@student.unimelb.edu.au
+// | Jussi Eemeli Silventoinen  JussiSil   jsilventoine@student.unimelb.edu.au
+// | Minghao Wang               minghaooo  minghaow1@student.unimelb.edu.au
+// | Vikram Gopalan-Krishnan    vikramgk   vgopalan@student.unimelb.edu.au
+// | Ziren Xiao                 zirenxiao  zirenx@student.unimelb.edu.au
+
 package com.comp30022.tarth.catchmeifyoucan.UI;
 
 import android.graphics.Color;
@@ -13,6 +21,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * MapDirectionsData.java
+ * Handles Google Directions Data communication
+ */
 public class MapDirectionsData extends AsyncTask<Object,String,String> {
 
     GoogleMap mMap;
@@ -21,6 +33,11 @@ public class MapDirectionsData extends AsyncTask<Object,String,String> {
     LatLng latLng;
     List<Polyline> mPolylines = new ArrayList<Polyline>();
 
+    /**
+     * Performs a computation on a background thread
+     * @param objects
+     * @return
+     */
     @Override
     protected String doInBackground(Object... objects) {
         mMap = (GoogleMap)objects[0];
@@ -36,6 +53,10 @@ public class MapDirectionsData extends AsyncTask<Object,String,String> {
         return googleDirectionsData;
     }
 
+    /**
+     * Runs on the UI thread after doInBackground(Params...)
+     * @param s
+     */
     @Override
     protected void onPostExecute(String s) {
         String[] directionsList;
@@ -44,6 +65,10 @@ public class MapDirectionsData extends AsyncTask<Object,String,String> {
         displayDirection(directionsList);
     }
 
+    /**
+     * Displays a route
+     * @param directionsList
+     */
     public void displayDirection(String[] directionsList) {
         int count = directionsList.length;
         for(int i = 0;i<count;i++) {
@@ -57,10 +82,14 @@ public class MapDirectionsData extends AsyncTask<Object,String,String> {
         }
     }
 
+    /**
+     * Removes route display
+     */
     public void clearPolyline(){
         int count = mPolylines.size();
         for(int i = count-1;i>=0;i--) {
             mPolylines.get(i).remove();
         }
     }
+
 }

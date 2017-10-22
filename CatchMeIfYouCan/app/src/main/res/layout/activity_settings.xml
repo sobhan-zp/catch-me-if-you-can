@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- COMP30022 IT Project - Semester 2 2017
+     House Tarth - William Voor Thursday 16.15
+     | Ivan Ken Weng Chee         eyeonechi  ichee@student.unimelb.edu.au
+     | Jussi Eemeli Silventoinen  JussiSil   jsilventoine@student.unimelb.edu.au
+     | Minghao Wang               minghaooo  minghaow1@student.unimelb.edu.au
+     | Vikram Gopalan-Krishnan    vikramgk   vgopalan@student.unimelb.edu.au
+     | Ziren Xiao                 zirenxiao  zirenx@student.unimelb.edu.au -->
+
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -135,18 +143,6 @@
         android:layout_marginRight="40dp"
         android:maxLength="45"
         android:text="Add a custom message for all to see!" />
-
-
- <!--   <Button
-        android:id="@+id/buttonGet"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:onClick="createOnClick"
-        android:text="GET"
-        android:layout_below="@+id/Status"
-        android:layout_centerHorizontal="true"
-        />-->
 
     <Button
         android:id="@+id/buttonUpdate"
