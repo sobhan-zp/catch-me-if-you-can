@@ -29,4 +29,3 @@
         android:onClick="onClick"
         android:text="Get Route" />
 </RelativeLayout>
-

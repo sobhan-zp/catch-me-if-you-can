@@ -20,7 +20,6 @@ import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class ChatActivity extends Activity implements Communication {
@@ -28,10 +27,9 @@ public class ChatActivity extends Activity implements Communication {
     private ArrayAdapter<String> adapter;
     private List<String> array;
 
-    private String name = "You";
     private String friend;
 
-    SimpleDateFormat dateFormat;
+    String dateFormat;
     TextView textViewName;
 
     @Override
@@ -44,7 +42,7 @@ public class ChatActivity extends Activity implements Communication {
         setFriend();
 
         // Set date format
-        dateFormat = new SimpleDateFormat("HH:mm:ss, dd/MM/yy");
+        dateFormat = SimpleDateFormat.getDateTimeInstance().format("HH:mm:ss, dd/MM/yy");
 
         textViewName = (TextView) findViewById(R.id.Name);
         textViewName.setText(friend);
@@ -85,6 +83,16 @@ public class ChatActivity extends Activity implements Communication {
         Intent returnIntent = new Intent();
         setResult(Activity.RESULT_OK, returnIntent);
         finish();
+    }
+
+    // Resets the current activity connected to the WebSocket upon terminating child activities
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1) {
+            if (resultCode == Activity.RESULT_OK) {
+                WebSocketClient.getClient().setActivity(this);
+            }
+        }
     }
 
     @Override
@@ -135,9 +143,7 @@ public class ChatActivity extends Activity implements Communication {
     }
 
     private void displayMessage(Message message) {
-        String time  = dateFormat.format(new Date());
-
-        array.add(message.getFrom() + ": " +  message.getMessage() + "\n" + time);
+        array.add(message.getFrom() + ": " +  message.getMessage() + "\n" + dateFormat);
         adapter.notifyDataSetChanged();
     }
 
@@ -153,23 +159,11 @@ public class ChatActivity extends Activity implements Communication {
         }
         WebSocketClient.getClient().send(obj.toString());
 
-        String time  = dateFormat.format(new Date());
-        array.add(name + ": " +  input.getText().toString() + "\n"  + time);
+        array.add("You: " +  input.getText().toString() + "\n"  + dateFormat);
         adapter.notifyDataSetChanged();
 
         // Clear input
         input.setText("");
     }
 
-    // Resets the current activity connected to the WebSocket upon terminating child activities
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 1) {
-            if (resultCode == Activity.RESULT_OK) {
-                WebSocketClient.getClient().setActivity(this);
-            }
-        }
-    }
-
 }
-

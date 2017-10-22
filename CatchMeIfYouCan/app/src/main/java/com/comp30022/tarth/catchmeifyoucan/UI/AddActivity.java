@@ -19,7 +19,6 @@ import org.json.JSONObject;
 
 public class AddActivity extends AppCompatActivity implements Communication {
 
-    private Button buttonAdd;
     private EditText editTextAdd;
 
     @Override
@@ -33,7 +32,7 @@ public class AddActivity extends AppCompatActivity implements Communication {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        buttonAdd = (Button) findViewById(R.id.buttonAdd);
+        Button buttonAdd = (Button) findViewById(R.id.buttonAdd);
         editTextAdd = (EditText) findViewById(R.id.editTextAdd);
 
         buttonAdd.setOnClickListener(new View.OnClickListener() {
@@ -43,18 +42,6 @@ public class AddActivity extends AppCompatActivity implements Communication {
                 editTextAdd.setText("");
             }
         });
-    }
-
-    // Adds a new friend
-    private void addFriend(String username) {
-        JSONObject obj = new JSONObject();
-        try {
-            obj.put("action", getResources().getInteger(R.integer.FRIEND_ADD));
-            obj.put("username", username);
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
-        WebSocketClient.getClient().send(obj.toString());
     }
 
     // Set back button on action bar
@@ -76,6 +63,16 @@ public class AddActivity extends AppCompatActivity implements Communication {
         finish();
     }
 
+    // Resets the current activity connected to the WebSocket upon terminating child activities
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1) {
+            if (resultCode == Activity.RESULT_OK) {
+                WebSocketClient.getClient().setActivity(this);
+            }
+        }
+    }
+
     // Called by the WebSocket upon receiving a message
     @Override
     public void onResponse(final Message message) {
@@ -95,14 +92,16 @@ public class AddActivity extends AppCompatActivity implements Communication {
         });
     }
 
-    // Resets the current activity connected to the WebSocket upon terminating child activities
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 1) {
-            if (resultCode == Activity.RESULT_OK) {
-                WebSocketClient.getClient().setActivity(this);
-            }
+    // Adds a new friend
+    private void addFriend(String username) {
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("action", getResources().getInteger(R.integer.FRIEND_ADD));
+            obj.put("username", username);
+        } catch(Exception e) {
+            e.printStackTrace();
         }
+        WebSocketClient.getClient().send(obj.toString());
     }
 
     // Displays a toast message
@@ -110,4 +109,3 @@ public class AddActivity extends AppCompatActivity implements Communication {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 }
-

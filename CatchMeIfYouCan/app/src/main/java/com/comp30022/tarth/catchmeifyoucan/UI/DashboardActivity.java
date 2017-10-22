@@ -20,12 +20,6 @@ import org.json.JSONObject;
 
 public class DashboardActivity extends Activity implements Communication {
 
-    private Button buttonLogout;
-    private Button buttonFriendlist;
-    private Button buttonSettings;
-    private Button buttonJoin;
-    private Button buttonCreate;
-    private ImageView imageViewTest;
     private String getName;
 
     @Override
@@ -34,23 +28,20 @@ public class DashboardActivity extends Activity implements Communication {
         setContentView(R.layout.activity_dashboard);
         WebSocketClient.getClient().setActivity(this);
 
-        // constructors
-        buttonCreate = (Button) findViewById(R.id.buttonCreate);
-        buttonJoin = (Button) findViewById(R.id.buttonJoin);
-        buttonFriendlist = (Button) findViewById(R.id.buttonFriendlist);
-        imageViewTest = (ImageView) findViewById(R.id.imageViewTest);
-        buttonFriendlist = (Button) findViewById(R.id.buttonFriendlist);
-        buttonLogout = (Button) findViewById(R.id.buttonLogout);
-        buttonSettings = (Button) findViewById(R.id.buttonSettings);
-
-        //buttonTest = (Button) findViewById(R.id.buttonTest);
+        Button buttonCreate = (Button) findViewById(R.id.buttonCreate);
+        Button buttonJoin = (Button) findViewById(R.id.buttonJoin);
+        Button buttonFriendlist = (Button) findViewById(R.id.buttonFriendlist);
+        Button buttonLogout = (Button) findViewById(R.id.buttonLogout);
+        Button buttonSettings = (Button) findViewById(R.id.buttonSettings);
+        ImageView imageViewTest = (ImageView) findViewById(R.id.imageViewTest);
 
         TextView textViewUsername = (TextView) findViewById(R.id.Username);
         Intent intent = getIntent();
         Bundle bd = intent.getExtras();
         if(bd != null) {
             getName = (String) bd.get("username");
-            textViewUsername.setText("@" + getName);
+            String username = "@" + getName;
+            textViewUsername.setText(username);
         }
 
         buttonCreate.setOnClickListener(new Button.OnClickListener() {
@@ -66,7 +57,6 @@ public class DashboardActivity extends Activity implements Communication {
                 WebSocketClient.getClient().send(obj.toString());
             }
         });
-
         buttonJoin.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -98,13 +88,6 @@ public class DashboardActivity extends Activity implements Communication {
             }
         });
 
-        /*buttonTest.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                test();
-            }
-        });*/
-
         // set a onclick listener for when the button gets clicked
         imageViewTest.setImageResource(R.mipmap.temp_placeholder);
         imageViewTest.setOnClickListener(new View.OnClickListener() {
@@ -119,6 +102,53 @@ public class DashboardActivity extends Activity implements Communication {
     @Override
     public void onBackPressed() {
         logoutWarning();
+    }
+
+    // Resets the current activity connected to the WebSocket upon terminating child activities
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1) {
+            if (resultCode == Activity.RESULT_OK) {
+                WebSocketClient.getClient().setActivity(this);
+            }
+        }
+    }
+
+    @Override
+    public void onResponse(final Message message) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (message.getAction() != null) {
+                    toast("New message from " + message.getFrom() + ": " + message.getMessage());
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_CURRENT_SUCCESS))) {
+                    toast("Rejoined existing game");
+                    if (message.getIs_owner().equals(1)) {
+                        System.out.println("GAME NAME: " + message.getName());
+                        openTarget(message);
+                    } else {
+                        System.out.println("GAME NAME: " + message.getName());
+                        openSearcher(message);
+                    }
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_CURRENT_FAIL))) {
+                    toast("No active games");
+                    openGamelist();
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_CREATE_SUCCESS))) {
+                    toast("Game creation successful");
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_CREATE_FAIL))) {
+                    toast("Game creation failed");
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_ADD_SUCCESS))) {
+                    toast("You have been added to the game");
+                    if (message.getIs_owner().equals(1)) {
+                        openTarget(message);
+                    } else {
+                        openSearcher(message);
+                    }
+                } else {
+                    toast("Error: Unknown response received");
+                }
+            }
+        });
     }
 
     // Reveals pop up asking if user really wants to exit
@@ -164,43 +194,6 @@ public class DashboardActivity extends Activity implements Communication {
         startActivityForResult(intent, 1);
     }
 
-    @Override
-    public void onResponse(final Message message) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (message.getAction() != null) {
-                    toast("New message from " + message.getFrom() + ": " + message.getMessage());
-                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_CURRENT_SUCCESS))) {
-                    toast("Rejoined existing game");
-                    if (message.getIs_owner().equals(1)) {
-                        System.out.println("GAME NAME: " + message.getName());
-                        openTarget(message);
-                    } else {
-                        System.out.println("GAME NAME: " + message.getName());
-                        openSearcher(message);
-                    }
-                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_CURRENT_FAIL))) {
-                    toast("No active games");
-                    openGamelist();
-                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_CREATE_SUCCESS))) {
-                    toast("Game creation successful");
-                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_CREATE_FAIL))) {
-                    toast("Game creation failed");
-                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_ADD_SUCCESS))) {
-                    toast("You have been added to the game");
-                    if (message.getIs_owner().equals(1)) {
-                        openTarget(message);
-                    } else {
-                        openSearcher(message);
-                    }
-                } else {
-                    toast("Error: Unknown response received");
-                }
-            }
-        });
-    }
-
     // Displays a toast message
     private void toast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
@@ -232,15 +225,4 @@ public class DashboardActivity extends Activity implements Communication {
         startActivityForResult(intent, 1);
     }
 
-    // Resets the current activity connected to the WebSocket upon terminating child activities
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 1) {
-            if (resultCode == Activity.RESULT_OK) {
-                WebSocketClient.getClient().setActivity(this);
-            }
-        }
-    }
-
 }
-

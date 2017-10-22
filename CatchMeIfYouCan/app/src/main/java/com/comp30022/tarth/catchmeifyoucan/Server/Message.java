@@ -86,6 +86,66 @@ public class Message {
         return result;
     }
 
+    public void setAction(Integer action) {
+        this.action = action;
+    }
+
+    public void setCode(Integer code) {
+        this.code = code;
+    }
+
+    public void setGame_id(Integer game_id) {
+        this.game_id = game_id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public void setIs_owner(Integer is_owner) {
+        this.is_owner = is_owner;
+    }
+
+    public void setLv(Integer lv) {
+        this.lv = lv;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setFrom(String from) {
+        this.from = from;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setResult(Result[] result) {
+        this.result = result;
+    }
+
     @Override
     public String toString() {
         return(
@@ -117,4 +177,3 @@ public class Message {
     }
 
 }
-

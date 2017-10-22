@@ -66,15 +66,4 @@ public class EndActivity extends Activity {
         System.exit(1);
     }
 
-    public void createAccount(View view) {
-        Intent intent = new Intent(this, RegisterActivity.class);
-        startActivity(intent);
-    }
-
-    public void login(View view) {
-        Intent intent = new Intent(this, LoginActivity.class);
-        startActivity(intent);
-    }
-
 }
-

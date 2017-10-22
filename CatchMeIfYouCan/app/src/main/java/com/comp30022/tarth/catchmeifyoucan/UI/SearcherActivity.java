@@ -115,9 +115,6 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
         setContentView(R.layout.activity_searcher);
         WebSocketClient.getClient().setActivity(this);
 
-        // Add back button
-        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
         //Check if Google Play Services available
         if (!checkGooglePlayServices()) {
             Log.d("onCreate", "Finishing test case since Google Play Services are not available");
@@ -132,7 +129,6 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
         }
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        //mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment = new SupportMapFragment();
         optionsFragment = new OptionsFragment();
         arFragment = new ArFragment();
@@ -151,6 +147,141 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
         switchFragment(item);
 
         continuousUpdate();
+    }
+
+    // Set back button on action bar
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                sendLocation();
+                getTargetLocation();
+                ((ArFragment) arFragment).onUpdate(curr_latitude, curr_longitude, end_latitude, end_longitude);
+                System.out.println(i);
+                checkGameExist();
+                if (i == 1) {
+                    getWaypoints();
+                }
+                i ++;
+            }
+        }, 0, 0);
+        Intent returnIntent = new Intent();
+        setResult(Activity.RESULT_OK, returnIntent);
+        finish();
+    }
+
+    // Resets the current activity connected to the WebSocket upon terminating child activities
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1) {
+            if (resultCode == Activity.RESULT_OK) {
+                WebSocketClient.getClient().setActivity(this);
+            }
+        }
+    }
+
+    @Override
+    public void onResponse(final Message message) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (message.getAction() != null) {
+                    toast("New message from " + message.getFrom() + ": " + message.getMessage());
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_USER_SUCCESS))) {
+                    toast("Game get users successful");
+                    ((OptionsFragment) optionsFragment).onResponse(message);
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_USER_FAIL))) {
+                    toast("Game get users failure");
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.LOCATION_GET_SUCCESS))) {
+                    toast("Location get successful");
+                    List<Double> locations = new ArrayList<>();
+                    Result[] results = message.getResult();
+                    for (Result result : results) {
+                        locations.add(result.getX());
+                        locations.add(result.getY());
+                    }
+                    updateOthers(locations);
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.LOCATION_GET_FAIL))) {
+                    toast("Location get failure");
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_EXIT_SUCCESS))) {
+                    toast("Game exit successful");
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_EXIT_FAIL))) {
+                    toast("Game exit failure");
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_DELETE_SUCCESS))) {
+                    toast("Game delete successful");
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_DELETE_FAIL))) {
+                    toast("Game delete failure");
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.LOCATION_GET2_SUCCESS))) {
+                    toast("Target location receive successful");
+                    if (message.getResult().length > 0) {
+                        Result result = message.getResult()[0];
+                        targetX = result.getX();
+                        targetY = result.getY();
+                        updateTarget();
+                    }
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.LOCATION_GET2_FAIL))) {
+                    toast("Target location receive failed");
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_WAYPOINT_SUCCESS))) {
+                    toast("Get waypoint success");
+                    Result[] results = message.getResult();
+                    List<Waypoint> waypoints = new ArrayList<>();
+                    for (Result result : results) {
+                        waypoints.add(new Waypoint(result.getInfo(), result.getX(), result.getY()));
+                    }
+                    addWp(waypoints);
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_WAYPOINT_FAIL))) {
+                    toast("Get waypoint failure");
+                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_CURRENT_FAIL))) {
+                    toast("Game ended");
+                    onExit();
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onExit() {
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("action", getResources().getInteger(R.integer.GAME_EXIT));
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        WebSocketClient.getClient().send(obj.toString());
+
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                sendLocation();
+                getTargetLocation();
+                ((ArFragment) arFragment).onUpdate(curr_latitude, curr_longitude, end_latitude, end_longitude);
+                System.out.println(i);
+                checkGameExist();
+                if (i == 1) {
+                    getWaypoints();
+                }
+                i ++;
+            }
+        }, 0, 0);
+        Intent returnIntent = new Intent();
+        setResult(Activity.RESULT_OK, returnIntent);
+        finish();
+    }
+
+    @Override
+    public void onSend(JSONObject obj) {
+        WebSocketClient.getClient().send(obj.toString());
     }
 
     private void switchFragment(MenuItem item) {
@@ -211,38 +342,6 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
                 break;
         }
         transaction.commit();
-    }
-
-    // Set back button on action bar
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                onBackPressed();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onBackPressed() {
-        timer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                sendLocation();
-                getTargetLocation();
-                ((ArFragment) arFragment).onUpdate(curr_latitude, curr_longitude, end_latitude, end_longitude);
-                System.out.println(i);
-                checkGameExist();
-                if (i == 1) {
-                    getWaypoints();
-                }
-                i ++;
-            }
-        }, 0, 0);
-        Intent returnIntent = new Intent();
-        setResult(Activity.RESULT_OK, returnIntent);
-        finish();
     }
 
     private boolean checkGooglePlayServices() {
@@ -567,106 +666,6 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
         }
     }
 
-    @Override
-    public void onResponse(final Message message) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                System.out.println("CODE" + message.getCode());
-                if (message.getAction() != null) {
-                    toast("New message from " + message.getFrom() + ": " + message.getMessage());
-                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_USER_SUCCESS))) {
-                    toast("Game get users successful");
-                    ((OptionsFragment) optionsFragment).onResponse(message);
-                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_USER_FAIL))) {
-                    toast("Game get users failure");
-                } else if (message.getCode().equals(614)) {
-                    // TESTING TESTING
-                    toast("Location get successful");
-                    //((ChatFragment) chatFragment).onResponse(message);
-                    // TESTING
-                    List<Double> locations = new ArrayList<>();
-                    Result[] results = message.getResult();
-                    for (Result result : results) {
-                        //array.add(Double.toString(result.getX()) + ", " + Double.toString(result.getY()));
-                        locations.add(result.getX());
-                        locations.add(result.getY());
-                    }
-                    updateOthers(locations);
-                    //adapter.notifyDataSetChanged();
-                } else if (message.getCode().equals(615)) {
-                    toast("Location get failure");
-                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_EXIT_SUCCESS))) {
-                    toast("Game exit successful");
-                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_EXIT_FAIL))) {
-                    toast("Game exit failure");
-                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_DELETE_SUCCESS))) {
-                    toast("Game delete successful");
-                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_DELETE_FAIL))) {
-                    toast("Game delete failure");
-                } else if (message.getCode().equals(getResources().getInteger(R.integer.LOCATION_GET2_SUCCESS))) {
-                    System.out.println("Target location receive successful");
-                    if (message.getResult().length > 0) {
-                        Result result = message.getResult()[0];
-                        targetX = result.getX();
-                        targetY = result.getY();
-                        updateTarget();
-                    }
-                } else if (message.getCode().equals(getResources().getInteger(R.integer.LOCATION_GET2_FAIL))) {
-                    System.out.println("Target location receive failed");
-                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_WAYPOINT_SUCCESS))) {
-                    toast("Get waypoint success");
-                    Result[] results = message.getResult();
-                    List<Waypoint> waypoints = new ArrayList<>();
-                    for (Result result : results) {
-                        waypoints.add(new Waypoint(result.getInfo(), result.getX(), result.getY()));
-                    }
-                    addWp(waypoints);
-                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_WAYPOINT_FAIL))) {
-                    toast("Get waypoint failure");
-                } else if (message.getCode().equals(getResources().getInteger(R.integer.GAME_GET_CURRENT_FAIL))) {
-                    toast("Game ended");
-                    onExit();
-                }
-            }
-        });
-    }
-
-    @Override
-    public void onExit() {
-        JSONObject obj = new JSONObject();
-        try {
-            obj.put("action", getResources().getInteger(R.integer.GAME_EXIT));
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
-        WebSocketClient.getClient().send(obj.toString());
-
-        timer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                sendLocation();
-                getTargetLocation();
-                ((ArFragment) arFragment).onUpdate(curr_latitude, curr_longitude, end_latitude, end_longitude);
-                System.out.println(i);
-                checkGameExist();
-                if (i == 1) {
-                    getWaypoints();
-                }
-                i ++;
-            }
-        }, 0, 0);
-        Intent returnIntent = new Intent();
-        setResult(Activity.RESULT_OK, returnIntent);
-        finish();
-    }
-
-    @Override
-    public void onSend(JSONObject obj) {
-        WebSocketClient.getClient().send(obj.toString());
-    }
-
-    // send the location data of myself to server
     private void sendLocation() {
         JSONObject loc = new JSONObject();
         try {
@@ -766,16 +765,6 @@ public class SearcherActivity extends FragmentActivity implements OnMapReadyCall
         intent.putExtra("TargetLatitude", end_latitude);
         intent.putExtra("TargetLongitude", end_longitude);
         startActivityForResult(intent, 1);
-    }
-
-    // Resets the current activity connected to the WebSocket upon terminating child activities
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 1) {
-            if (resultCode == Activity.RESULT_OK) {
-                WebSocketClient.getClient().setActivity(this);
-            }
-        }
     }
 
 }

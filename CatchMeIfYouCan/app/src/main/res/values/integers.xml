@@ -95,5 +95,4 @@
     <integer name="GAME_GET_WAYPOINT_SUCCESS">734</integer>
     <integer name="GAME_GET_WAYPOINT_FAIL">735</integer>
 
-
 </resources>

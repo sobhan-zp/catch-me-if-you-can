@@ -2,9 +2,9 @@ package com.comp30022.tarth.catchmeifyoucan.Game;
 
 public class Waypoint {
 
-    String info;
-    Double x;
-    Double y;
+    private String info;
+    private Double x;
+    private Double y;
 
     public Waypoint(String info, Double x, Double y) {
         this.info = info;

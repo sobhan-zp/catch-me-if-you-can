@@ -24,29 +24,21 @@ import com.comp30022.tarth.catchmeifyoucan.R;
 
 import org.json.JSONObject;
 
-import java.net.Inet6Address;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.util.Enumeration;
-
 public class RegisterActivity extends AppCompatActivity implements Communication {
-
-    TextView textViewSignedup;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
+        // Enable Internet permissions
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
         // Add back button
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
-
-        // Enable Internet permissions
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
 
         WebSocketClient.getClient().connect();
         WebSocketClient.getClient().setActivity(this);
@@ -59,7 +51,7 @@ public class RegisterActivity extends AppCompatActivity implements Communication
             }
         });
 
-        textViewSignedup = (TextView) findViewById(R.id.signedup);
+        TextView textViewSignedup = (TextView) findViewById(R.id.signedup);
         textViewSignedup.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -87,100 +79,14 @@ public class RegisterActivity extends AppCompatActivity implements Communication
         return super.onOptionsItemSelected(item);
     }
 
-    // Get menu
-    public boolean onCreateOptionsMenu(Menu menu) {
-        return true;
-    }
-
-    // Redirect to login activity
-    private void signedup() {
-        Intent intent = new Intent(this, LoginActivity.class);
-        startActivity(intent);
-    }
-
-    // Checks if email is valid
-    boolean isEmailValid(String email) {
-        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
-    }
-
-    // Extracts user-entered information into a JSON formatted string to be sent
-    private void register() {
-        TextView username = (TextView) findViewById(R.id.editTextUsername);
-        TextView password = (TextView) findViewById(R.id.editTextPassword);
-        TextView name = (TextView) findViewById(R.id.editTextName);
-        TextView email = (TextView) findViewById(R.id.editTextEmail);
-        //TextView dob = (TextView) findViewById(R.id.editTextDOB);
-        String client_ip = getHostIP();
-
-        if (TextUtils.isEmpty(username.getText().toString())) {
-            toast("Username field cannot be empty");
-        } else if (TextUtils.isEmpty(password.getText().toString())) {
-            toast("Password field cannot be empty");
-        } else if (TextUtils.isEmpty(name.getText().toString())) {
-            toast("Name field cannot be empty");
-        } else if (!isEmailValid(email.getText().toString())) {
-            toast("Email is not valid");
-        } else {
-            JSONObject obj = new JSONObject();
-            try {
-                obj.put("action", getResources().getInteger(R.integer.REGISTER_ACTION));
-                obj.put("client_ip", client_ip);
-                obj.put("username", username.getText());
-                obj.put("password", password.getText());
-                obj.put("name", name.getText());
-                obj.put("email", email.getText());
-                obj.put("date_of_birth", "0");
-            } catch (Exception e) {
-                e.printStackTrace();
+    // Resets the current activity connected to the WebSocket upon terminating child activities
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1) {
+            if (resultCode == Activity.RESULT_OK) {
+                WebSocketClient.getClient().setActivity(this);
             }
-            WebSocketClient.getClient().send(obj.toString());
         }
-    }
-
-    // Checks if email is valid
-    boolean isEmailValid(CharSequence target) {
-        if (target == null) {
-            return false;
-        } else {
-            return android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
-        }
-    }
-
-    // Obtains the IP Address of the host
-    private String getHostIP() {
-        String hostIp = null;
-        try {
-            Enumeration nis = NetworkInterface.getNetworkInterfaces();
-            InetAddress ia;
-            while (nis.hasMoreElements()) {
-                NetworkInterface ni = (NetworkInterface) nis.nextElement();
-                Enumeration<InetAddress> ias = ni.getInetAddresses();
-                while (ias.hasMoreElements()) {
-                    ia = ias.nextElement();
-                    if (ia instanceof Inet6Address) {
-                        continue; // Skip iPv6
-                    }
-                    String ip = ia.getHostAddress();
-                    if (!"127.0.0.1".equals(ip)) {
-                        hostIp = ia.getHostAddress();
-                        break;
-                    }
-                }
-            }
-        } catch (SocketException e) {
-            e.printStackTrace();
-        }
-        return hostIp;
-    }
-
-    // Displays a toast message
-    private void toast(String text) {
-        Spannable centeredText = new SpannableString(text);
-        centeredText.setSpan(new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER),
-                0, text.length() - 1,
-                Spannable.SPAN_INCLUSIVE_INCLUSIVE);
-
-        Toast.makeText(this, centeredText, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -200,15 +106,60 @@ public class RegisterActivity extends AppCompatActivity implements Communication
         });
     }
 
-    // Resets the current activity connected to the WebSocket upon terminating child activities
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 1) {
-            if (resultCode == Activity.RESULT_OK) {
-                WebSocketClient.getClient().setActivity(this);
+    // Get menu
+    public boolean onCreateOptionsMenu(Menu menu) {
+        return true;
+    }
+
+    // Redirect to login activity
+    private void signedup() {
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+    }
+
+    // Checks if email is valid
+    boolean isValidEmail(String email) {
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
+    }
+
+    // Extracts user-entered information into a JSON formatted string to be sent
+    private void register() {
+        TextView username = (TextView) findViewById(R.id.editTextUsername);
+        TextView password = (TextView) findViewById(R.id.editTextPassword);
+        TextView name = (TextView) findViewById(R.id.editTextName);
+        TextView email = (TextView) findViewById(R.id.editTextEmail);
+
+        if (TextUtils.isEmpty(username.getText().toString())) {
+            toast("Username field cannot be empty");
+        } else if (TextUtils.isEmpty(password.getText().toString())) {
+            toast("Password field cannot be empty");
+        } else if (TextUtils.isEmpty(name.getText().toString())) {
+            toast("Name field cannot be empty");
+        } else if (!isValidEmail(email.getText().toString())) {
+            toast("Email is not valid");
+        } else {
+            JSONObject obj = new JSONObject();
+            try {
+                obj.put("action", getResources().getInteger(R.integer.REGISTER_ACTION));
+                obj.put("username", username.getText());
+                obj.put("password", password.getText());
+                obj.put("name", name.getText());
+                obj.put("email", email.getText());
+                obj.put("date_of_birth", "0");
+            } catch (Exception e) {
+                e.printStackTrace();
             }
+            WebSocketClient.getClient().send(obj.toString());
         }
     }
 
-}
+    // Displays a toast message
+    private void toast(String text) {
+        Spannable centeredText = new SpannableString(text);
+        centeredText.setSpan(new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER),
+                0, text.length() - 1,
+                Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+        Toast.makeText(this, centeredText, Toast.LENGTH_SHORT).show();
+    }
 
+}

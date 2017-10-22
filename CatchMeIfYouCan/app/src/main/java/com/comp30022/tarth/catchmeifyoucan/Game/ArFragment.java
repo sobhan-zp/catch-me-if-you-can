@@ -360,4 +360,5 @@ public class ArFragment extends Fragment implements SensorEventListener, View.On
     public void setTouchPause(long time){
         this.touchPause = time;
     }
+
 }

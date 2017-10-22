@@ -136,18 +136,6 @@
         android:maxLength="45"
         android:text="Add a custom message for all to see!" />
 
-
- <!--   <Button
-        android:id="@+id/buttonGet"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:onClick="createOnClick"
-        android:text="GET"
-        android:layout_below="@+id/Status"
-        android:layout_centerHorizontal="true"
-        />-->
-
     <Button
         android:id="@+id/buttonUpdate"
         android:layout_width="300dp"

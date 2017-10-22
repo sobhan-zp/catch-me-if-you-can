@@ -3,6 +3,7 @@ package com.comp30022.tarth.catchmeifyoucan.UI;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.StrictMode;
 import android.support.v7.app.AlertDialog;
 import android.os.Bundle;
 import android.view.View;
@@ -26,7 +27,7 @@ public class MainActivity extends Activity {
         buttonRegister.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                createAccount(v);
+                register();
             }
         });
 
@@ -34,7 +35,7 @@ public class MainActivity extends Activity {
         buttonLogin.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                login(v);
+                login();
             }
         });
 
@@ -67,21 +68,20 @@ public class MainActivity extends Activity {
     }
 
     // Disconnects from server and returns to main menu
-    public void logout() {
+    private void logout() {
         moveTaskToBack(true);
         android.os.Process.killProcess(android.os.Process.myPid());
         System.exit(1);
     }
 
-    public void createAccount(View view) {
-        Intent intent = new Intent(this, RegisterActivity.class);
-        startActivity(intent);
+    private void login() {
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivityForResult(intent, 1);
     }
 
-    public void login(View view) {
-        Intent intent = new Intent(this, LoginActivity.class);
-        startActivity(intent);
+    private void register() {
+        Intent intent = new Intent(this, RegisterActivity.class);
+        startActivityForResult(intent, 1);
     }
 
 }
-

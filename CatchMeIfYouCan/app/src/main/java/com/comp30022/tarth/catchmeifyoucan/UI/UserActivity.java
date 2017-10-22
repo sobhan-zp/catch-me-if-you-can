@@ -28,14 +28,7 @@ public class UserActivity extends Activity implements Communication {
     TextView textViewStatus;
     TextView textViewOnline;
 
-    //private Button buttonGet;
-    //private Button buttonChat;
-    private ImageButton fabChat;
-
-    //    ImageView backdropImg;
-    ImageView profilePicture;
-
-    String getUsername;
+    private String getUsername;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,9 +37,7 @@ public class UserActivity extends Activity implements Communication {
         // Set server to send responses back to this class
         WebSocketClient.getClient().setActivity(this);
 
-        //buttonGet = (Button) findViewById(R.id.buttonGet);
-        //buttonChat = (Button) findViewById(R.id.buttonChat);
-        fabChat = (ImageButton) findViewById(R.id.floatingChat);
+        ImageButton fabChat = (ImageButton) findViewById(R.id.floatingChat);
 
         textViewLocation = (TextView) findViewById(R.id.Location);
         textViewStatus = (TextView) findViewById(R.id.Status);
@@ -54,43 +45,18 @@ public class UserActivity extends Activity implements Communication {
         textViewName = (TextView) findViewById(R.id.Name);
         textViewOnline = (TextView) findViewById(R.id.Online);
 
-        profilePicture = (ImageView) findViewById(R.id.ProfilePicture);
+        ImageView profilePicture = (ImageView) findViewById(R.id.ProfilePicture);
         profilePicture.setImageResource(R.mipmap.temp_placeholder);
-
-       /* backdropImg = (ImageView) findViewById(R.id.backdrop);
-        backdropImg.setImageResource(R.drawable.p1);*/
 
         // Get username from dashboard
         Intent intent = getIntent();
         Bundle bd = intent.getExtras();
-        if(bd != null)
-        {
+        if(bd != null) {
             getUsername = (String) bd.get("username");
-
-            // Check if the Send Message Button should appear
-            // Shouldn't appear if user is looking at his own profile
-            /*if ((Boolean) bd.get("dashboard") == true) {
-                buttonChat.setVisibility(View.GONE);
-            }*/
-            //System.out.println("getUsername" + getUsername);
         }
 
         // Fetch details
         getInfo(getUsername);
-
-        /*buttonGet.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getInfo(getUsername);
-            }
-        });*/
-
-        /*buttonChat.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openChat(getUsername);
-            }
-        });*/
 
         fabChat.setOnClickListener(new View.OnClickListener() {
 
@@ -108,6 +74,58 @@ public class UserActivity extends Activity implements Communication {
         finish();
     }
 
+    // Resets the current activity connected to the WebSocket upon terminating child activities
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1) {
+            if (resultCode == Activity.RESULT_OK) {
+                WebSocketClient.getClient().setActivity(this);
+            }
+        }
+    }
+
+    /* Grabs response from server */
+    @Override
+    public void onResponse(final Message message) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_SEARCH_SUCCESS))) {
+                    // Strip result from JSON
+                    Result profile = message.getResult()[0];
+                    String username = "@" + profile.getUsername();
+                    String location = "Location: " + profile.getLocation();
+
+                    // Assign updated fields to UI
+                    textViewName.setText(profile.getName());
+                    textViewUsername.setText(username);
+                    textViewLocation.setText(location);
+                    textViewStatus.setText(profile.getStatus());
+
+                    getOnline();
+                }
+                // If online
+                if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_CHECK_SUCCESS))) {
+                    textViewOnline.setTextColor(Color.parseColor("#16B72E"));
+                    String online = "ONLINE";
+                    textViewOnline.setText(online);
+                    textViewOnline.setTypeface(null, Typeface.BOLD_ITALIC);
+                    toast("Online");
+                }
+                // If offline
+                else if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_CHECK_FAIL))) {
+                    String offline = "OFFLINE";
+                    textViewOnline.setText(offline);
+                    textViewOnline.setTextColor(Color.parseColor("#B72616"));
+                    textViewOnline.setTypeface(null, Typeface.BOLD_ITALIC);
+                    toast("Offline");
+                } else {
+                    toast("User Error: Unknown response received");
+                }
+            }
+        });
+    }
+
     // Redirects to user to chat
     private void openChat(String friend) {
         Intent intent = new Intent(this, ChatActivity.class);
@@ -115,11 +133,10 @@ public class UserActivity extends Activity implements Communication {
         startActivityForResult(intent, 1);
     }
 
-    /* Sends server a JSON request for the information of a user, takes in unique username as string*/
+    /* Sends server a JSON request for the information of a user, takes in unique username as string */
     private void getInfo(String uname) {
         JSONObject obj = new JSONObject();
         System.out.println("uname" + uname);
-
         try {
             obj.put("username", uname);
             obj.put("action", getResources().getInteger(R.integer.FRIEND_SEARCH));
@@ -134,74 +151,13 @@ public class UserActivity extends Activity implements Communication {
     /* Sends server a JSON request to check if user is online*/
     private void getOnline() {
         JSONObject obj = new JSONObject();
-
         try {
             obj.put("username", getUsername);
             obj.put("action", getResources().getInteger(R.integer.FRIEND_CHECK));
-            //System.out.println("SentOnline->" + obj.toString(4));
         } catch (Exception e) {
             e.printStackTrace();
         }
         WebSocketClient.getClient().send(obj.toString());
-    }
-
-    /* Grabs response from server */
-    @Override
-    public void onResponse(final Message message) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                //System.out.println("Message received");
-                System.out.println("getCode->" + message.getCode());
-
-                if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_SEARCH_SUCCESS))) {
-                    // Strip result from JSON
-                    Result profile = message.getResult()[0];
-
-            /*System.out.println("recvname->" + profile.getName());
-            System.out.println("recvusername->" + profile.getUsername());
-            System.out.println("recvemail->" + profile.getEmail());
-            System.out.println("recvstatus->" + profile.getStatus());
-            System.out.println("recvlocation->" + profile.getLocation());*/
-
-                    // Assign updated fields to UI
-                    textViewName.setText(profile.getName());
-                    textViewUsername.setText("@" + profile.getUsername());
-                    textViewLocation.setText("Location: " + profile.getLocation());
-                    //textViewLocation.setText(profile.getX() + "," + profile.getY());
-                    textViewStatus.setText(profile.getStatus());
-
-                    getOnline();
-
-                    //System.out.println("Profile get success");
-                }
-
-                // If online
-                if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_CHECK_SUCCESS))) {
-                    textViewOnline.setTextColor(Color.parseColor("#16B72E"));
-                    textViewOnline.setText("ONLINE");
-                    textViewOnline.setTypeface(null, Typeface.BOLD_ITALIC);
-
-                    // If offline
-                } else if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_CHECK_FAIL))) {
-                    textViewOnline.setText("OFFLINE");
-                    textViewOnline.setTextColor(Color.parseColor("#B72616"));
-                    textViewOnline.setTypeface(null, Typeface.BOLD_ITALIC);
-                } else {
-                    System.out.println("User Error: Unknown response received");
-                }
-            }
-        });
-    }
-
-    // Resets the current activity connected to the WebSocket upon terminating child activities
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 1) {
-            if (resultCode == Activity.RESULT_OK) {
-                WebSocketClient.getClient().setActivity(this);
-            }
-        }
     }
 
     // Displays a toast message
@@ -210,4 +166,3 @@ public class UserActivity extends Activity implements Communication {
     }
 
 }
-
