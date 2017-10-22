@@ -75,6 +75,6 @@
         android:layout_below="@+id/list_of_messages"
         android:layout_marginTop="5dp"
         android:layout_marginLeft="14dp"
-        android:layout_marginRight="14dp"        />
+        android:layout_marginRight="14dp" />
 
 </RelativeLayout>
