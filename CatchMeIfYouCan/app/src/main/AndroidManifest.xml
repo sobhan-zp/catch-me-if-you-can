@@ -105,10 +105,6 @@
             android:exported="true">
         </activity>
         <activity
-            android:name=".UI.UserDetailActivity"
-            android:label="User">
-        </activity>
-        <activity
             android:name=".UI.EndActivity"
             android:label="End">
         </activity>

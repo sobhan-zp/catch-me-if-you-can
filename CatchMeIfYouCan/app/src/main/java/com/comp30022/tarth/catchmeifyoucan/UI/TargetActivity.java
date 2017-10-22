@@ -1,3 +1,11 @@
+// COMP30022 IT Project - Semester 2 2017
+// House Tarth - William Voor Thursday 16.15
+// | Ivan Ken Weng Chee         eyeonechi  ichee@student.unimelb.edu.au
+// | Jussi Eemeli Silventoinen  JussiSil   jsilventoine@student.unimelb.edu.au
+// | Minghao Wang               minghaooo  minghaow1@student.unimelb.edu.au
+// | Vikram Gopalan-Krishnan    vikramgk   vgopalan@student.unimelb.edu.au
+// | Ziren Xiao                 zirenxiao  zirenx@student.unimelb.edu.au
+
 package com.comp30022.tarth.catchmeifyoucan.UI;
 
 import android.Manifest;
@@ -48,6 +56,10 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+/**
+ * TargetActivity.java
+ * Target game interface
+ */
 public class TargetActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
         LocationListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener,
@@ -83,6 +95,10 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
     Fragment optionsFragment;
     private BottomNavigationView navigation;
 
+    /**
+     * Called when the activity is starting
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -122,7 +138,11 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
         continuousUpdate();
     }
 
-    // Set back button on action bar
+    /**
+     * This hook is called whenever an item in your options menu is selected
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -133,15 +153,30 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Called when the activity has detected the user's press of the back key
+     */
     @Override
     public void onBackPressed() {
-        timer.scheduleAtFixedRate(null, 0, 0);
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                getLocation();
+                sendLocation();
+            }
+        }, 0, 0);
         Intent returnIntent = new Intent();
         setResult(Activity.RESULT_OK, returnIntent);
         finish();
     }
 
-    // Resets the current activity connected to the WebSocket upon terminating child activities
+    /**
+     * Called when an activity you launched exits, giving you the requestCode you started it with,
+     * the resultCode it returned, and any additional data from it
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1) {
@@ -151,6 +186,10 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
         }
     }
 
+    /**
+     * Method invoked when the WebSocketClient receives a message
+     * @param message : Message received from server
+     */
     @Override
     public void onResponse(final Message message) {
         runOnUiThread(new Runnable() {
@@ -201,7 +240,13 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
         }
         WebSocketClient.getClient().send(obj.toString());
 
-        timer.scheduleAtFixedRate(null, 0, 0);
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                getLocation();
+                sendLocation();
+            }
+        }, 0, 0);
         Intent returnIntent = new Intent();
         setResult(Activity.RESULT_OK, returnIntent);
         finish();
@@ -534,7 +579,10 @@ public class TargetActivity extends FragmentActivity implements OnMapReadyCallba
         }
     }
 
-    // Displays a toast message
+    /**
+     * Displays a toast message
+     * @param message : Message to be displayed
+     */
     private void toast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }

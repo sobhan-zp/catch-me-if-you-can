@@ -1,7 +1,19 @@
+// COMP30022 IT Project - Semester 2 2017
+// House Tarth - William Voor Thursday 16.15
+// | Ivan Ken Weng Chee         eyeonechi  ichee@student.unimelb.edu.au
+// | Jussi Eemeli Silventoinen  JussiSil   jsilventoine@student.unimelb.edu.au
+// | Minghao Wang               minghaooo  minghaow1@student.unimelb.edu.au
+// | Vikram Gopalan-Krishnan    vikramgk   vgopalan@student.unimelb.edu.au
+// | Ziren Xiao                 zirenxiao  zirenx@student.unimelb.edu.au
+
 package com.comp30022.tarth.catchmeifyoucan.Server;
 
 import java.util.Date;
 
+/**
+ * Message.java
+ * Maps outer level JSON objects received from the server
+ */
 public class Message {
 
     private Integer action;
@@ -146,6 +158,10 @@ public class Message {
         this.result = result;
     }
 
+    /**
+     * String representation of class object
+     * @return
+     */
     @Override
     public String toString() {
         return(
@@ -168,6 +184,10 @@ public class Message {
         );
     }
 
+    /**
+     * String representation of nested JSON objects in a JSON array
+     * @return
+     */
     private String resultToString() {
         String str = "";
         for (Result res : result) {

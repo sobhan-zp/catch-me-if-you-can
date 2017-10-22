@@ -1,3 +1,11 @@
+// COMP30022 IT Project - Semester 2 2017
+// House Tarth - William Voor Thursday 16.15
+// | Ivan Ken Weng Chee         eyeonechi  ichee@student.unimelb.edu.au
+// | Jussi Eemeli Silventoinen  JussiSil   jsilventoine@student.unimelb.edu.au
+// | Minghao Wang               minghaooo  minghaow1@student.unimelb.edu.au
+// | Vikram Gopalan-Krishnan    vikramgk   vgopalan@student.unimelb.edu.au
+// | Ziren Xiao                 zirenxiao  zirenx@student.unimelb.edu.au
+
 package com.comp30022.tarth.catchmeifyoucan.UI;
 
 import android.app.Activity;
@@ -22,6 +30,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * ChatActivity.java
+ * Chatting with friends
+ */
 public class ChatActivity extends Activity implements Communication {
 
     private ArrayAdapter<String> adapter;
@@ -32,6 +44,10 @@ public class ChatActivity extends Activity implements Communication {
     String dateFormat;
     TextView textViewName;
 
+    /**
+     * Called when the activity is starting
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,7 +83,11 @@ public class ChatActivity extends Activity implements Communication {
         getOfflineMessages();
     }
 
-    // Set back button on action bar
+    /**
+     * This hook is called whenever an item in your options menu is selected
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -78,6 +98,9 @@ public class ChatActivity extends Activity implements Communication {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Called when the activity has detected the user's press of the back key
+     */
     @Override
     public void onBackPressed() {
         Intent returnIntent = new Intent();
@@ -85,7 +108,13 @@ public class ChatActivity extends Activity implements Communication {
         finish();
     }
 
-    // Resets the current activity connected to the WebSocket upon terminating child activities
+    /**
+     * Called when an activity you launched exits, giving you the requestCode you started it with,
+     * the resultCode it returned, and any additional data from it
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1) {
@@ -95,6 +124,10 @@ public class ChatActivity extends Activity implements Communication {
         }
     }
 
+    /**
+     * Method invoked when the WebSocketClient receives a message
+     * @param message : Message received from server
+     */
     @Override
     public void onResponse(final Message message) {
         runOnUiThread(new Runnable() {
@@ -122,6 +155,9 @@ public class ChatActivity extends Activity implements Communication {
         });
     }
 
+    /**
+     * Retrieves recipient username from previous activity
+     */
     public void setFriend() {
         // Get username from dashboard
         Intent intent = getIntent();
@@ -131,6 +167,9 @@ public class ChatActivity extends Activity implements Communication {
         }
     }
 
+    /**
+     * Retrieves offline messages from the server
+     */
     private void getOfflineMessages() {
         JSONObject obj = new JSONObject();
         try {
@@ -142,11 +181,18 @@ public class ChatActivity extends Activity implements Communication {
         WebSocketClient.getClient().send(obj.toString());
     }
 
+    /**
+     * Displays a new message
+     * @param message : Message to be displayed
+     */
     private void displayMessage(Message message) {
         array.add(message.getFrom() + ": " +  message.getMessage() + "\n" + dateFormat);
         adapter.notifyDataSetChanged();
     }
 
+    /**
+     * Sends a message to the recipient
+     */
     private void sendMessage() {
         EditText input = (EditText) findViewById(R.id.input);
         JSONObject obj = new JSONObject();

@@ -1,3 +1,11 @@
+// COMP30022 IT Project - Semester 2 2017
+// House Tarth - William Voor Thursday 16.15
+// | Ivan Ken Weng Chee         eyeonechi  ichee@student.unimelb.edu.au
+// | Jussi Eemeli Silventoinen  JussiSil   jsilventoine@student.unimelb.edu.au
+// | Minghao Wang               minghaooo  minghaow1@student.unimelb.edu.au
+// | Vikram Gopalan-Krishnan    vikramgk   vgopalan@student.unimelb.edu.au
+// | Ziren Xiao                 zirenxiao  zirenx@student.unimelb.edu.au
+
 package com.comp30022.tarth.catchmeifyoucan.UI;
 
 import android.app.Activity;
@@ -20,7 +28,10 @@ import com.comp30022.tarth.catchmeifyoucan.Server.WebSocketClient;
 
 import org.json.JSONObject;
 
-/* Opens a detailed view of a user and letting them make changes */
+/**
+ * SettingsActivity.java
+ * Opens a detailed view of a user and letting them make changes
+ */
 public class SettingsActivity extends AppCompatActivity implements Communication{
 
     EditText EditTextName;
@@ -32,6 +43,10 @@ public class SettingsActivity extends AppCompatActivity implements Communication
 
     String getUsername;
 
+    /**
+     * Called when the activity is starting
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,7 +87,11 @@ public class SettingsActivity extends AppCompatActivity implements Communication
         });
     }
 
-    // Set back button on action bar
+    /**
+     * This hook is called whenever an item in your options menu is selected
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -83,26 +102,9 @@ public class SettingsActivity extends AppCompatActivity implements Communication
         return super.onOptionsItemSelected(item);
     }
 
-    private void changeSettings() {
-        JSONObject obj = new JSONObject();
-
-        TextView name = (TextView) findViewById(R.id.Name);
-        TextView location = (TextView) findViewById(R.id.Location);
-        TextView status = (TextView) findViewById(R.id.Status);
-        TextView newEmail = (TextView) findViewById(R.id.Email);
-
-        try {
-            obj.put("action", getResources().getInteger(R.integer.PROFILE_UPDATE));
-            obj.put("name", name.getText());
-            obj.put("email", newEmail.getText());
-            obj.put("location", location.getText());
-            obj.put("status", status.getText());
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
-        WebSocketClient.getClient().send(obj.toString());
-    }
-
+    /**
+     * Called when the activity has detected the user's press of the back key
+     */
     @Override
     public void onBackPressed() {
         Intent returnIntent = new Intent();
@@ -110,7 +112,13 @@ public class SettingsActivity extends AppCompatActivity implements Communication
         finish();
     }
 
-    // Resets the current activity connected to the WebSocket upon terminating child activities
+    /**
+     * Called when an activity you launched exits, giving you the requestCode you started it with,
+     * the resultCode it returned, and any additional data from it
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1) {
@@ -120,7 +128,10 @@ public class SettingsActivity extends AppCompatActivity implements Communication
         }
     }
 
-    /* Grabs response from server */
+    /**
+     * Method invoked when the WebSocketClient receives a message
+     * @param message : Message received from server
+     */
     @Override
     public void onResponse(final Message message) {
         runOnUiThread(new Runnable() {
@@ -177,34 +188,63 @@ public class SettingsActivity extends AppCompatActivity implements Communication
         });
     }
 
-    /* Sends JSON request for latest information of user */
-    private void getInfo() {
+    /**
+     * Displays a toast message
+     * @param message : Message to be displayed
+     */
+    private void toast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * Updates user details
+     */
+    private void changeSettings() {
         JSONObject obj = new JSONObject();
+
+        TextView name = (TextView) findViewById(R.id.Name);
+        TextView location = (TextView) findViewById(R.id.Location);
+        TextView status = (TextView) findViewById(R.id.Status);
+        TextView newEmail = (TextView) findViewById(R.id.Email);
+
         try {
-            obj.put("action", getResources().getInteger(R.integer.PROFILE_ACTION));
-            //System.out.println("SentInfo->" + obj.toString(4));
+            obj.put("action", getResources().getInteger(R.integer.PROFILE_UPDATE));
+            obj.put("name", name.getText());
+            obj.put("email", newEmail.getText());
+            obj.put("location", location.getText());
+            obj.put("status", status.getText());
         } catch(Exception e) {
             e.printStackTrace();
         }
         WebSocketClient.getClient().send(obj.toString());
     }
 
-    /* Sends request to see if user is online */
+    /**
+     * Sends JSON request for latest information of user
+     */
+    private void getInfo() {
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("action", getResources().getInteger(R.integer.PROFILE_ACTION));
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        WebSocketClient.getClient().send(obj.toString());
+    }
+
+    /**
+     * Sends request to see if user is online
+     * @param user
+     */
     private void getOnline(String user) {
         JSONObject obj = new JSONObject();
         try {
             obj.put("username", user);
             obj.put("action", getResources().getInteger(R.integer.FRIEND_CHECK));
-            //System.out.println("SentOnline->" + obj.toString(4));
         } catch(Exception e) {
             e.printStackTrace();
         }
         WebSocketClient.getClient().send(obj.toString());
-    }
-
-    // Displays a toast message
-    private void toast(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
 }

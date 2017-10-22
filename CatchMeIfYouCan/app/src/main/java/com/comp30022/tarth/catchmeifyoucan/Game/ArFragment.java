@@ -1,3 +1,11 @@
+// COMP30022 IT Project - Semester 2 2017
+// House Tarth - William Voor Thursday 16.15
+// | Ivan Ken Weng Chee         eyeonechi  ichee@student.unimelb.edu.au
+// | Jussi Eemeli Silventoinen  JussiSil   jsilventoine@student.unimelb.edu.au
+// | Minghao Wang               minghaooo  minghaow1@student.unimelb.edu.au
+// | Vikram Gopalan-Krishnan    vikramgk   vgopalan@student.unimelb.edu.au
+// | Ziren Xiao                 zirenxiao  zirenx@student.unimelb.edu.au
+
 package com.comp30022.tarth.catchmeifyoucan.Game;
 
 import android.Manifest;
@@ -33,6 +41,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * ArFragment.java
+ * Displays Augmented Reality view for aiding in location of the target
+ */
 public class ArFragment extends Fragment implements SensorEventListener, View.OnTouchListener{
 
     private Activity parent;
@@ -77,6 +89,10 @@ public class ArFragment extends Fragment implements SensorEventListener, View.On
 
     FrameLayout graphicsView;
 
+    /**
+     * Called once the fragment is associated with its activity
+     * @param context
+     */
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -87,16 +103,33 @@ public class ArFragment extends Fragment implements SensorEventListener, View.On
         }
     }
 
+    /**
+     * Tells the fragment that its activity has completed its own Activity.onCreate()
+     * @param savedInstanceState
+     */
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
     }
 
+    /**
+     * Creates and returns the view hierarchy associated with the fragment
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.activity_ar, container, false);
     }
 
+    /**
+     * Called immediately after onCreateView(LayoutInflater, ViewGroup, Bundle) has returned,
+     * but before any saved state has been restored in to the view
+     * @param view
+     * @param savedInstanceState
+     */
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -148,14 +181,6 @@ public class ArFragment extends Fragment implements SensorEventListener, View.On
         graphicUpdateHandler = Executors.newScheduledThreadPool(0);
         locationUpdateHandler = Executors.newScheduledThreadPool(0);
         startRepeatingTask();
-        /*
-        Intent intent = getIntent();
-        Bundle bd = intent.getExtras();
-        System.out.println(bd.get("SearcherLatitude"));
-        System.out.println(bd.get("SearcherLongitude"));
-        System.out.println(bd.get("TargetLatitude"));
-        System.out.println(bd.get("TargetLongitude"));
-        */
     }
 
     /*
