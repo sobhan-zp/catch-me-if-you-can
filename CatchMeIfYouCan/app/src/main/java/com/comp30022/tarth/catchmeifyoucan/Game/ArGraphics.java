@@ -25,7 +25,8 @@ public class ArGraphics extends View{
     private float velocityX;
     private float velocityY;
     private float shapeRad;
-    private static int NUM_UPDATES = (int)(ArActivity.LOCATION_UPDATE_RATE/ArActivity.GRAPHIC_UPDATE_RATE);
+    private static int NUM_UPDATES = (int)(ArFragment.LOCATION_UPDATE_RATE/
+            ArFragment.GRAPHIC_UPDATE_RATE);
     private int timesMoved = 0;
 
     //Shape Constructors
@@ -49,7 +50,7 @@ public class ArGraphics extends View{
     //private Bitmap bitmap;
     //private Canvas canvas;
 
-    public ArGraphics(Context context, Activity activity){
+    public ArGraphics(Context context){
         super(context);
 
         //Example Locations
@@ -97,6 +98,7 @@ public class ArGraphics extends View{
         height = h;
     }
 
+    //Calculates x-coordinate of the AR circle
     private float calculateGraphicXPos(float[] orientationAngles){
         float x;
         float bearingAngle = (float)toRadians(mCurrentLocation.bearingTo(mCurrLocationMarker));
@@ -115,6 +117,8 @@ public class ArGraphics extends View{
 
         return x;
     }
+
+    //Calculates y-coordinate of the AR circle
     private float calculateGraphicYPos(float[] orientationAngles){
         float y;
         y = height/2 - (int) ((orientationAngles[1])/yViewingAngle * height);
@@ -132,6 +136,7 @@ public class ArGraphics extends View{
         return s;
     }
 
+    //Used to set the orientationAngles array from ArFragment
     public void setOrientationAngles(float[] orientationAngles){
         //Log.d("debug", "setAngles");
         timesMoved = 0;
@@ -151,5 +156,17 @@ public class ArGraphics extends View{
     public void setCurrentLocation(double x, double y){
         mCurrentLocation.setLatitude(y);
         mCurrentLocation.setLongitude(x);
+    }
+
+    public void setShapeX(float x){
+        this.shapeX = x;
+    }
+
+    public void setShapeY(float y){
+        this.shapeY = y;
+    }
+
+    public float[] getOrientationAngles(){
+        return mOrientationAngles;
     }
 }
