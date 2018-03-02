@@ -4,6 +4,12 @@
 
 # Catch Me If You Can
 
+Contents
+
+[About](#about)
+[Java App](#java-app)
+[Examples of Functionality]
+
 ## About
 
 Catch Me If You Can is an Android game app. The motive for creating the game was to make the dull experience of trying to meet up with friends a fun experience. The app features: user accounts, customisable user profiles, text chat, Google Maps integration, in-app notifications, and basic augmented reality.
@@ -19,7 +25,7 @@ README written by [vikramgk](https://github.com/vikramgk)
 
 ### Examples of Functionality
 
-| Creating an Account & Logging In |  Chat and In-App Notification |
+| Creating an Account & Logging In |  Chat and In-App Notifications |
 | ------------- | ------------- |
 | Content Cell  | Content Cell  |
 
