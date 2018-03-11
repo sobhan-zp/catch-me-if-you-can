@@ -30,13 +30,10 @@ README produced by [vikramgk](https://github.com/vikramgk)
 <center>
 
 
-| <center>Register & Logging In</center> |  <center>Chat</center> |
-| ------------- | ------------- |
-| <img src="https://i.imgur.com/RaCq7oZ.gif" width="200" /> | <img src="https://imgur.com/L97s5jx.gif" width="200" />  |
+| <center>Register & Logging In</center> |  <center>Chat</center> | <center>Adding a Friend</center> | <center>Changing your Profile Details</center> |
+| ------------- | ------------- | ------------- | ------------- |
+| <img src="https://i.imgur.com/RaCq7oZ.gif" width="200" /> | <img src="https://imgur.com/L97s5jx.gif" width="200" />  |  <img src="https://imgur.com/mXWVFRS.gif" width="200" />  | <img src="https://imgur.com/211OrtT.gif" width="200" />  |
 
-| <center>Adding a Friend</center> | <center>Changing your Profile Details</center> |
-| ------------- | ------------- |
-| <img src="https://imgur.com/mXWVFRS.gif" width="200" />  | <img src="https://imgur.com/211OrtT.gif" width="200" />  |
 
 <!--| Starting a Game | Joining a Game |
 | ------------- | ------------- |
