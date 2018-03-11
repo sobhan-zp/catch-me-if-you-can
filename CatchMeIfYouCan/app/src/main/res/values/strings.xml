@@ -25,8 +25,8 @@
     <string name ="ok">OK</string>
 
     <!-- Server related strings -->
-    <string name="SERVER_IP">ws://45.77.49.3</string>
-    <string name="SERVER2_IP">ws://35.197.172.195</string>
+    <string name="SERVER_IP"></string>
+    <string name="SERVER2_IP"></string>
 
     <string name="signedup_title">Already signed up? Click here to login.</string>
     <string name="main_title">Let\'s Start!</string>

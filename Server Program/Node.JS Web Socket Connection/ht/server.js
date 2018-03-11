@@ -17,7 +17,7 @@ var WebSocketServer = WebSocket.Server,
     wss = new WebSocketServer({ port: SERVER_PORT });
 var clients = [];
 
-//console.log('Server Starts At Port %d', SERVER_PORT);
+console.log('Server Starts At Port %d', SERVER_PORT);
 db.set_database_con();
 
 function invalid_msg(ws){

@@ -1,14 +1,15 @@
 // Constant
 // Database settings
-DATABASE_HOST = "45.77.49.3";
+DATABASE_HOST = "localhost";
 DATABASE_USERNAME = "root";
-DATABASE_PASSWORD = "ht!!!";
+DATABASE_PASSWORD = "password";
+//DATABASE_PASSWORD = "ht!!!";
 DATABASE_DATABASE = "house_tarth";
-DATABASE_PORT = "8888";
+DATABASE_PORT = "3306";
 // Global user settings
 DEFAULT_USER_LEVEL = 0;
 // Server settings
-SERVER_PORT = 80;
+SERVER_PORT = 3000;
 // Actions
 REGISTER_ACTION = 100;
 LOGIN_ACTION = 101;

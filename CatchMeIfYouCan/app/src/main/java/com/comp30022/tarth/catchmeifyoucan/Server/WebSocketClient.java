@@ -38,9 +38,9 @@ public class WebSocketClient extends OkHttpClient {
     }
 
     // CentOS 6 Server
-    //private static final String SERVER2_IP = "ws://35.197.172.195";
+    //private static final String SERVER_IP = "ws://35.197.172.195";
     // CentOS 7 Server
-    private static final String SERVER_IP = "ws://45.77.49.3";
+    private static final String SERVER_IP = "ws://192.168.1.5:3000";
     private static final int NORMAL_CLOSURE_STATUS = 1000;
 
     private Communication activity;

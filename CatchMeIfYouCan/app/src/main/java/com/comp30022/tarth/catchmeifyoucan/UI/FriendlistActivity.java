@@ -139,7 +139,7 @@ public class FriendlistActivity extends AppCompatActivity implements Communicati
                 if (message.getAction() != null) {
                     toast("New message from " + message.getFrom() + ": " + message.getMessage());
                 } else if (message.getCode().equals(getResources().getInteger(R.integer.FRIEND_GET_SUCCESS))) {
-                    toast("Friend get success");
+                    //toast("Friend get success");
 
                     // Repopulates list
                     Result[] results = message.getResult();

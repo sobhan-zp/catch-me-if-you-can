@@ -147,9 +147,10 @@ public class UserActivity extends Activity implements Communication {
                     textViewOnline.setTextColor(Color.parseColor("#B72616"));
                     textViewOnline.setTypeface(null, Typeface.BOLD_ITALIC);
                     toast("Offline");
-                } else {
-                    toast("User Error: Unknown response received");
                 }
+//                } else {
+//                    toast("User Error: Unknown response received");
+//                }
             }
         });
     }

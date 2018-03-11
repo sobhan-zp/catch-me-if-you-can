@@ -186,7 +186,7 @@ public class ChatActivity extends Activity implements Communication {
      * @param message : Message to be displayed
      */
     private void displayMessage(Message message) {
-        array.add(message.getFrom() + ": " +  message.getMessage() + "\n" + dateFormat);
+        array.add(message.getFrom() + ": " +  message.getMessage());// + "\n" + dateFormat);
         adapter.notifyDataSetChanged();
     }
 
@@ -205,7 +205,7 @@ public class ChatActivity extends Activity implements Communication {
         }
         WebSocketClient.getClient().send(obj.toString());
 
-        array.add("You: " +  input.getText().toString() + "\n"  + dateFormat);
+        array.add("You: " +  input.getText().toString());// + "\n"  + dateFormat);
         adapter.notifyDataSetChanged();
 
         // Clear input
